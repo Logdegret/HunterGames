@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hunter Games</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <a class="brand" href="#top" aria-label="Hunter Games home">
+          <span class="brand-mark">HG</span>
+          <span>Hunter Games</span>
+        </a>
+        <label class="search">
+          <span>Search games</span>
+          <input id="searchInput" type="search" placeholder="Search by title or tag">
+        </label>
+        <nav class="nav" aria-label="Game categories">
+          <button class="chip active" data-filter="all">All</button>
+          <button class="chip" data-filter="arcade">Arcade</button>
+          <button class="chip" data-filter="skill">Skill</button>
+          <button class="chip" data-filter="puzzle">Puzzle</button>
+        </nav>
+      </header>
+
+      <main id="top">
+        <aside class="ad-slot ad-slot-banner" aria-label="Advertisement">
+          <span>Advertisement</span>
+          <strong>728 x 90 banner</strong>
+        </aside>
+
+        <section class="hero" aria-labelledby="pageTitle">
+          <div class="hero-copy">
+            <p class="eyebrow">Browser games that load fast</p>
+            <h1 id="pageTitle">Pick a game and start playing.</h1>
+            <p class="intro">A fast HTML5 game portal.</p>
+            <div class="hero-actions">
+              <a class="primary-action" href="#player">Play now</a>
+              <a class="secondary-action" href="#library">Browse library</a>
+            </div>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="orbit one"></div>
+            <div class="orbit two"></div>
+            <div class="pixel-board">
+              <span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="play-shell" aria-label="Game player and ads">
+          <div class="player-ad-row">
+            <aside class="ad-slot ad-slot-player" aria-label="Advertisement">
+              <span>Advertisement</span>
+              <strong>300 x 250</strong>
+            </aside>
+            <aside class="ad-slot ad-slot-player" aria-label="Advertisement">
+              <span>Advertisement</span>
+              <strong>300 x 250</strong>
+            </aside>
+          </div>
+
+          <section class="player-section" id="player" aria-labelledby="playerTitle">
+            <div class="player-info">
+              <p class="eyebrow" id="activeGenre">Arcade</p>
+              <h2 id="playerTitle">Loading</h2>
+              <p id="playerDescription">Choose a game from the shelf to load it here.</p>
+              <dl class="stats">
+                <div>
+                  <dt>Category</dt>
+                  <dd id="score">Arcade</dd>
+                </div>
+                <div>
+                  <dt>Controls</dt>
+                  <dd id="controls">Shown in each game</dd>
+                </div>
+              </dl>
+              <div class="controls-row">
+                <button id="startBtn" class="icon-button" aria-label="Load selected game" title="Load game">
+                  <span class="play-icon"></span>
+                </button>
+                <button id="pauseBtn" class="icon-button" aria-label="Open game fullscreen" title="Fullscreen">
+                  <span class="fullscreen-icon"></span>
+                </button>
+                <button id="blankBtn" class="icon-button" aria-label="Open game in blank tab" title="Open in blank tab">
+                  <span class="blank-icon"></span>
+                </button>
+              </div>
+            </div>
+            <div class="cabinet">
+              <iframe id="gameFrame" title="Selected HTML5 game" tabindex="0" allow="fullscreen; gamepad; autoplay; clipboard-write; accelerometer; gyroscope" allowfullscreen></iframe>
+              <div id="overlay" class="overlay">
+                <div class="overlay-message">
+                  <strong>Loading games</strong>
+                  <span>Pick a title from the shelf</span>
+                </div>
+                <div id="adPanel" class="ad-panel hidden">
+                  <p class="ad-label">Advertisement</p>
+                  <h3 id="adTitle">Hunter Games Sponsor</h3>
+                  <p id="adText">Your ad creative can go here before the selected game opens.</p>
+                  <a id="adLink" class="ad-link" href="#" target="_blank" rel="noopener noreferrer">Visit sponsor</a>
+                  <button id="skipAdBtn" class="skip-ad" type="button" disabled>Game starts in 5</button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section class="library" id="library" aria-labelledby="libraryTitle">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Game shelf</p>
+              <h2 id="libraryTitle">Popular picks</h2>
+            </div>
+            <p id="resultCount">0 games</p>
+          </div>
+          <div class="game-grid" id="gameGrid"></div>
+        </section>
+      </main>
+    </div>
+    <script src="script.js?v=20260526-basket-ubg76"></script>
+  </body>
+</html>

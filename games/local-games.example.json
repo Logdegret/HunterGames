@@ -1,0 +1,11 @@
+[
+  {
+    "title": "Licensed Game Title",
+    "category": "Arcade",
+    "sourcePage": "https://creator.itch.io/game-page-with-license",
+    "embed": "./games/licensed-game-title/index.html",
+    "image": "./games/licensed-game-title/cover.png",
+    "description": "Short catalog description.",
+    "controls": "Keyboard, mouse, or touch"
+  }
+]
