@@ -159,6 +159,7 @@ a {
     rgba(24, 27, 34, .64);
   color: var(--muted);
   text-align: center;
+  overflow: hidden;
 }
 
 .ad-slot span {
@@ -175,7 +176,7 @@ a {
 }
 
 .ad-slot-banner {
-  min-height: 90px;
+  height: 90px;
   margin: 18px auto 0;
   width: min(728px, 100%);
 }
@@ -189,12 +190,16 @@ a {
 .player-ad-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 300px));
-  gap: 16px;
+  gap: 20px;
   justify-content: center;
+  align-items: start;
+  margin-bottom: 8px;
 }
 
 .ad-slot-player {
-  min-height: 250px;
+  width: 300px;
+  height: 250px;
+  max-width: 100%;
 }
 
 .eyebrow {
@@ -346,7 +351,7 @@ body.theater-mode .cabinet {
 }
 
 body.theater-mode .cabinet,
-body.theater-mode iframe {
+body.theater-mode #gameFrame {
   min-height: calc(100vh - 32px);
 }
 
@@ -472,13 +477,22 @@ body.theater-mode iframe {
   overflow: hidden;
 }
 
-iframe {
+#gameFrame {
   display: block;
   width: 100%;
   height: 100%;
   min-height: 360px;
   border: 0;
   background: #0b0d11;
+}
+
+.adsbygoogle {
+  max-width: 100%;
+}
+
+.ad-slot iframe {
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .overlay {
@@ -613,8 +627,13 @@ iframe {
 }
 
 .ad-slot-gallery {
-  min-height: 230px;
+  height: 280px;
   padding: 18px;
+}
+
+.ad-slot-gallery .adsbygoogle {
+  width: 100%;
+  min-height: 240px;
 }
 
 .game-card:hover,
@@ -705,7 +724,7 @@ iframe {
   }
 
   body.theater-mode .cabinet,
-  body.theater-mode iframe {
+  body.theater-mode #gameFrame {
     min-height: 70vh;
   }
 
@@ -726,7 +745,8 @@ iframe {
   }
 
   .ad-slot-player {
-    min-height: 96px;
+    height: 250px;
+    justify-self: center;
   }
 
   .game-grid {

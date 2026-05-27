@@ -103,6 +103,16 @@ const classroomGames = [
   ["Drift Hunters", "Arcade", "https://classroom6x.org/game/drift-hunters", "https://script.google.com/macros/s/AKfycbw8iHPqdVFEzquUYbNxFVAu1Tw4Nri5SWMRLdP_c7a84vCOHVG7YUWuhjSVptg1SVHr/exec", "https://classroom6x.org/files/images/drift-hunters.png", "Tune cars and master long high-speed drifts.", "WASD or arrows"]
 ];
 
+const googleSiteGames = [
+  ["Medieval Golf", "Sports", "https://sites.google.com/site/thegamecompilation/medieval-golf", "https://977305247-atari-embeds.googleusercontent.com/embeds/16cb204cf3a9d4d223a0a3fd8b0eec5d/inner-frame-minified.html", "", "Play a medieval-themed golf challenge through the browser.", "Mouse"],
+  ["Poly Track v0.6.0", "Arcade", "https://sites.google.com/view/newcargame/poly-track-0-6-0", "https://smapskajendfjshwbekf-prog.github.io/newcargame/", "https://lh3.googleusercontent.com/sitesv/AA5AbUC7JiBBjsmKYJE6tFdarrWoKMNoP5ga5cgNjbLouVAfxhbjwbQR_ATk58Fhanci-EQZqp52gus-EdrSwrKZPnYQ7WMosEY6VI_p7x3RGHymqQVkBiccPFY95Ladrl5K3QP2suqm5j6NXd8PlHpO9LVuqMmQP20KqkFxZS8olDRbzfQtapshHGvu=w16383", "Race, build tracks, and play PolyTrack v0.6.0.", "Keyboard"],
+  ["Eaglercraft", "Minecraft", "https://sites.google.com/view/newcargame/eaglercraft", "https://smapskajendfjshwbekf-prog.github.io/eaglercraft", "https://lh3.googleusercontent.com/sitesv/AA5AbUDw6X1H6vmla5PFTX2gnathA4OFXyO51F0P2omHcX93YHSjk9PnRA6H_I4ZBop4buB3JbIPqinwdKFHI4aQYGlBnn1DV8legMWQO7J_sIKPprtC7ZKKAIoGu7PXXnjMHXiuTMQk8wi8i_0O2ED5wklPaBAdWJvxVDnP5yEotDVtofuUVQsPVPm7gtoKgrE64Y7ISebxwCyoWDPlrcdLtz0hCjM6H6XMdvxAUkE=w1280", "A browser-based Minecraft-style survival and creative game.", "WASD and mouse"],
+  ["Stacktris", "Puzzle", "https://sites.google.com/view/newcargame/stacktris", "https://htmlunblockedgames.github.io/stacktris/", "", "Stack falling blocks in a puzzle game inspired by classic tile clearing.", "Keyboard"],
+  ["Poly Track v0.5.2", "Arcade", "https://sites.google.com/view/newcargame/poly-track-0-5-2", "https://htmlunblockedgames.github.io/pt0.5.2/", "https://lh3.googleusercontent.com/sitesv/AA5AbUDCKIYV2IlYm6aXL23dvuj4yewY8E9sRuEu9vgNG0u_mk-wilZZlZ1YkA5m1yChCVLB_F0r-GqF_mXyVCup7kCreCiECc34IZgxQYc12sc9MpRz5jms8tgSB2o8PL59urnwhySSwt0Zwh-zCg4xaMG9mTVT83MlA5iDegcF54lugFxSlSIFg5zXKKp6ypO3t8sSvz_vx2NKDhwvCqlQQINT9pmattAK1zqVQrA=w1280", "Play PolyTrack v0.5.2 with community track features.", "Keyboard"],
+  ["Poly Track v0.5.1", "Arcade", "https://sites.google.com/view/newcargame/poly-track-0-5-1", "https://htmlunblockedgames.github.io/polytrack-0.5.1-new/", "https://lh3.googleusercontent.com/sitesv/AA5AbUD_TxTsGOlp8JQlvvRuq_NbCU6vLxD1l6K8y7HZJ5NiVKGYIkWQ4M89dlnJUvL9T6l62mmsWMW0Dk9X2N9aXHhd6N46t3W3YD2P-9KuL9NQJvpMemlJwTly3JewTspf6uOeHTGXWnrQY8WGsJ9OSItpddQOvV16vGsRQk2g6l6Qiubiun4aypP4w0RjWAps4Ht7q6N0ykyuhldC6gYaIFEeFDb6JEn75jWzMwo=w1280", "Play PolyTrack v0.5.1 with shadows and editor undo.", "Keyboard"],
+  ["Poly Track v0.4.1", "Arcade", "https://sites.google.com/view/newcargame/poly-track-0-4-1", "https://htmlunblockedgames.github.io/polytrack/", "https://lh3.googleusercontent.com/sitesv/AA5AbUDcQKnWAfTdpOi9rZiRmEuupJHYlpC0I7og_sD5n6cWN0rZNRm6dbRhWzd4e64b-CpVsxylWUq5zhA_VFyKU14TfWjLEOZCAtE_pEkJpvUHbUPMmyrXjULJmGXs6BKs2njB-3w-NSVxQ_zeP0oK0Gx4Z06tCRFiPOhNdMTnoz-5BAjvd2XYalEsqyJRWMvUJ1Rmhb2R-tl1lNILqCVMMwe1gu7pvlJNC1HyE4w=w1280", "Play an older PolyTrack version with replays and mobile support.", "Keyboard"]
+];
+
 const categoryGroups = {
   arcade: ["Arcade", "Clicker", "Idle", "2 Player"],
   skill: ["Skill", "3D", "Action", "Escape", "Multiplayer", "Minecraft"],
@@ -141,12 +151,26 @@ const classroomCatalog = classroomGames.map(([title, category, sourcePage, embed
   tags: [category, ...category.toLowerCase().split(/\s+/), "classroom 6x"]
 }));
 
-const games = [...itchCatalog, ...classroomCatalog, ...freezeNovaCatalog];
+const googleSiteCatalog = googleSiteGames.map(([title, category, sourcePage, embed, image, description, controls]) => ({
+  id: slug(title),
+  title,
+  category,
+  source: "Google Sites",
+  sourcePage,
+  embed,
+  image,
+  description,
+  controls,
+  tags: [category, ...category.toLowerCase().split(/\s+/), "google sites", "new car game"]
+}));
+
+const games = [...googleSiteCatalog, ...itchCatalog, ...classroomCatalog, ...freezeNovaCatalog];
 const blockedTitleTerms = ["brainrot"];
+const blockedTitles = new Set(["Greed II", "Closer", "Among Us", "Snow Rider 3D", "Golf Bit"]);
 const cleanGames = games.filter((game) => {
   const title = game.title.toLowerCase();
-  const allowedSource = game.source === "itch.io" || game.source === "Classroom 6x" || game.title === "Golf Bit";
-  return allowedSource && game.title !== "Drift Hunters" && !blockedTitleTerms.some((term) => title.includes(term));
+  const allowedSource = game.source === "Google Sites" || game.source === "itch.io" || game.source === "Classroom 6x" || game.title === "Golf Bit";
+  return allowedSource && !blockedTitles.has(game.title) && game.title !== "Drift Hunters" && !blockedTitleTerms.some((term) => title.includes(term));
 });
 
 const grid = document.querySelector("#gameGrid");
@@ -171,7 +195,7 @@ const categoryEl = document.querySelector("#score");
 const controlsEl = document.querySelector("#controls");
 
 let activeFilter = "all";
-let activeGame = cleanGames[0];
+let activeGame = null;
 let frameTimer = 0;
 let adTimer = 0;
 let adFinishTimer = 0;
@@ -182,6 +206,8 @@ const adSlot = {
   text: "Place your video, banner, or sponsor message here. The game loads after this short break.",
   href: "#"
 };
+const adClient = "ca-pub-4125872061932966";
+const galleryAdSlots = ["GALLERY_SLOT_ID_1", "GALLERY_SLOT_ID_2"];
 
 function renderCards() {
   const query = searchInput.value.trim().toLowerCase();
@@ -194,7 +220,7 @@ function renderCards() {
   grid.innerHTML = "";
   visible.forEach((game) => {
     const card = document.createElement("button");
-    card.className = `game-card ${game.id === activeGame.id ? "active" : ""}`;
+    card.className = `game-card ${activeGame && game.id === activeGame.id ? "active" : ""}`;
     card.type = "button";
     card.innerHTML = `
       <span class="thumb image-thumb" style="${thumbStyle(game)}" aria-hidden="true"></span>
@@ -210,23 +236,43 @@ function renderCards() {
     card.addEventListener("click", () => selectGame(game.id, true));
     grid.appendChild(card);
     if ((grid.children.length === 4 || grid.children.length === 10) && visible.length > grid.children.length) {
-      grid.appendChild(createGalleryAd());
+      grid.appendChild(createGalleryAd(grid.querySelectorAll(".ad-slot-gallery").length));
     }
   });
 
   resultCount.textContent = `${visible.length} ${visible.length === 1 ? "game" : "games"}`;
+  loadGalleryAds();
 }
 
-function createGalleryAd() {
+function createGalleryAd(index) {
   const ad = document.createElement("aside");
   ad.className = "ad-slot ad-slot-gallery";
   ad.setAttribute("aria-label", "Advertisement");
-  ad.innerHTML = "<span>Advertisement</span><strong>Gallery sponsor</strong>";
+  ad.innerHTML = `
+    <ins class="adsbygoogle gallery-ad"
+         style="display:block"
+         data-ad-client="${adClient}"
+         data-ad-slot="${galleryAdSlots[index % galleryAdSlots.length]}"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+  `;
   return ad;
 }
 
+function loadGalleryAds() {
+  if (!window.adsbygoogle) return;
+  document.querySelectorAll(".gallery-ad:not([data-ad-loaded])").forEach((ad) => {
+    ad.setAttribute("data-ad-loaded", "true");
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (error) {
+      ad.removeAttribute("data-ad-loaded");
+    }
+  });
+}
+
 function selectGame(id, loadNow) {
-  const selected = cleanGames.find((game) => game.id === id) || cleanGames[0];
+  const selected = cleanGames.find((game) => game.id === id);
   if (!selected) return;
   activeGame = selected;
   playerTitle.textContent = activeGame.title;
@@ -234,19 +280,15 @@ function selectGame(id, loadNow) {
   activeGenre.textContent = activeGame.category;
   categoryEl.textContent = activeGame.category;
   controlsEl.textContent = activeGame.controls;
-  setOverlay(activeGame.title, "Press play to load the iframe");
+  frame.removeAttribute("src");
+  setOverlay(activeGame.title, "Press Play to start this game");
   renderCards();
-
-  if (id !== activeGame.id && location.hash) {
-    history.replaceState(null, "", `#${activeGame.id}`);
-  }
 
   if (loadNow) {
     if (location.hash !== `#${activeGame.id}`) {
       history.replaceState(null, "", `#${activeGame.id}`);
     }
     document.querySelector("#player").scrollIntoView({ behavior: "smooth", block: "start" });
-    loadActiveGame();
   }
 }
 
@@ -288,7 +330,7 @@ function finishPreRoll(game) {
   adPanel.classList.add("hidden");
   overlayMessage.classList.remove("hidden");
   activeGame = game;
-  setOverlay(activeGame.title, "Loading iframe");
+  setOverlay(activeGame.title, "Loading game");
   frame.src = activeGame.embed;
   setTimeout(() => frame.focus(), 300);
   clearTimeout(frameTimer);
@@ -364,10 +406,6 @@ window.addEventListener("keydown", (event) => {
 
 blankBtn.addEventListener("click", () => {
   if (!activeGame) return;
-  if (!frame.src) {
-    frame.src = activeGame.embed;
-    setTimeout(() => frame.focus(), 100);
-  }
   const blank = window.open("about:blank", "_blank");
   if (!blank) return;
   const title = escapeHtml(activeGame.title);
@@ -407,4 +445,14 @@ window.addEventListener("hashchange", () => {
   if (id) selectGame(id, false);
 });
 
-selectGame(location.hash.slice(1) || activeGame.id, false);
+if (location.hash.slice(1)) {
+  selectGame(location.hash.slice(1), false);
+} else {
+  playerTitle.textContent = "Choose a game";
+  playerDescription.textContent = "Pick a title from the game shelf, then press Play when you are ready.";
+  activeGenre.textContent = "Ready";
+  categoryEl.textContent = "None selected";
+  controlsEl.textContent = "Shown after choosing";
+  setOverlay("Choose a game", "Select a game from the shelf, then press Play");
+  renderCards();
+}
