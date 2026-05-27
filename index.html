@@ -59,6 +59,35 @@
           </div>
         </section>
 
+        <section class="engagement" aria-label="Player tools">
+          <div class="daily-panel">
+            <p class="eyebrow">Daily loop</p>
+            <h2 id="dailyTitle">Daily challenge</h2>
+            <p id="dailyText">Play one new game today to keep your streak alive.</p>
+            <div class="mini-stats" aria-label="Player progress">
+              <span><strong id="streakCount">0</strong> day streak</span>
+              <span><strong id="xpCount">0</strong> XP</span>
+              <span><strong id="levelCount">1</strong> level</span>
+            </div>
+          </div>
+          <div class="spotlight-panel">
+            <p class="eyebrow">Game of the day</p>
+            <h2 id="spotlightTitle">Loading</h2>
+            <p id="spotlightText">A rotating pick from the library.</p>
+            <button id="spotlightBtn" class="text-button" type="button">Open spotlight</button>
+          </div>
+          <div class="tool-panel">
+            <p class="eyebrow">Discovery</p>
+            <button id="surpriseBtn" class="primary-action" type="button">Surprise me</button>
+            <div class="mood-row" aria-label="Mood filters">
+              <button class="mood-chip" data-mood="quick" type="button">Quick</button>
+              <button class="mood-chip" data-mood="chill" type="button">Chill</button>
+              <button class="mood-chip" data-mood="rage" type="button">Challenge</button>
+              <button class="mood-chip" data-mood="friend" type="button">2 player</button>
+            </div>
+          </div>
+        </section>
+
         <section class="play-shell" aria-label="Game player and ads">
           <div class="player-ad-row">
             <aside class="ad-slot ad-slot-player" aria-label="Advertisement">
@@ -102,6 +131,8 @@
                 <button id="blankBtn" class="icon-button" aria-label="Open game in blank tab" title="Open in blank tab">
                   <span class="blank-icon"></span>
                 </button>
+                <button id="reportBtn" class="text-button compact" type="button">Report broken</button>
+                <button id="shortcutsBtn" class="text-button compact" type="button">Shortcuts</button>
               </div>
             </div>
             <div class="cabinet">
@@ -124,6 +155,26 @@
         </section>
 
         <section class="library" id="library" aria-labelledby="libraryTitle">
+          <section class="rail-section" id="continueSection" aria-labelledby="continueTitle" hidden>
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Pick up</p>
+                <h2 id="continueTitle">Continue playing</h2>
+              </div>
+            </div>
+            <div class="rail" id="continueRail"></div>
+          </section>
+
+          <section class="rail-section" aria-labelledby="recommendTitle">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">For you</p>
+                <h2 id="recommendTitle">Recommended</h2>
+              </div>
+            </div>
+            <div class="rail" id="recommendRail"></div>
+          </section>
+
           <div class="section-heading">
             <div>
               <p class="eyebrow">Game shelf</p>
@@ -135,6 +186,18 @@
         </section>
       </main>
     </div>
-    <script src="script.js?v=20260526-google-games"></script>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <dialog id="shortcutsDialog" class="shortcuts-dialog" aria-labelledby="shortcutsTitle">
+      <h2 id="shortcutsTitle">Shortcuts</h2>
+      <dl>
+        <div><dt>?</dt><dd>Show shortcuts</dd></div>
+        <div><dt>/</dt><dd>Search games</dd></div>
+        <div><dt>R</dt><dd>Surprise me</dd></div>
+        <div><dt>F</dt><dd>Fullscreen player</dd></div>
+        <div><dt>Esc</dt><dd>Close panels</dd></div>
+      </dl>
+      <button id="closeShortcutsBtn" class="primary-action" type="button">Close</button>
+    </dialog>
+    <script src="script.js?v=20260526-retention-tools"></script>
   </body>
 </html>
