@@ -51,45 +51,47 @@ a {
   margin: 0 auto;
 }
 
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  display: grid;
-  grid-template-columns: auto minmax(220px, 1fr) auto;
-  gap: 16px;
-  align-items: center;
-  padding: 14px 0;
-  background: rgba(16, 17, 20, .88);
-  backdrop-filter: blur(18px);
-}
-
-.brand {
-  display: inline-flex;
-  align-items: center;
+.floating-search {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 20;
+  display: flex;
   gap: 10px;
-  color: var(--text);
-  font-weight: 800;
-  text-decoration: none;
-  white-space: nowrap;
+  align-items: center;
 }
 
-.brand-mark {
+.search-toggle {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
-  border: 1px solid rgba(255, 255, 255, .16);
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: linear-gradient(135deg, var(--green), var(--cyan));
-  color: #07100d;
-  font-size: 13px;
-  letter-spacing: 0;
+  background: rgba(24, 27, 34, .9);
+  color: var(--text);
+  cursor: pointer;
+  backdrop-filter: blur(14px);
+}
+
+.search-toggle svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
 }
 
 .search {
   position: relative;
   display: block;
+  width: min(320px, calc(100vw - 86px));
+  transform-origin: right center;
+  transition: opacity .16s ease, transform .16s ease;
+}
+
+.search.is-collapsed {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(8px) scale(.98);
 }
 
 .search span {
@@ -109,6 +111,7 @@ a {
   color: var(--text);
   padding: 0 14px;
   outline: none;
+  box-shadow: 0 12px 42px rgba(0, 0, 0, .28);
 }
 
 .search input:focus {
@@ -137,6 +140,22 @@ a {
 .chip:hover {
   background: var(--text);
   color: #101114;
+}
+
+.hero-brand {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.hero-brand svg {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
 }
 
 .hero {
@@ -780,6 +799,12 @@ body.theater-mode #gameFrame {
   margin-bottom: 18px;
 }
 
+.library-tools {
+  display: grid;
+  gap: 10px;
+  justify-items: end;
+}
+
 .section-heading p:last-child {
   color: var(--muted);
 }
@@ -887,7 +912,6 @@ body.theater-mode #gameFrame {
 }
 
 @media (max-width: 880px) {
-  .topbar,
   .hero,
   .engagement,
   .play-shell,
@@ -905,12 +929,12 @@ body.theater-mode #gameFrame {
     min-height: 70vh;
   }
 
-  .topbar {
-    position: static;
-  }
-
   .nav {
     justify-content: flex-start;
+  }
+
+  .library-tools {
+    justify-items: start;
   }
 
   .hero {

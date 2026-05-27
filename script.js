@@ -175,6 +175,8 @@ const cleanGames = games.filter((game) => {
 
 const grid = document.querySelector("#gameGrid");
 const searchInput = document.querySelector("#searchInput");
+const searchToggle = document.querySelector("#searchToggle");
+const searchPanel = document.querySelector("#searchPanel");
 const resultCount = document.querySelector("#resultCount");
 const frame = document.querySelector("#gameFrame");
 const cabinet = document.querySelector(".cabinet");
@@ -422,6 +424,11 @@ document.querySelectorAll(".mood-chip").forEach((chip) => {
 });
 
 searchInput.addEventListener("input", renderCards);
+searchToggle.addEventListener("click", () => {
+  const collapsed = searchPanel.classList.toggle("is-collapsed");
+  searchToggle.setAttribute("aria-expanded", String(!collapsed));
+  if (!collapsed) searchInput.focus();
+});
 loadBtn.addEventListener("click", loadActiveGame);
 surpriseBtn.addEventListener("click", () => {
   const game = pickSurpriseGame();
