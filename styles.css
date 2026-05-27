@@ -750,6 +750,88 @@ body.theater-mode #gameFrame {
   transform: translateY(0);
 }
 
+.streak-celebration {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(79, 227, 154, .34), transparent 28%),
+    rgba(5, 6, 8, .72);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.streak-celebration.show {
+  animation: streakFade 2.1s ease both;
+}
+
+.streak-card {
+  display: grid;
+  place-items: center;
+  width: min(420px, calc(100vw - 44px));
+  min-height: 280px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(101, 214, 255, .18), transparent 40%),
+    var(--panel);
+  box-shadow: 0 30px 100px rgba(0, 0, 0, .52);
+  transform: scale(.86);
+}
+
+.streak-celebration.show .streak-card {
+  animation: streakPop 2.1s cubic-bezier(.2, .9, .2, 1) both;
+}
+
+.streak-card span {
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.streak-card strong {
+  color: var(--text);
+  font-size: clamp(82px, 18vw, 148px);
+  line-height: .85;
+}
+
+.streak-card p {
+  color: var(--muted);
+  font-size: 24px;
+  font-weight: 800;
+}
+
+@keyframes streakFade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  14%,
+  82% {
+    opacity: 1;
+  }
+}
+
+@keyframes streakPop {
+  0% {
+    transform: scale(.76) rotate(-3deg);
+  }
+  18% {
+    transform: scale(1.04) rotate(1deg);
+  }
+  32%,
+  82% {
+    transform: scale(1) rotate(0);
+  }
+  100% {
+    transform: scale(.92);
+  }
+}
+
 .shortcuts-dialog {
   width: min(460px, calc(100vw - 32px));
   border: 1px solid var(--line);

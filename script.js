@@ -104,10 +104,10 @@ const classroomGames = [
 ];
 
 const googleSiteGames = [
-  ["Medieval Golf", "Sports", "https://sites.google.com/site/thegamecompilation/medieval-golf", "https://977305247-atari-embeds.googleusercontent.com/embeds/16cb204cf3a9d4d223a0a3fd8b0eec5d/inner-frame-minified.html", "", "Play a medieval-themed golf challenge through the browser.", "Mouse"],
+  ["Medieval Golf", "Sports", "https://sites.google.com/site/thegamecompilation/medieval-golf", "https://977305247-atari-embeds.googleusercontent.com/embeds/16cb204cf3a9d4d223a0a3fd8b0eec5d/inner-frame-minified.html", "art:golf", "Play a medieval-themed golf challenge through the browser.", "Mouse"],
   ["Poly Track v0.6.0", "Arcade", "https://sites.google.com/view/newcargame/poly-track-0-6-0", "https://smapskajendfjshwbekf-prog.github.io/newcargame/", "https://lh3.googleusercontent.com/sitesv/AA5AbUC7JiBBjsmKYJE6tFdarrWoKMNoP5ga5cgNjbLouVAfxhbjwbQR_ATk58Fhanci-EQZqp52gus-EdrSwrKZPnYQ7WMosEY6VI_p7x3RGHymqQVkBiccPFY95Ladrl5K3QP2suqm5j6NXd8PlHpO9LVuqMmQP20KqkFxZS8olDRbzfQtapshHGvu=w16383", "Race, build tracks, and play PolyTrack v0.6.0.", "Keyboard"],
   ["Eaglercraft", "Minecraft", "https://sites.google.com/view/newcargame/eaglercraft", "https://smapskajendfjshwbekf-prog.github.io/eaglercraft", "https://lh3.googleusercontent.com/sitesv/AA5AbUDw6X1H6vmla5PFTX2gnathA4OFXyO51F0P2omHcX93YHSjk9PnRA6H_I4ZBop4buB3JbIPqinwdKFHI4aQYGlBnn1DV8legMWQO7J_sIKPprtC7ZKKAIoGu7PXXnjMHXiuTMQk8wi8i_0O2ED5wklPaBAdWJvxVDnP5yEotDVtofuUVQsPVPm7gtoKgrE64Y7ISebxwCyoWDPlrcdLtz0hCjM6H6XMdvxAUkE=w1280", "A browser-based Minecraft-style survival and creative game.", "WASD and mouse"],
-  ["Stacktris", "Puzzle", "https://sites.google.com/view/newcargame/stacktris", "https://htmlunblockedgames.github.io/stacktris/", "", "Stack falling blocks in a puzzle game inspired by classic tile clearing.", "Keyboard"],
+  ["Stacktris", "Puzzle", "https://sites.google.com/view/newcargame/stacktris", "https://htmlunblockedgames.github.io/stacktris/", "art:stacktris", "Stack falling blocks in a puzzle game inspired by classic tile clearing.", "Keyboard"],
   ["Poly Track v0.5.2", "Arcade", "https://sites.google.com/view/newcargame/poly-track-0-5-2", "https://htmlunblockedgames.github.io/pt0.5.2/", "https://lh3.googleusercontent.com/sitesv/AA5AbUDCKIYV2IlYm6aXL23dvuj4yewY8E9sRuEu9vgNG0u_mk-wilZZlZ1YkA5m1yChCVLB_F0r-GqF_mXyVCup7kCreCiECc34IZgxQYc12sc9MpRz5jms8tgSB2o8PL59urnwhySSwt0Zwh-zCg4xaMG9mTVT83MlA5iDegcF54lugFxSlSIFg5zXKKp6ypO3t8sSvz_vx2NKDhwvCqlQQINT9pmattAK1zqVQrA=w1280", "Play PolyTrack v0.5.2 with community track features.", "Keyboard"],
   ["Poly Track v0.5.1", "Arcade", "https://sites.google.com/view/newcargame/poly-track-0-5-1", "https://htmlunblockedgames.github.io/polytrack-0.5.1-new/", "https://lh3.googleusercontent.com/sitesv/AA5AbUD_TxTsGOlp8JQlvvRuq_NbCU6vLxD1l6K8y7HZJ5NiVKGYIkWQ4M89dlnJUvL9T6l62mmsWMW0Dk9X2N9aXHhd6N46t3W3YD2P-9KuL9NQJvpMemlJwTly3JewTspf6uOeHTGXWnrQY8WGsJ9OSItpddQOvV16vGsRQk2g6l6Qiubiun4aypP4w0RjWAps4Ht7q6N0ykyuhldC6gYaIFEeFDb6JEn75jWzMwo=w1280", "Play PolyTrack v0.5.1 with shadows and editor undo.", "Keyboard"],
   ["Poly Track v0.4.1", "Arcade", "https://sites.google.com/view/newcargame/poly-track-0-4-1", "https://htmlunblockedgames.github.io/polytrack/", "https://lh3.googleusercontent.com/sitesv/AA5AbUDcQKnWAfTdpOi9rZiRmEuupJHYlpC0I7og_sD5n6cWN0rZNRm6dbRhWzd4e64b-CpVsxylWUq5zhA_VFyKU14TfWjLEOZCAtE_pEkJpvUHbUPMmyrXjULJmGXs6BKs2njB-3w-NSVxQ_zeP0oK0Gx4Z06tCRFiPOhNdMTnoz-5BAjvd2XYalEsqyJRWMvUJ1Rmhb2R-tl1lNILqCVMMwe1gu7pvlJNC1HyE4w=w1280", "Play an older PolyTrack version with replays and mobile support.", "Keyboard"]
@@ -211,6 +211,8 @@ const shortcutsBtn = document.querySelector("#shortcutsBtn");
 const shortcutsDialog = document.querySelector("#shortcutsDialog");
 const closeShortcutsBtn = document.querySelector("#closeShortcutsBtn");
 const toast = document.querySelector("#toast");
+const streakCelebration = document.querySelector("#streakCelebration");
+const streakCelebrationCount = document.querySelector("#streakCelebrationCount");
 
 let activeFilter = "all";
 let activeMood = "";
@@ -397,6 +399,12 @@ function thumbStyle(game) {
   if (!game.image) {
     return "";
   }
+  if (game.image === "art:golf") {
+    return "--accent:#ffc857;--accent2:#4fe39a;--accent3:#65d6ff";
+  }
+  if (game.image === "art:stacktris") {
+    return "--accent:#65d6ff;--accent2:#ff5e8a;--accent3:#ffc857";
+  }
   return `background-image: linear-gradient(rgba(12,14,18,.16), rgba(12,14,18,.5)), url('${game.image}')`;
 }
 
@@ -576,6 +584,7 @@ function awardPlay(game) {
   renderContinueRail();
   renderRecommendations();
   showToast(firstToday ? `Daily streak saved. +35 XP` : `+10 XP for playing ${game.title}`);
+  if (firstToday) showStreakCelebration();
 }
 
 function renderProgress() {
@@ -648,6 +657,14 @@ function showToast(message) {
   toast.textContent = message;
   toast.classList.add("show");
   toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+}
+
+function showStreakCelebration() {
+  streakCelebrationCount.textContent = state.streak;
+  streakCelebration.classList.remove("show");
+  void streakCelebration.offsetWidth;
+  streakCelebration.classList.add("show");
+  setTimeout(() => streakCelebration.classList.remove("show"), 2100);
 }
 
 function readJson(key, fallback) {
