@@ -558,7 +558,8 @@ function loadState() {
     xp: Number(saved.xp) || 0,
     streak: Number(saved.streak) || 0,
     lastVisit: saved.lastVisit || "",
-    playedToday: saved.playedToday === todayKey,
+    lastPlayDate: saved.lastPlayDate || "",
+    playedToday: saved.lastPlayDate === todayKey || (saved.playedToday === true && saved.lastVisit === todayKey),
     played: saved.played || {}
   };
   if (state.lastVisit !== todayKey) {
@@ -575,6 +576,7 @@ function awardPlay(game) {
   const firstToday = !state.playedToday;
   state.playedToday = true;
   state.lastVisit = todayKey;
+  state.lastPlayDate = todayKey;
   state.played[game.id] = (state.played[game.id] || 0) + 1;
   state.xp += firstToday ? 35 : 10;
   if (firstToday) state.streak += 1;
