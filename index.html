@@ -70,7 +70,7 @@
             <h2 id="dailyTitle">Daily challenge</h2>
             <p id="dailyText">Play one new game today to keep your streak alive.</p>
             <div class="mini-stats" aria-label="Player progress">
-              <span><strong id="streakCount">0</strong> day streak</span>
+              <span class="streak-stat"><img class="streak-flame small" src="assets/streak-flame.svg" alt=""><strong id="streakCount">0</strong> day streak</span>
               <span><strong id="xpCount">0</strong> XP</span>
               <span><strong id="levelCount">1</strong> level</span>
             </div>
@@ -141,7 +141,7 @@
               </div>
             </div>
             <div class="cabinet">
-              <iframe id="gameFrame" title="Selected HTML5 game" tabindex="0" allow="fullscreen; gamepad; autoplay; clipboard-write; accelerometer; gyroscope" allowfullscreen></iframe>
+              <iframe id="gameFrame" title="Selected HTML5 game" tabindex="0" allow="fullscreen *; pointer-lock *; gamepad *; autoplay *; clipboard-write *; accelerometer *; gyroscope *" allowfullscreen></iframe>
               <div id="overlay" class="overlay">
                 <div class="overlay-message">
                   <strong>Loading games</strong>
@@ -213,11 +213,12 @@
     </dialog>
     <div class="streak-celebration" id="streakCelebration" aria-hidden="true">
       <div class="streak-card">
+        <img class="streak-flame large" src="assets/streak-flame.svg" alt="">
         <span>Streak saved</span>
         <strong id="streakCelebrationCount">1</strong>
         <p>day streak</p>
       </div>
     </div>
-    <script src="script.js?v=20260527-streak-once"></script>
+    <script src="script.js?v=20260601-thumbnail-labels"></script>
   </body>
 </html>

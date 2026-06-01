@@ -230,6 +230,7 @@ const adSlot = {
 };
 const adClient = "ca-pub-4125872061932966";
 const galleryAdSlots = ["GALLERY_SLOT_ID_1", "GALLERY_SLOT_ID_2"];
+const iframeAllow = "fullscreen *; pointer-lock *; gamepad *; autoplay *; clipboard-write *; accelerometer *; gyroscope *";
 const todayKey = new Date().toISOString().slice(0, 10);
 const moodGroups = {
   quick: ["Arcade", "Clicker", "Sports", "Puzzle"],
@@ -255,7 +256,7 @@ function renderCards() {
     card.className = `game-card ${activeGame && game.id === activeGame.id ? "active" : ""}`;
     card.type = "button";
     card.innerHTML = `
-      <span class="thumb image-thumb" style="${thumbStyle(game)}" aria-hidden="true"></span>
+      ${thumbMarkup(game)}
       <span class="card-copy">
         <h3>${escapeHtml(game.title)}</h3>
         <p>${escapeHtml(game.description)}</p>
@@ -365,6 +366,7 @@ function finishPreRoll(game) {
   activeGame = game;
   awardPlay(game);
   setOverlay(activeGame.title, "Loading game");
+  frame.setAttribute("allow", iframeAllow);
   frame.src = activeGame.embed;
   setTimeout(() => frame.focus(), 300);
   clearTimeout(frameTimer);
@@ -396,16 +398,61 @@ function escapeHtml(value) {
 }
 
 function thumbStyle(game) {
-  if (!game.image) {
-    return "";
-  }
   if (game.image === "art:golf") {
     return "--accent:#ffc857;--accent2:#4fe39a;--accent3:#65d6ff";
   }
   if (game.image === "art:stacktris") {
     return "--accent:#65d6ff;--accent2:#ff5e8a;--accent3:#ffc857";
   }
-  return `background-image: linear-gradient(rgba(12,14,18,.16), rgba(12,14,18,.5)), url('${game.image}')`;
+  return artColors(game.title);
+}
+
+function thumbMarkup(game) {
+  const src = thumbnailUrl(game.image);
+  const image = game.image && !game.image.startsWith("art:") ? `
+    <img src="${escapeHtml(src)}" alt="" loading="lazy"
+         onload="this.parentElement.classList.add('image-loaded')"
+         onerror="this.remove()">
+  ` : "";
+  return `
+    <span class="thumb" style="${thumbStyle(game)}" aria-hidden="true">
+      ${image}
+      <span class="thumb-fallback">
+        <span class="thumb-mark">${escapeHtml(initials(game.title))}</span>
+        <span class="thumb-title">${escapeHtml(game.title)}</span>
+        <span class="thumb-kind">${escapeHtml(game.category)}</span>
+      </span>
+    </span>
+  `;
+}
+
+function thumbnailUrl(image) {
+  if (!image || image.startsWith("art:")) return "";
+  if (!/^https?:\/\//i.test(image)) return image;
+  const source = image.replace(/^https?:\/\//i, "");
+  return `https://images.weserv.nl/?url=${encodeURIComponent(source)}&w=640&h=360&fit=cover&output=webp`;
+}
+
+function artColors(seed) {
+  const palettes = [
+    ["#4fe39a", "#65d6ff", "#ff5e8a"],
+    ["#ffc857", "#4fe39a", "#65d6ff"],
+    ["#65d6ff", "#ff5e8a", "#ffc857"],
+    ["#ff5e8a", "#ffc857", "#4fe39a"],
+    ["#9aff00", "#00d869", "#65d6ff"]
+  ];
+  const palette = palettes[hashNumber(seed) % palettes.length];
+  return `--accent:${palette[0]};--accent2:${palette[1]};--accent3:${palette[2]}`;
+}
+
+function initials(title) {
+  return String(title)
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase();
 }
 
 document.querySelectorAll(".chip").forEach((chip) => {
@@ -513,7 +560,7 @@ blankBtn.addEventListener("click", () => {
     </style>
   </head>
   <body>
-    <iframe src="${src}" allow="fullscreen; gamepad; autoplay; clipboard-write; accelerometer; gyroscope" allowfullscreen></iframe>
+    <iframe src="${src}" allow="${iframeAllow}" allowfullscreen></iframe>
   </body>
 </html>`);
   blank.document.close();
@@ -528,7 +575,11 @@ frame.addEventListener("load", () => {
 });
 
 cabinet.addEventListener("pointerdown", () => {
-  if (frame.src) frame.focus();
+  if (frame.src) {
+    frame.focus();
+    return;
+  }
+  if (activeGame) loadActiveGame();
 });
 
 window.addEventListener("hashchange", () => {
