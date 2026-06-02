@@ -1,0 +1,2362 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bossbound Party</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+      * { box-sizing: border-box; }
+
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: #181820;
+        color: #181818;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 8px;
+      }
+
+      .screen {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: #181820;
+      }
+
+      canvas {
+        width: 100vw;
+        height: 100vh;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+        background: #101929;
+      }
+
+      /* ── HUD panels ─── */
+      .hud {
+        position: fixed;
+        inset: 8px;
+        display: grid;
+        grid-template-columns: minmax(160px, 230px) 1fr minmax(160px, 230px);
+        gap: 8px;
+        pointer-events: none;
+      }
+
+      .pixel-panel {
+        align-self: start;
+        padding: 8px 10px 9px;
+        background: #f0f0e0;
+        border: 3px solid #181818;
+        box-shadow: 3px 3px 0 #787860;
+      }
+
+      .pk-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+        font-size: 6px;
+        line-height: 1.6;
+      }
+
+      /* HP rows hidden until battle */
+      .pk-hp-row {
+        display: none;
+        align-items: center;
+        gap: 4px;
+        margin-top: 4px;
+      }
+
+      .hud.in-battle .pk-hp-row { display: flex; }
+      .hud.in-battle #hpLabel,
+      .hud.in-battle #bossHpLabel { display: inline; }
+
+      .pk-hp-label {
+        font-size: 5px;
+        color: #383838;
+        flex-shrink: 0;
+        letter-spacing: 0.5px;
+      }
+
+      .bar {
+        flex: 1;
+        height: 6px;
+        border: 2px solid #181818;
+        background: #282820;
+      }
+
+      .fill {
+        height: 100%;
+        width: 100%;
+        background: #40c840;
+        transition: width 0.15s, background 0.3s;
+      }
+
+      .fill.red { background: #e03020; }
+
+      .pixel-panel p {
+        margin: 5px 0 0;
+        color: #505050;
+        font-size: 5px;
+        line-height: 1.8;
+      }
+
+      /* ── Overlay menus ─── */
+      .menu {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 16px;
+        background: rgba(0, 0, 10, 0.72);
+      }
+
+      .menu.hidden, .dialogue.hidden { display: none; }
+
+      .menu-card {
+        width: min(520px, 100%);
+        max-height: calc(100vh - 32px);
+        overflow: auto;
+        padding: 18px 20px 20px;
+        background: #f0f0e0;
+        border: 4px solid #181818;
+        box-shadow: 4px 4px 0 #787860;
+      }
+
+      h1 {
+        font-size: clamp(13px, 3vw, 22px);
+        margin: 0 0 14px;
+        color: #181818;
+        line-height: 1.7;
+      }
+
+      h2 {
+        font-size: clamp(9px, 2vw, 13px);
+        margin: 0 0 10px;
+        color: #181818;
+        line-height: 1.6;
+      }
+
+      p {
+        margin: 0 0 10px;
+        color: #505050;
+        line-height: 2.4;
+        font-size: 6px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin: 10px 0;
+      }
+
+      .option-card, label {
+        display: grid;
+        gap: 4px;
+        border: 2px solid #181818;
+        background: #e0e0d0;
+        padding: 8px;
+      }
+
+      .option-card b, label b { font-size: 6px; }
+
+      .option-card span, label span {
+        color: #585850;
+        font-size: 5px;
+        line-height: 1.8;
+      }
+
+      input, select {
+        min-height: 26px;
+        border: 2px solid #181818;
+        border-radius: 0;
+        background: #ffffff;
+        color: #181818;
+        padding: 0 6px;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 6px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      button {
+        min-height: 30px;
+        border: 3px solid #181818;
+        border-radius: 0;
+        background: #e0e0d0;
+        color: #181818;
+        padding: 0 12px;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 6px;
+        cursor: pointer;
+        box-shadow: 3px 3px 0 #787860;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+
+      button:hover { background: #c8d4f0; }
+      button.blue  { background: #5878e8; color: #f0f0f0; }
+      button.gold  { background: #e8c028; color: #181818; }
+      button.red   { background: #e03020; color: #f0f0f0; }
+      button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #787860; }
+
+      /* ── Dialogue box (Pokemon bottom-bar style) ─── */
+      .dialogue {
+        position: fixed;
+        left: 50%;
+        bottom: 10px;
+        width: min(600px, calc(100vw - 18px));
+        transform: translateX(-50%);
+        pointer-events: none;
+      }
+
+      .dialogue-box {
+        display: grid;
+        grid-template-columns: 54px 1fr;
+        gap: 10px;
+        min-height: 76px;
+        padding: 10px 12px;
+        background: #f0f0e0;
+        border: 4px solid #181818;
+        box-shadow: 4px 4px 0 #787860;
+      }
+
+      .portrait {
+        width: 50px;
+        height: 50px;
+        border: 2px solid #181818;
+        background: #c8c8b8;
+        image-rendering: pixelated;
+        align-self: center;
+      }
+
+      .dialogue-copy {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .dialogue-copy strong {
+        display: block;
+        margin-bottom: 5px;
+        color: #181818;
+        font-size: 7px;
+      }
+
+      .dialogue-copy span {
+        display: block;
+        color: #181818;
+        line-height: 2.2;
+        font-size: 6px;
+      }
+
+      .pk-cursor {
+        display: inline-block;
+        margin-top: 4px;
+        color: #303030;
+        font-size: 8px;
+        animation: pkblink 0.7s step-end infinite;
+        line-height: 1;
+      }
+
+      @keyframes pkblink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+      }
+
+      /* ── Interact prompt (bottom-right) ─── */
+      .interact-prompt {
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
+        padding: 7px 12px 8px;
+        background: #f0f0e0;
+        border: 3px solid #181818;
+        box-shadow: 3px 3px 0 #787860;
+        font-size: 7px;
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 50;
+      }
+
+      .interact-prompt.hidden { display: none; }
+
+      .interact-key {
+        display: inline-block;
+        background: #181818;
+        color: #f0f0e0;
+        padding: 2px 6px 3px;
+        font-size: 6px;
+        letter-spacing: 0.5px;
+      }
+
+      /* ── Music toggle ─── */
+      .music-btn {
+        position: fixed;
+        bottom: 16px;
+        left: 16px;
+        min-height: auto;
+        width: 32px;
+        height: 28px;
+        padding: 0;
+        font-size: 10px;
+        z-index: 50;
+        line-height: 1;
+      }
+
+      .music-btn.muted {
+        background: #e0e0d0;
+        color: #888880;
+      }
+
+      @media (max-width: 780px) {
+        .hud { grid-template-columns: 1fr; }
+        .hud .pixel-panel:nth-child(2) { display: none; }
+        .grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="screen">
+      <canvas id="game" width="240" height="160" aria-label="Bossbound Party game"></canvas>
+    </div>
+
+    <div class="interact-prompt hidden" id="interactPrompt" aria-hidden="true">
+      <span class="interact-key">E</span><span id="interactText">Interact</span>
+    </div>
+
+    <button class="music-btn" id="musicToggle" title="Toggle music">♪</button>
+
+    <div class="hud" id="hud" aria-hidden="true">
+      <div class="pixel-panel">
+        <div class="pk-row"><span id="heroLabel">Bellbound</span><span id="hpLabel">100%</span></div>
+        <div class="pk-hp-row"><span class="pk-hp-label">HP</span><div class="bar"><div class="fill" id="hpBar"></div></div></div>
+        <p id="partyLabel">Single player</p>
+      </div>
+      <div class="pixel-panel">
+        <div class="pk-row"><span id="bossLabel">Boss dormant</span><span id="bossHpLabel">--</span></div>
+        <div class="pk-hp-row"><span class="pk-hp-label">HP</span><div class="bar"><div class="fill red" id="bossHpBar"></div></div></div>
+        <p id="modeLabel">Choose a mode</p>
+      </div>
+      <div class="pixel-panel">
+        <div class="pk-row"><span id="chapterLabel">Prologue</span><span id="noteLabel">0/6</span></div>
+        <p id="questLabel">Start the Bellbound story.</p>
+      </div>
+    </div>
+
+    <div class="dialogue hidden" id="dialogue">
+      <div class="dialogue-box">
+        <canvas class="portrait" id="portrait" width="32" height="32" aria-hidden="true"></canvas>
+        <div class="dialogue-copy">
+          <strong id="speaker">Guide</strong>
+          <span id="line"></span>
+          <span class="pk-cursor">&#9660;</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu" id="titleMenu">
+      <div class="menu-card">
+        <h1>Bossbound Party</h1>
+        <p>Alderreach is held together by ancient Bell Towers. Restore the lost notes before the final silence spreads.</p>
+        <div class="grid">
+          <label><b>Hero name</b><span>Up to 12 chars</span><input id="heroNameInput" maxlength="12" value="Rowan"></label>
+          <label><b>Class</b><span>Your fighting style</span><select id="classInput"><option value="Vanguard">Vanguard</option><option value="Arcanist">Arcanist</option><option value="Minstrel">Minstrel</option></select></label>
+          <label><b>Room ID</b><span>Online room name</span><input id="roomInput" maxlength="18" value="party"></label>
+        </div>
+        <div class="grid">
+          <div class="option-card"><b>Single Player</b><span>One hero, full story, personal camera.</span></div>
+          <div class="option-card"><b>Local Co-op</b><span>Two players on one keyboard, tethered.</span></div>
+          <div class="option-card"><b>Online Co-op</b><span>Room-based play. Each client own camera.</span></div>
+        </div>
+        <div class="grid">
+          <label><b>Server</b><span>WebSocket address</span><input id="serverInput" placeholder="ws://127.0.0.1:8787"></label>
+        </div>
+        <div class="actions">
+          <button id="singleBtn">Solo Story</button>
+          <button id="localBtn" class="gold">Local Co-op</button>
+          <button id="onlineBtn" class="blue">Join Online</button>
+          <button id="continueBtn" class="gold">Continue</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu hidden" id="choiceMenu">
+      <div class="menu-card">
+        <h2 id="choiceTitle">Dawnmere Inn</h2>
+        <p id="choiceText">Inside the building.</p>
+        <div class="actions" id="choiceActions"></div>
+      </div>
+    </div>
+
+    <div class="menu hidden" id="gameOverMenu">
+      <div class="menu-card">
+        <h2>The Bellbound Fell</h2>
+        <p id="gameOverText">The road is not over. Return to the last town and ring the bell again.</p>
+        <div class="actions">
+          <button id="retryBtn">Retry</button>
+          <button id="titleBtn" class="red">Title Screen</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const canvas = document.querySelector("#game");
+      const ctx = canvas.getContext("2d");
+      const portraitCanvas = document.querySelector("#portrait");
+      const pctx = portraitCanvas.getContext("2d");
+      const keys = new Set();
+      const TILE = 16;
+      const VIEW_W = 240;
+      const VIEW_H = 160;
+      const MAP_W = 96;
+      const MAP_H = 72;
+      const WORLD_W = MAP_W * TILE;
+      const WORLD_H = MAP_H * TILE;
+      const SAVE_KEY = "bossboundProfessionalSave";
+
+      const ui = {
+        titleMenu: document.querySelector("#titleMenu"),
+        choiceMenu: document.querySelector("#choiceMenu"),
+        gameOverMenu: document.querySelector("#gameOverMenu"),
+        dialogue: document.querySelector("#dialogue"),
+        speaker: document.querySelector("#speaker"),
+        line: document.querySelector("#line"),
+        heroLabel: document.querySelector("#heroLabel"),
+        hpLabel: document.querySelector("#hpLabel"),
+        hpBar: document.querySelector("#hpBar"),
+        partyLabel: document.querySelector("#partyLabel"),
+        bossLabel: document.querySelector("#bossLabel"),
+        bossHpLabel: document.querySelector("#bossHpLabel"),
+        bossHpBar: document.querySelector("#bossHpBar"),
+        modeLabel: document.querySelector("#modeLabel"),
+        chapterLabel: document.querySelector("#chapterLabel"),
+        noteLabel: document.querySelector("#noteLabel"),
+        questLabel: document.querySelector("#questLabel"),
+        choiceTitle: document.querySelector("#choiceTitle"),
+        choiceText: document.querySelector("#choiceText"),
+        choiceActions: document.querySelector("#choiceActions"),
+        gameOverText: document.querySelector("#gameOverText"),
+        heroNameInput: document.querySelector("#heroNameInput"),
+        classInput: document.querySelector("#classInput"),
+        roomInput: document.querySelector("#roomInput"),
+        serverInput: document.querySelector("#serverInput"),
+        hud: document.querySelector("#hud"),
+        interactPrompt: document.querySelector("#interactPrompt"),
+        interactText: document.querySelector("#interactText"),
+        musicToggle: document.querySelector("#musicToggle")
+      };
+
+      let musicEnabled = true;
+      function toggleMusic() {
+        musicEnabled = !musicEnabled;
+        ui.musicToggle.textContent = musicEnabled ? "♪" : "✕";
+        ui.musicToggle.classList.toggle("muted", !musicEnabled);
+        if (!musicEnabled) Music.stop();
+        else Music.update(game.mode === "battle" ? "battle" : game.mode === "overworld" ? "overworld" : "title");
+      }
+
+      // ── Effects ──────────────────────────────────────────
+      let shakeAmt = 0;
+      let bossFlash = 0;
+      const soulFlash = [0, 0];
+      const WParts = []; // world-space particles
+      const SParts = []; // screen-space particles (battle)
+      const DmgNums = []; // floating damage numbers
+
+      function addShake(v) { shakeAmt = Math.max(shakeAmt, v); }
+
+      function wPart(x, y, vx, vy, color, life, size = 1) {
+        if (WParts.length > 120) return;
+        WParts.push({ x, y, vx, vy, color, life, maxLife: life, size });
+      }
+      function sPart(x, y, vx, vy, color, life) {
+        SParts.push({ x, y, vx, vy, color, life, maxLife: life });
+      }
+      function dmgNum(x, y, text, color = "#ff4848") {
+        DmgNums.push({ x, y, vy: -28, life: 1.1, text, color });
+      }
+
+      function updateEffects(dt) {
+        shakeAmt = Math.max(0, shakeAmt - 14 * dt);
+        bossFlash = Math.max(0, bossFlash - dt * 6);
+        for (let i = 0; i < 2; i++) soulFlash[i] = Math.max(0, soulFlash[i] - dt * 6);
+        for (let i = WParts.length - 1; i >= 0; i--) {
+          const p = WParts[i]; p.x += p.vx * dt; p.y += p.vy * dt;
+          p.vx *= 0.92; p.vy += 18 * dt; p.life -= dt;
+          if (p.life <= 0) WParts.splice(i, 1);
+        }
+        for (let i = SParts.length - 1; i >= 0; i--) {
+          const p = SParts[i]; p.x += p.vx * dt; p.y += p.vy * dt;
+          p.vx *= 0.9; p.vy += 20 * dt; p.life -= dt;
+          if (p.life <= 0) SParts.splice(i, 1);
+        }
+        for (let i = DmgNums.length - 1; i >= 0; i--) {
+          const d = DmgNums[i]; d.y += d.vy * dt; d.vy += 16 * dt; d.life -= dt;
+          if (d.life <= 0) DmgNums.splice(i, 1);
+        }
+        // Ambient leaves in overworld
+        if (game.mode === "overworld" && WParts.length < 30 && Math.random() < 0.18) {
+          const hero = focusHero();
+          const lx = hero.x + (Math.random() - 0.5) * 200;
+          const ly = hero.y + (Math.random() - 0.5) * 140;
+          const tile = getTile(Math.floor(lx / TILE), Math.floor(ly / TILE));
+          if (tile === "forest" || tile === "grass") {
+            const leafColors = ["#8bcc68", "#a8d870", "#c8e860", "#f8e860"];
+            wPart(lx, ly, (Math.random() - 0.5) * 8, -6 - Math.random() * 6,
+              leafColors[Math.floor(Math.random() * leafColors.length)], 2.5 + Math.random() * 2);
+          }
+        }
+      }
+
+      function renderWParts(camX, camY) {
+        WParts.forEach(p => {
+          ctx.globalAlpha = Math.max(0, p.life / p.maxLife) * 0.85;
+          ctx.fillStyle = p.color;
+          ctx.fillRect(Math.round(p.x - camX), Math.round(p.y - camY), p.size, p.size);
+        });
+        ctx.globalAlpha = 1;
+      }
+      function renderSParts() {
+        SParts.forEach(p => {
+          ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(Math.round(p.x - 1), Math.round(p.y - 1), 3, 3);
+        });
+        ctx.globalAlpha = 1;
+      }
+      function renderDmgNums() {
+        ctx.font = "bold 7px 'Trebuchet MS'";
+        DmgNums.forEach(d => {
+          ctx.globalAlpha = Math.min(1, d.life * 2);
+          ctx.fillStyle = d.color;
+          ctx.fillText(d.text, Math.round(d.x) - 4, Math.round(d.y));
+        });
+        ctx.globalAlpha = 1;
+      }
+
+      const Campaign = {
+        title: "Bossbound Party",
+        premise: "Alderreach is held together by ancient Bell Towers. When the First Bell cracks, guardian bosses wake corrupted. The Bellbound must restore each lost note before the final silence spreads.",
+        regions: [
+          { id: "dawnmere", note: "Verdant", title: "Prologue: The First Bell", place: "Dawnmere Hamlet", objective: "Learn the road, enter the inn, help Mira, and wake Bramble Crown.", boss: "bramble", color: "#5ab45f", start: [15, 18], bossGate: [34, 18] },
+          { id: "vellforge", note: "Ember", title: "Chapter 1: Ash Under Vellforge", place: "Vellforge City", objective: "Rescue the forge crew and decide what to do with the old boss-forging engine.", boss: "brass", color: "#c96f3d", start: [39, 17], bossGate: [45, 17] },
+          { id: "moonwell", note: "Lunar", title: "Chapter 2: Moonwell Pilgrimage", place: "Moonwell Monastery", objective: "Cross the flooded archive and learn the bosses were once protectors.", boss: "silt", color: "#5f80c6", start: [61, 16], bossGate: [67, 20] },
+          { id: "saltglass", note: "Tide", title: "Chapter 3: Saltglass Night", place: "Saltglass Port", objective: "Follow canal smugglers and drag the leviathan away from the docks.", boss: "leviathan", color: "#4aa7a6", start: [78, 25], bossGate: [84, 28] },
+          { id: "ironroot", note: "Anvil", title: "Chapter 4: Ironroot Siege", place: "Ironroot Bastion", objective: "Repair the southern gate while the walking anvil pounds the walls.", boss: "anvil", color: "#8b6c48", start: [32, 53], bossGate: [38, 58] },
+          { id: "starfall", note: "Star", title: "Finale: Starfall Citadel", place: "Starfall Citadel", objective: "Climb the capital and ring every restored note against the Null Bell.", boss: "nullbell", color: "#8b64bc", start: [68, 53], bossGate: [78, 57] }
+        ]
+      };
+
+      const BossEncounter = {
+        bramble: { name: "Bramble Crown", hp: 180, quote: "The forest remembers every axe.", pattern: "ring", palette: ["#345f35", "#66c45d", "#d6f0a4"] },
+        brass: { name: "The Brass Maw", hp: 230, quote: "Feed the furnace. Feed it all.", pattern: "sweep", palette: ["#5c3020", "#d98241", "#ffd47a"] },
+        silt: { name: "Silt Oracle", hp: 260, quote: "Truth sinks. Lies float.", pattern: "rain", palette: ["#28345c", "#6d9be8", "#d7e8ff"] },
+        leviathan: { name: "Harbor Leviathan", hp: 300, quote: "Every harbor is a mouth.", pattern: "waves", palette: ["#1e5960", "#45c5bf", "#d8fff8"] },
+        anvil: { name: "Moon-Anvil Titan", hp: 340, quote: "Hold the gate. Hear the hammer.", pattern: "walls", palette: ["#4c3b32", "#b18a5a", "#ffe0a3"] },
+        nullbell: { name: "The Null Bell", hp: 420, quote: "No grief. No joy. No sound.", pattern: "spiral", palette: ["#2a203c", "#9c75ff", "#fff0ff"] }
+      };
+
+      const Quest = {
+        tutorial: { id: "tutorial", title: "First Steps", text: "Move, talk to Mira, enter the inn, then practice at the training bell." },
+        dawnmereFavor: { id: "dawnmereFavor", title: "Mira's Parcel", text: "Carry the innkeeper's parcel to the scout at Old Kingsroad." },
+        optionalBosses: [
+          "Mossback Lurker", "Glass-Eel Twins", "Coalheart Golem", "Blue Archive Shade", "Canal Siren",
+          "Ironroot Ram", "Starlit Moth", "Bell-Rust Knight", "Tidehook Crab", "Moonlit Warden"
+        ]
+      };
+
+      const DialogueNode = {
+        intro: [
+          ["Mira", "The First Bell cracked at dawn. Every tower answered with silence."],
+          ["Mira", "You are Bellbound now: not chosen by blood, but by the road you decide to walk."],
+          ["Mira", "Start small. Move through Dawnmere, enter the inn, and take my parcel to the Kingsroad scout."]
+        ],
+        inn: [
+          ["Mira", "Inside a safe house, you can rest, read rumors, or accept local work."],
+          ["Mira", "Take this parcel. The scout at Old Kingsroad knows how to wake Bramble Crown on our terms."]
+        ],
+        scout: [
+          ["Scout Renn", "Mira sent you? Good. Ring the training bell, then challenge the Crown beyond the northern trees."],
+          ["Scout Renn", "Bosses are not monsters. They are guardians with their songs twisted."]
+        ],
+        victory: [
+          ["Bell Tower", "The restored note rises: clear, green, alive."],
+          ["Mira", "One note returned. Five more, and Alderreach may yet sing again."]
+        ]
+      };
+
+      const InteriorMap = {
+        inn: { title: "Dawnmere Inn", text: "Warm lamps, creaking floorboards, and Mira's guild ledger. The room smells like mint tea and rain.", npc: "Mira" },
+        shop: { title: "Bellroad Shop", text: "Shelves of travel charms, cloak pins, and old maps. The keeper circles every boss trail in red ink.", npc: "Shopkeeper" },
+        guild: { title: "Scout Guild", text: "A board lists optional bosses: ten local threats waiting across Alderreach.", npc: "Scout Renn" },
+        forge: { title: "Vellforge Hall", text: "The furnace city roars behind brass shutters. Workers whisper that the machines are learning to hunger.", npc: "Foreman Vale" },
+        archive: { title: "Moonwell Archive", text: "Blue shelves sink into still water. Every book says the guardians were once loved.", npc: "Archivist Lune" },
+        port: { title: "Saltglass Dockhouse", text: "Salt lanterns swing over canal charts. Smugglers know which tide carries bosses ashore.", npc: "Captain Sable" },
+        bastion: { title: "Ironroot Keep", text: "Root and iron twist through the walls. The gate drums whenever the Titan walks.", npc: "Marshal Orr" },
+        citadel: { title: "Starfall Spire", text: "The capital's upper halls are quiet enough to hear the missing notes.", npc: "The Last Ringer" }
+      };
+
+      const StoryFlag = {
+        introSeen: "introSeen",
+        innVisited: "innVisited",
+        parcelTaken: "parcelTaken",
+        scoutMet: "scoutMet",
+        trainingDone: "trainingDone",
+        brambleDefeated: "brambleDefeated"
+      };
+
+      const game = {
+        mode: "title",
+        playMode: "single",
+        socket: null,
+        onlinePlayer: 0,
+        sendTimer: 0,
+        hero: { name: "Rowan", className: "Vanguard" },
+        party: [
+          { name: "Rowan", className: "Vanguard", x: 15 * TILE, y: 18 * TILE, hp: 100, maxHp: 100, dir: "down", anim: 0, state: "idle", color: "#3a8f56", active: true },
+          { name: "Ember", className: "Minstrel", x: 16 * TILE, y: 18 * TILE, hp: 100, maxHp: 100, dir: "down", anim: 0, state: "idle", color: "#4a80c8", active: false }
+        ],
+        camera: { x: 0, y: 0 },
+        regionIndex: 0,
+        notes: 0,
+        flags: {},
+        quest: Quest.tutorial,
+        dialogueQueue: [],
+        currentInterior: null,
+        inBattle: false,
+        battle: null,
+        bullets: [],
+        lastPlace: "",
+        saveHint: 0
+      };
+
+      // doors must be defined before createMap()
+      const doors = [
+        { id: "inn", x: 14, y: 17, interior: "inn" },
+        { id: "shop", x: 20, y: 17, interior: "shop" },
+        { id: "guild", x: 29, y: 17, interior: "guild" },
+        { id: "forge", x: 40, y: 16, interior: "forge" },
+        { id: "archive", x: 61, y: 15, interior: "archive" },
+        { id: "port", x: 79, y: 24, interior: "port" },
+        { id: "bastion", x: 32, y: 52, interior: "bastion" },
+        { id: "citadel", x: 68, y: 52, interior: "citadel" }
+      ];
+
+      const map = createMap();
+      const npcs = [
+        { id: "mira", name: "Mira", x: 17, y: 18, kind: "guide", dialogue: "intro" },
+        { id: "scout", name: "Scout Renn", x: 30, y: 18, kind: "scout", dialogue: "scout" }
+      ];
+
+      function createMap() {
+        const data = Array.from({ length: MAP_H }, () => Array.from({ length: MAP_W }, () => "grass"));
+        fillRect(data, 0, 0, MAP_W, MAP_H, "grass");
+        fillRect(data, 0, 0, MAP_W, 5, "forest");
+        fillRect(data, 0, 66, MAP_W, 6, "mountain");
+        fillRect(data, 88, 0, 8, MAP_H, "water");
+        drawPath(data, [[15, 18], [30, 18], [40, 16], [61, 15], [79, 24], [68, 52], [32, 52], [30, 18]]);
+        placeTown(data, 15, 18, 8, 6);
+        placeTown(data, 29, 18, 5, 4);
+        placeTown(data, 40, 16, 9, 7);
+        placeTown(data, 61, 15, 8, 7);
+        placeTown(data, 79, 24, 9, 7);
+        placeTown(data, 32, 52, 9, 7);
+        placeTown(data, 68, 52, 11, 8);
+        Campaign.regions.forEach((region) => data[region.bossGate[1]][region.bossGate[0]] = "gate");
+        doors.forEach((door) => {
+          data[door.y][door.x] = "door";
+          // mark building footprint tiles as impassable walls
+          for (let dy = 1; dy <= 2; dy += 1) {
+            for (let dx = -1; dx <= 1; dx += 1) {
+              const ty = door.y - dy;
+              const tx = door.x + dx;
+              if (data[ty]?.[tx] && data[ty][tx] !== "gate" && data[ty][tx] !== "door") {
+                data[ty][tx] = "wall";
+              }
+            }
+          }
+        });
+        return data;
+      }
+
+      function fillRect(data, x, y, w, h, tile) {
+        for (let yy = y; yy < y + h; yy += 1) {
+          for (let xx = x; xx < x + w; xx += 1) {
+            if (data[yy] && data[yy][xx] !== undefined) data[yy][xx] = tile;
+          }
+        }
+      }
+
+      function drawPath(data, points) {
+        for (let i = 0; i < points.length - 1; i += 1) {
+          let [x, y] = points[i];
+          const [tx, ty] = points[i + 1];
+          while (x !== tx || y !== ty) {
+            fillRect(data, x - 1, y - 1, 3, 3, "path");
+            if (x !== tx) x += Math.sign(tx - x);
+            if (y !== ty) y += Math.sign(ty - y);
+          }
+        }
+      }
+
+      function placeTown(data, cx, cy, w, h) {
+        fillRect(data, cx - Math.floor(w / 2), cy - Math.floor(h / 2), w, h, "plaza");
+      }
+
+      function start(mode) {
+        game.playMode = mode;
+        game.mode = "overworld";
+        game.hero.name = ui.heroNameInput.value.trim() || "Rowan";
+        game.hero.className = ui.classInput.value;
+        game.regionIndex = 0;
+        game.notes = 0;
+        game.flags = {};
+        game.quest = Quest.tutorial;
+        game.party[0] = { ...game.party[0], name: game.hero.name, className: game.hero.className, x: 15 * TILE, y: 18 * TILE, hp: 100, maxHp: 100, active: true };
+        game.party[1] = { ...game.party[1], x: 16 * TILE, y: 18 * TILE, hp: 100, active: mode === "local" };
+        ui.titleMenu.classList.add("hidden");
+        ui.gameOverMenu.classList.add("hidden");
+        game.camera.x = game.party[0].x - VIEW_W / 2;
+        game.camera.y = game.party[0].y - VIEW_H / 2;
+        if (mode === "online") joinOnline();
+        else queueDialogue(DialogueNode.intro);
+        updateHud();
+        Music.update("overworld");
+      }
+
+      function joinOnline() {
+        const host = location.hostname || "127.0.0.1";
+        const fallback = `ws://${host}:8787`;
+        const room = ui.roomInput.value.trim() || "party";
+        const url = `${(ui.serverInput.value.trim() || fallback).replace(/\/$/, "")}?room=${encodeURIComponent(room)}&name=${encodeURIComponent(game.hero.name)}&class=${encodeURIComponent(game.hero.className)}`;
+        game.socket = new WebSocket(url);
+        game.socket.addEventListener("open", () => queueDialogue([["Bell Relay", `Joined online room ${room}. Each hero keeps their own camera while the room shares bosses and story flags.`]]));
+        game.socket.addEventListener("message", (event) => applyOnlineState(JSON.parse(event.data)));
+        game.socket.addEventListener("error", () => queueDialogue([["Bell Relay", "Could not reach the room server. Run games/bossbound/server.js, then try again."]]));
+      }
+
+      function applyOnlineState(message) {
+        if (message.type === "welcome") game.onlinePlayer = message.playerIndex;
+        if (message.type !== "state") return;
+        game.regionIndex = message.state.regionIndex;
+        game.notes = message.state.notes;
+        game.flags = message.state.flags || {};
+        message.state.players.forEach((player, index) => {
+          Object.assign(game.party[index], player);
+        });
+        if (message.state.battle) {
+          game.mode = "battle";
+          game.inBattle = true;
+          game.battle = { ...message.state.battle, remote: true };
+          game.bullets = message.state.battle.bullets || [];
+        } else if (game.inBattle) {
+          game.mode = "overworld";
+          game.inBattle = false;
+          game.battle = null;
+          game.bullets = [];
+        }
+        updateHud();
+      }
+
+      function queueDialogue(lines) {
+        game.dialogueQueue = lines.map(([speaker, line]) => ({ speaker, line }));
+        showNextDialogue();
+      }
+
+      function showNextDialogue() {
+        const next = game.dialogueQueue.shift();
+        if (!next) {
+          ui.dialogue.classList.add("hidden");
+          return;
+        }
+        ui.dialogue.classList.remove("hidden");
+        ui.speaker.textContent = next.speaker;
+        ui.line.textContent = next.line;
+        drawPortrait(next.speaker);
+      }
+
+      function drawPortrait(name) {
+        pctx.fillStyle = "#253452";
+        pctx.fillRect(0, 0, 32, 32);
+        const hue = hash(name) % 6;
+        const colors = ["#55b95a", "#4b8bd9", "#e5b947", "#df5b64", "#9c75ff", "#4dc8b8"];
+        pctx.fillStyle = colors[hue];
+        pctx.fillRect(9, 6, 14, 18);
+        pctx.fillStyle = "#f8d8a8";
+        pctx.fillRect(10, 4, 12, 10);
+        pctx.fillStyle = "#101929";
+        pctx.fillRect(13, 8, 2, 2);
+        pctx.fillRect(19, 8, 2, 2);
+        pctx.fillRect(14, 14, 7, 2);
+      }
+
+      function update(dt) {
+        if (game.mode !== "overworld" && game.mode !== "battle") return;
+        if (!ui.dialogue.classList.contains("hidden") || !ui.choiceMenu.classList.contains("hidden")) return;
+        if (game.mode === "battle") {
+          updateBattle(dt);
+          return;
+        }
+        updateOverworld(dt);
+      }
+
+      function updateOverworld(dt) {
+        const inputs = [readInput(0), readInput(1)];
+        activeParty().forEach((hero, index) => moveHero(hero, inputs[index], dt));
+        if (game.playMode === "local") enforceTether();
+        if (game.playMode === "online") sendOnlineInput(inputs[0], dt);
+        updateCamera();
+        updateHud();
+      }
+
+      function readInput(index) {
+        if (index === 1) {
+          return { x: (keys.has("arrowright") ? 1 : 0) - (keys.has("arrowleft") ? 1 : 0), y: (keys.has("arrowdown") ? 1 : 0) - (keys.has("arrowup") ? 1 : 0), attack: keys.has("enter"), dash: keys.has("/") };
+        }
+        return { x: (keys.has("d") ? 1 : 0) - (keys.has("a") ? 1 : 0), y: (keys.has("s") ? 1 : 0) - (keys.has("w") ? 1 : 0), attack: keys.has(" "), dash: keys.has("shift") };
+      }
+
+      function moveHero(hero, input, dt) {
+        const moving = input.x || input.y;
+        const speed = input.dash ? 78 : 48;
+        let nx = hero.x;
+        let ny = hero.y;
+        if (moving) {
+          const len = Math.hypot(input.x, input.y) || 1;
+          nx += input.x / len * speed * dt;
+          ny += input.y / len * speed * dt;
+          hero.dir = Math.abs(input.x) > Math.abs(input.y) ? (input.x > 0 ? "right" : "left") : (input.y > 0 ? "down" : "up");
+          hero.anim += dt * 8;
+          hero.state = input.dash ? "dash" : "walk";
+        } else {
+          hero.anim += dt * 2;
+          hero.state = "idle";
+        }
+        if (isPassable(nx, hero.y)) hero.x = clamp(nx, 8, WORLD_W - 8);
+        if (isPassable(hero.x, ny)) hero.y = clamp(ny, 8, WORLD_H - 8);
+        // footstep dust
+        hero._stepTimer = (hero._stepTimer || 0) - dt;
+        if (moving && hero._stepTimer <= 0) {
+          hero._stepTimer = 0.18;
+          wPart(hero.x + (Math.random() - 0.5) * 4, hero.y + 7,
+            (Math.random() - 0.5) * 10, -4 - Math.random() * 6, "#c8b890", 0.35);
+        }
+      }
+
+      function isPassable(x, y) {
+        const tile = getTile(Math.floor(x / TILE), Math.floor(y / TILE));
+        return tile !== "water" && tile !== "forest" && tile !== "mountain" && tile !== "door" && tile !== "wall";
+      }
+
+      function getTile(tx, ty) {
+        if (tx < 0 || ty < 0 || tx >= MAP_W || ty >= MAP_H) return "mountain";
+        return map[ty][tx];
+      }
+
+      function activeParty() {
+        if (game.playMode === "online") return [game.party[game.onlinePlayer] || game.party[0]].filter((hero) => hero && hero.hp > 0);
+        return game.party.filter((hero) => hero.active && hero.hp > 0);
+      }
+
+      function focusHero() {
+        if (game.playMode === "online") return game.party[game.onlinePlayer] || game.party[0];
+        return game.party[0];
+      }
+
+      function enforceTether() {
+        const [a, b] = game.party;
+        const d = distance(a, b);
+        if (!a.active || !b.active || d <= 52) return;
+        const mx = (a.x + b.x) / 2;
+        const my = (a.y + b.y) / 2;
+        const nx = (b.x - a.x) / d;
+        const ny = (b.y - a.y) / d;
+        a.x = mx - nx * 26;
+        a.y = my - ny * 26;
+        b.x = mx + nx * 26;
+        b.y = my + ny * 26;
+      }
+
+      function updateCamera() {
+        let x = focusHero().x;
+        let y = focusHero().y;
+        if (game.playMode === "local") {
+          const party = activeParty();
+          x = party.reduce((sum, hero) => sum + hero.x, 0) / party.length;
+          y = party.reduce((sum, hero) => sum + hero.y, 0) / party.length;
+        }
+        game.camera.x += (clamp(x - VIEW_W / 2, 0, WORLD_W - VIEW_W) - game.camera.x) * .14;
+        game.camera.y += (clamp(y - VIEW_H / 2, 0, WORLD_H - VIEW_H) - game.camera.y) * .14;
+      }
+
+      function sendOnlineInput(input, dt) {
+        game.sendTimer -= dt;
+        if (!game.socket || game.socket.readyState !== WebSocket.OPEN || game.sendTimer > 0) return;
+        game.sendTimer = 1 / 20;
+        game.socket.send(JSON.stringify({ type: "input", input }));
+      }
+
+      function interact() {
+        if (!ui.dialogue.classList.contains("hidden")) {
+          showNextDialogue();
+          return;
+        }
+        const hero = focusHero();
+        const tx = Math.floor(hero.x / TILE);
+        const ty = Math.floor(hero.y / TILE);
+        const npc = npcs.find((item) => Math.abs(item.x - tx) <= 1 && Math.abs(item.y - ty) <= 1);
+        if (npc) {
+          if (npc.id === "mira") {
+            game.flags[StoryFlag.innVisited] = true;
+            queueDialogue(DialogueNode.inn);
+          } else {
+            game.flags[StoryFlag.scoutMet] = true;
+            queueDialogue(DialogueNode.scout);
+          }
+          return;
+        }
+        const door = doors.find((item) => Math.abs(item.x - tx) <= 1 && Math.abs(item.y - ty) <= 1);
+        if (door) {
+          openInterior(door.interior);
+          return;
+        }
+        const region = Campaign.regions[game.regionIndex];
+        if (Math.abs(region.bossGate[0] - tx) <= 2 && Math.abs(region.bossGate[1] - ty) <= 2) {
+          startBattle(region.boss);
+          return;
+        }
+        queueDialogue([["Road Sign", "Bell roads connect every city. Enter buildings, finish quests, then challenge each guardian gate."]]);
+      }
+
+      function openInterior(id) {
+        const interior = InteriorMap[id];
+        game.currentInterior = id;
+        ui.choiceTitle.textContent = interior.title;
+        ui.choiceText.textContent = interior.text;
+        ui.choiceActions.innerHTML = "";
+        addChoice("Talk", () => {
+          ui.choiceMenu.classList.add("hidden");
+          if (id === "inn") {
+            game.flags[StoryFlag.parcelTaken] = true;
+            queueDialogue(DialogueNode.inn);
+          } else {
+            queueDialogue([[interior.npc, regionFlavor(id)]]);
+          }
+        });
+        addChoice("Rest", () => {
+          game.party.forEach((hero) => hero.hp = hero.maxHp);
+          saveGame();
+          ui.choiceText.textContent = "The party rested. Progress saved.";
+          updateHud();
+        });
+        addChoice("Quest Board", () => {
+          game.flags.sideQuest = true;
+          ui.choiceText.textContent = `Optional bosses posted: ${Quest.optionalBosses.slice(0, 4).join(", ")}. More unlock as the road opens.`;
+        });
+        addChoice("Leave", () => ui.choiceMenu.classList.add("hidden"), "blue");
+        ui.choiceMenu.classList.remove("hidden");
+      }
+
+      function addChoice(label, handler, className = "") {
+        const button = document.createElement("button");
+        button.textContent = label;
+        if (className) button.className = className;
+        button.addEventListener("click", handler);
+        ui.choiceActions.appendChild(button);
+      }
+
+      function regionFlavor(id) {
+        const text = {
+          shop: "Buy only what keeps you moving. The Bellbound need speed more than silver.",
+          guild: "Every optional boss teaches a pattern before the chapter guardian tests it.",
+          forge: "The Brass Maw was built to protect us. Then someone taught it hunger.",
+          archive: "The oldest books call the guardians friends, not beasts.",
+          port: "The leviathan follows bell echoes through the fog. We will bait it with lanterns.",
+          bastion: "If the gate holds tonight, the road to Starfall opens tomorrow.",
+          citadel: "The Null Bell does not hate us. It wants to end pain by ending every song."
+        };
+        return text[id] || "The old bell note still hums in the walls.";
+      }
+
+      function startBattle(bossId, remote = false) {
+        if (game.playMode === "online" && !remote) {
+          if (game.socket && game.socket.readyState === WebSocket.OPEN) {
+            game.socket.send(JSON.stringify({ type: "action", action: "startBattle", bossId }));
+          }
+          return;
+        }
+        const boss = BossEncounter[bossId];
+        game.mode = "battle";
+        game.inBattle = true;
+        game.battle = {
+          bossId,
+          hp: boss.hp,
+          maxHp: boss.hp,
+          timer: 0,
+          phase: 1,
+          // Boss AI
+          bx: 120, by: 50,
+          bState: "enter", bStateTimer: 2,
+          bAtkCd: 0, bAtkPattern: 0,
+          bDashVx: 0, bDashVy: 0, bDashing: false,
+          // Player in arena
+          px: 120, py: 128,
+          pAtkCd: 0,
+          pDodge: 0, pDodgeCd: 0, pDodgeVx: 0, pDodgeVy: 0,
+          pInvince: 0, pContactCd: 0,
+          pFlash: 0,
+          pProjectiles: [],
+          remote
+        };
+        game.bullets = [];
+        queueDialogue([[boss.name, boss.quote]]);
+        Music.update("battle");
+      }
+
+      function updateBattle(dt) {
+        if (game.playMode === "online" && game.battle?.remote) {
+          sendOnlineInput(readInput(0), dt);
+          return;
+        }
+        const b = game.battle;
+        const boss = BossEncounter[b.bossId];
+        const hero = game.party[0];
+        b.timer += dt;
+        b.pFlash    = Math.max(0, b.pFlash    - dt * 5);
+        b.pInvince  = Math.max(0, b.pInvince  - dt);
+        b.pDodge    = Math.max(0, b.pDodge    - dt);
+        b.pDodgeCd  = Math.max(0, b.pDodgeCd  - dt);
+        b.pAtkCd    = Math.max(0, b.pAtkCd    - dt);
+        b.pContactCd= Math.max(0, b.pContactCd- dt);
+
+        // ── Player movement ──────────────────────────────
+        const inp = readInput(0);
+        const dodging = b.pDodge > 0;
+        const mvSpd = dodging ? 95 : 54;
+
+        if (dodging) {
+          b.px = clamp(b.px + b.pDodgeVx * mvSpd * dt, 8, 232);
+          b.py = clamp(b.py + b.pDodgeVy * mvSpd * dt, 16, 150);
+        } else {
+          if (inp.x || inp.y) {
+            const len = Math.hypot(inp.x, inp.y) || 1;
+            b.px = clamp(b.px + inp.x / len * mvSpd * dt, 8, 232);
+            b.py = clamp(b.py + inp.y / len * mvSpd * dt, 16, 150);
+          }
+        }
+
+        // Dodge roll trigger (Shift)
+        if (inp.dash && b.pDodgeCd <= 0 && !dodging) {
+          b.pDodge = 0.32; b.pDodgeCd = 1.4; b.pInvince = 0.36;
+          const len = Math.hypot(inp.x, inp.y) || 1;
+          b.pDodgeVx = inp.x / len || 0;
+          b.pDodgeVy = inp.y / len || 1;
+          addShake(1);
+          for (let k = 0; k < 5; k++)
+            sPart(b.px+(Math.random()-0.5)*8, b.py+6, (Math.random()-0.5)*32, -15-Math.random()*20, "#d0c8a0", 0.3);
+        }
+
+        // ── Player attack ────────────────────────────────
+        if (inp.attack && b.pAtkCd <= 0) {
+          const cls = hero.className;
+          b.pAtkCd = cls === "Arcanist" ? 0.26 : cls === "Minstrel" ? 0.60 : 0.35;
+
+          if (cls === "Arcanist") {
+            const dx = b.bx - b.px, dy = b.by - b.py;
+            const d = Math.hypot(dx, dy) || 1;
+            b.pProjectiles.push({ x: b.px, y: b.py, vx: dx/d*150, vy: dy/d*150, life: 2.5, dmg: 16 });
+            sPart(b.px, b.py-4, dx/d*24, dy/d*24, "#c090ff", 0.2);
+          } else if (cls === "Minstrel") {
+            const d = Math.hypot(b.bx-b.px, b.by-b.py);
+            if (d < 50) dealBossDmg(b, boss, 13);
+            for (let k = 0; k < 10; k++) {
+              const a = k / 10 * Math.PI * 2;
+              sPart(b.px+Math.cos(a)*22, b.py+Math.sin(a)*14, Math.cos(a)*28, Math.sin(a)*28, "#60d8ff", 0.5);
+            }
+          } else {
+            // Vanguard melee
+            const d = Math.hypot(b.bx-b.px, b.by-b.py);
+            if (d < 34) dealBossDmg(b, boss, 20);
+            sPart(b.px + (b.bx>b.px?12:-12), b.py-4, (b.bx>b.px?48:-48), -18, "#ffe0a0", 0.25);
+          }
+        }
+
+        // Player projectiles
+        for (let i = b.pProjectiles.length - 1; i >= 0; i--) {
+          const p = b.pProjectiles[i];
+          p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
+          if (Math.hypot(p.x - b.bx, p.y - b.by) < 18) {
+            dealBossDmg(b, boss, p.dmg);
+            for (let k=0;k<5;k++) sPart(p.x,p.y,(Math.random()-.5)*60,(Math.random()-.5)*60,"#c090ff",0.3);
+            b.pProjectiles.splice(i, 1);
+          } else if (p.life <= 0 || p.x < 4 || p.x > 236 || p.y < 12 || p.y > 154) {
+            b.pProjectiles.splice(i, 1);
+          }
+        }
+
+        // ── Boss AI ──────────────────────────────────────
+        updateBossAI(dt, b, boss);
+        updateBullets(dt);
+
+        if (b.hp <= 0) winBattle();
+        if (hero.hp <= 0) showGameOver();
+      }
+
+      function dealBossDmg(b, boss, dmg) {
+        b.hp -= dmg;
+        bossFlash = 0.45; addShake(2);
+        dmgNum(b.bx, b.by - 18, `-${dmg}`, "#ffe040");
+        for (let k=0;k<5;k++) sPart(b.bx+(Math.random()-.5)*18,b.by+(Math.random()-.5)*18,(Math.random()-.5)*55,(Math.random()-.5)*55,boss.palette[1],0.35);
+      }
+
+      function dealPlayerDmg(b, dmg) {
+        if (b.pInvince > 0) return;
+        const hero = game.party[0];
+        hero.hp = Math.max(0, hero.hp - dmg);
+        b.pInvince = 0.5; b.pFlash = 0.7;
+        soulFlash[0] = 0.7; addShake(4);
+        dmgNum(b.px, b.py - 14, `-${dmg}`, "#ff4848");
+        for (let k=0;k<6;k++) sPart(b.px+(Math.random()-.5)*10,b.py+(Math.random()-.5)*10,(Math.random()-.5)*50,(Math.random()-.5)*50,"#ff6060",0.4);
+      }
+
+      function updateBossAI(dt, b, boss) {
+        const ph2Threshold = b.maxHp * 0.5;
+        if (b.phase === 1 && b.hp <= ph2Threshold) {
+          b.phase = 2;
+          addShake(7); bossFlash = 1;
+          game.bullets = [];
+          b.bState = "hurt"; b.bStateTimer = 1.4;
+          for (let k=0;k<14;k++) sPart(b.bx+(Math.random()-.5)*35,b.by+(Math.random()-.5)*35,(Math.random()-.5)*90,(Math.random()-.5)*90,boss.palette[1],0.7);
+          dmgNum(b.bx - 20, b.by - 28, "PHASE 2!", "#ff6030");
+        }
+
+        const spd = b.phase === 2 ? 1.7 : 1;
+        b.bStateTimer -= dt;
+        b.bAtkCd -= dt;
+        const dx = b.px - b.bx, dy = b.py - b.by;
+        const dist = Math.hypot(dx, dy) || 1;
+
+        if (b.bState === "enter") {
+          b.by = Math.min(50, b.by + 35 * dt);
+          if (b.bStateTimer <= 0) { b.bState = "idle"; b.bStateTimer = 1; }
+
+        } else if (b.bState === "idle") {
+          if (b.bStateTimer <= 0) {
+            const r = Math.random();
+            if (r < 0.35)      { b.bState = "chase"; b.bStateTimer = (1.2 - b.phase * 0.3); }
+            else if (r < 0.65) { b.bState = "attack"; b.bStateTimer = (1.5 - b.phase * 0.2) / spd; }
+            else               { b.bState = "dash"; b.bStateTimer = 0.45 / spd; b.bDashing = false; }
+          }
+
+        } else if (b.bState === "chase") {
+          const cspd = (38 + b.phase * 16) * spd;
+          b.bx += dx / dist * cspd * dt;
+          b.by += dy / dist * cspd * dt;
+          b.bx = clamp(b.bx, 14, 226); b.by = clamp(b.by, 18, 110);
+          // Contact damage during chase
+          if (dist < 20 && b.pContactCd <= 0)
+            { dealPlayerDmg(b, 18 + b.phase * 6); b.pContactCd = 1; }
+          if (b.bStateTimer <= 0) { b.bState = "attack"; b.bStateTimer = 1.2 / spd; }
+
+        } else if (b.bState === "dash") {
+          if (!b.bDashing) {
+            // Telegraphed pause before dash
+            if (b.bStateTimer > 0.2) {
+              // Vibrate slightly as telegraph
+              b.bx += (Math.random()-.5) * 1.5;
+            } else {
+              b.bDashing = true;
+              b.bDashVx = dx / dist * 200 * spd;
+              b.bDashVy = dy / dist * 200 * spd;
+            }
+          } else {
+            b.bx += b.bDashVx * dt; b.by += b.bDashVy * dt;
+            b.bx = clamp(b.bx, 14, 226); b.by = clamp(b.by, 18, 120);
+            if (dist < 18 && b.pContactCd <= 0)
+              { dealPlayerDmg(b, 28 + b.phase * 8); b.pContactCd = 0.8; b.pInvince = Math.max(b.pInvince, 0.5); }
+          }
+          if (b.bStateTimer <= 0) { b.bDashing = false; b.bState = "idle"; b.bStateTimer = 0.5; }
+
+        } else if (b.bState === "attack") {
+          if (b.bAtkCd <= 0) {
+            fireBossPattern(b, boss, spd);
+            const baseCd = [0.32, 0.28, 0.26, 0.22, 0.20, 0.16][game.regionIndex] || 0.28;
+            b.bAtkCd = baseCd / spd;
+          }
+          if (b.bStateTimer <= 0) { b.bState = "idle"; b.bStateTimer = 0.4; }
+
+        } else if (b.bState === "hurt") {
+          if (b.bStateTimer <= 0) { b.bState = "idle"; b.bStateTimer = 0.3; }
+        }
+      }
+
+      function fireBossPattern(b, boss, spd) {
+        const t = b.timer;
+        const id = b.bossId;
+        const ph = b.phase;
+        const dx = b.px - b.bx, dy = b.py - b.by;
+        const dist = Math.hypot(dx, dy) || 1;
+        const ax = dx / dist, ay = dy / dist;
+        const v = (60 + ph * 22) * spd;
+
+        if (id === "bramble") {
+          const n = ph === 2 ? 12 : 8;
+          for (let i = 0; i < n; i++) {
+            const a = t * 1.4 + i / n * Math.PI * 2;
+            bullet(b.bx, b.by, Math.cos(a)*v, Math.sin(a)*v, boss.palette[1]);
+          }
+          if (ph === 2) bullet(b.bx, b.by, ax*v*1.4, ay*v*1.4, boss.palette[2]);
+
+        } else if (id === "brass") {
+          const sweep = 5 + ph;
+          for (let i = -Math.floor(sweep/2); i <= Math.floor(sweep/2); i++) {
+            bullet(b.bx + i*15, b.by, ax*v*0.4 + i*3, v, boss.palette[1]);
+          }
+          if (ph === 2 && Math.floor(t*2)%3===0) {
+            for (let i=0;i<4;i++) { const a=i*Math.PI/2; bullet(b.bx,b.by,Math.cos(a)*v,Math.sin(a)*v,boss.palette[2]); }
+          }
+
+        } else if (id === "silt") {
+          const drops = 3 + ph * 2;
+          for (let i=0;i<drops;i++) {
+            bullet(b.px+(i-Math.floor(drops/2))*22+(Math.random()-.5)*14, b.by-8, (Math.random()-.5)*18, v*0.85, boss.palette[1]);
+          }
+          if (ph===2 && Math.floor(t*1.5)%4===0)
+            for (let i=0;i<8;i++) { const a=i*Math.PI/4+t; bullet(b.bx,b.by,Math.cos(a)*v,Math.sin(a)*v,boss.palette[2]); }
+
+        } else if (id === "leviathan") {
+          const side = Math.sin(t) > 0 ? 1 : -1;
+          for (let gy=20; gy<=145; gy+=18)
+            bullet(side>0?8:232, gy, side*v, Math.sin(gy/12+t*2.8)*28, boss.palette[1]);
+          if (ph===2) for (let i=-1;i<=1;i++) {
+            const a = Math.atan2(ay,ax)+i*0.38;
+            bullet(b.bx,b.by,Math.cos(a)*v*1.3,Math.sin(a)*v*1.3,boss.palette[2]);
+          }
+
+        } else if (id === "anvil") {
+          const col = Math.round(b.px/22)*22;
+          [0,-26,26].forEach(off => bullet(col+off, 16, 0, v*(0.7+Math.abs(off)/80), boss.palette[1]));
+          if (ph===2) for (let fx=14;fx<=226;fx+=26) if (Math.abs(fx-col)>36)
+            bullet(fx, 16, 0, v*0.65, boss.palette[2]);
+
+        } else { // nullbell
+          const n = ph === 2 ? 7 : 5;
+          for (let i=0;i<n;i++) {
+            const a = t*2.8 + i/n*Math.PI*2;
+            bullet(b.bx,b.by,Math.cos(a)*v,Math.sin(a)*v,boss.palette[1]);
+          }
+          if (ph===2) for (let i=0;i<5;i++) {
+            const a = -t*2.2 + i/5*Math.PI*2;
+            bullet(b.bx,b.by,Math.cos(a)*v*0.75,Math.sin(a)*v*0.75,boss.palette[2]);
+          }
+        }
+      }
+
+      function bullet(x, y, vx, vy, color) {
+        if (game.bullets.length > 200) return;
+        game.bullets.push({ x, y, vx, vy, color, life: 5 });
+      }
+
+      function updateBullets(dt) {
+        const b = game.battle;
+        for (let i = game.bullets.length - 1; i >= 0; i--) {
+          const blt = game.bullets[i];
+          blt.x += blt.vx * dt; blt.y += blt.vy * dt; blt.life -= dt;
+          if (b.pInvince <= 0 && Math.hypot(blt.x-b.px, blt.y-b.py) < 6) {
+            dealPlayerDmg(b, 10 + b.phase * 4);
+            game.bullets.splice(i, 1);
+          } else if (blt.life <= 0 || blt.x < 2 || blt.x > 238 || blt.y < 12 || blt.y > 155) {
+            game.bullets.splice(i, 1);
+          }
+        }
+      }
+
+      function winBattle() {
+        const region = Campaign.regions[game.regionIndex];
+        game.notes = Math.max(game.notes, game.regionIndex + 1);
+        game.flags[`${region.id}Cleared`] = true;
+        if (game.regionIndex < Campaign.regions.length - 1) {
+          game.regionIndex += 1;
+          const next = Campaign.regions[game.regionIndex];
+          game.party.forEach((hero, index) => {
+            hero.x = (next.start[0] + index) * TILE;
+            hero.y = next.start[1] * TILE;
+            hero.hp = hero.maxHp;
+          });
+        }
+        game.mode = "overworld";
+        game.inBattle = false;
+        game.battle = null;
+        game.bullets = [];
+        saveGame();
+        queueDialogue(DialogueNode.victory);
+        Music.update("overworld");
+      }
+
+      function showGameOver() {
+        game.mode = "gameover";
+        ui.gameOverText.textContent = `${BossEncounter[game.battle?.bossId || "bramble"].name} broke the rhythm. Retry from the last bell gate.`;
+        ui.gameOverMenu.classList.remove("hidden");
+        Music.update("gameover");
+      }
+
+      function retry() {
+        const region = Campaign.regions[game.regionIndex];
+        game.party.forEach((hero, index) => {
+          hero.x = (region.start[0] + index) * TILE;
+          hero.y = region.start[1] * TILE;
+          hero.hp = hero.maxHp;
+        });
+        game.mode = "overworld";
+        game.inBattle = false;
+        game.battle = null;
+        game.bullets = [];
+        ui.gameOverMenu.classList.add("hidden");
+        Music.update("overworld");
+      }
+
+      function saveGame() {
+        const data = {
+          hero: game.hero,
+          regionIndex: game.regionIndex,
+          notes: game.notes,
+          flags: game.flags,
+          party: game.party.map(({ name, className, hp, maxHp, x, y, active, color }) => ({ name, className, hp, maxHp, x, y, active, color }))
+        };
+        localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+      }
+
+      function loadGame() {
+        const data = JSON.parse(localStorage.getItem(SAVE_KEY) || "null");
+        if (!data) {
+          queueDialogue([["Save Bell", "No saved road yet. Start a new Bellbound story first."]]);
+          return;
+        }
+        Object.assign(game.hero, data.hero);
+        game.regionIndex = data.regionIndex || 0;
+        game.notes = data.notes || 0;
+        game.flags = data.flags || {};
+        data.party.forEach((hero, index) => Object.assign(game.party[index], hero));
+        game.playMode = "single";
+        game.mode = "overworld";
+        ui.titleMenu.classList.add("hidden");
+        updateCamera();
+        updateHud();
+        Music.update("overworld");
+      }
+
+      function render() {
+        ctx.clearRect(0, 0, VIEW_W, VIEW_H);
+        if (game.mode === "battle") renderBattle();
+        else renderOverworld();
+      }
+
+      function renderOverworld() {
+        const camX = Math.floor(game.camera.x);
+        const camY = Math.floor(game.camera.y);
+        const startX = Math.floor(camX / TILE);
+        const startY = Math.floor(camY / TILE);
+        for (let y = startY; y <= startY + 11; y += 1) {
+          for (let x = startX; x <= startX + 16; x += 1) {
+            drawTile(getTile(x, y), x * TILE - camX, y * TILE - camY, (x + y) % 2, x, y);
+          }
+        }
+        renderWParts(camX, camY);
+        doors.forEach((door) => drawDoor(door, camX, camY));
+        npcs.forEach((npc) => drawNpc(npc, camX, camY));
+        Campaign.regions.forEach((region, index) => drawGate(region, index, camX, camY));
+        game.party.filter((hero) => hero.active).sort((a, b) => a.y - b.y).forEach((hero) => drawHero(hero, camX, camY));
+        drawOverworldPrompt();
+      }
+
+      function drawTile(tile, x, y, alt, tx = 0, ty = 0) {
+        const rng = (tx * 31 + ty * 17) % 100;
+        const wt = Math.floor(performance.now() / 220) % 4;
+
+        if (tile === "grass") {
+          ctx.fillStyle = alt ? "#74c462" : "#6cb85a";
+          ctx.fillRect(x, y, TILE, TILE);
+          // grass blades
+          ctx.fillStyle = alt ? "#5aad4a" : "#62a852";
+          ctx.fillRect(x + 2, y + 11, 1, 3);
+          ctx.fillRect(x + 5, y + 12, 1, 2);
+          ctx.fillRect(x + 10, y + 9, 1, 3);
+          ctx.fillRect(x + 13, y + 11, 1, 2);
+          // occasional flower
+          if (rng < 8) {
+            const fc = ["#ff8888","#ffee66","#ffffff","#ff99cc"][rng % 4];
+            ctx.fillStyle = fc;
+            ctx.fillRect(x + (rng % 4) * 3 + 1, y + 3 + (rng % 3), 2, 2);
+            ctx.fillStyle = "#ffff90";
+            ctx.fillRect(x + (rng % 4) * 3 + 2, y + 4 + (rng % 3), 1, 1);
+          }
+          // small pebble
+          if (rng > 88) {
+            ctx.fillStyle = "#a8a090";
+            ctx.fillRect(x + (rng % 10) + 2, y + 6, 2, 1);
+          }
+        } else if (tile === "path") {
+          ctx.fillStyle = alt ? "#d4b268" : "#c8a458";
+          ctx.fillRect(x, y, TILE, TILE);
+          // cobble dots
+          ctx.fillStyle = alt ? "#b89048" : "#aa8040";
+          ctx.fillRect(x + 1, y + 1, 5, 5);
+          ctx.fillRect(x + 8, y + 1, 5, 5);
+          ctx.fillRect(x + 1, y + 9, 5, 5);
+          ctx.fillRect(x + 8, y + 9, 5, 5);
+          ctx.fillStyle = alt ? "#e0c070" : "#d4b060";
+          ctx.fillRect(x + 2, y + 2, 3, 3);
+          ctx.fillRect(x + 9, y + 2, 3, 3);
+          ctx.fillRect(x + 2, y + 10, 3, 3);
+          ctx.fillRect(x + 9, y + 10, 3, 3);
+        } else if (tile === "plaza" || tile === "wall") {
+          ctx.fillStyle = tile === "wall" ? (alt ? "#a89468" : "#9e8860") : (alt ? "#baa870" : "#ae9c68");
+          ctx.fillRect(x, y, TILE, TILE);
+          // stone grid lines
+          ctx.fillStyle = "rgba(0,0,0,0.15)";
+          ctx.fillRect(x, y, 1, TILE);
+          ctx.fillRect(x, y, TILE, 1);
+          if (tile === "wall") {
+            ctx.fillStyle = "rgba(0,0,0,0.1)";
+            ctx.fillRect(x + 3, y + 3, TILE - 4, TILE - 4);
+          }
+        } else if (tile === "water") {
+          ctx.fillStyle = alt ? "#4090c8" : "#3880b8";
+          ctx.fillRect(x, y, TILE, TILE);
+          // deep center
+          ctx.fillStyle = "rgba(0,0,60,0.2)";
+          ctx.fillRect(x + 3, y + 3, 10, 10);
+          // animated wave highlights
+          ctx.fillStyle = "#78d0f8";
+          const wy = (wt % 2) * 2;
+          ctx.fillRect(x + 1, y + 3 + wy, 6, 1);
+          ctx.fillRect(x + 9, y + 9 + ((wt + 1) % 2) * 2, 5, 1);
+          ctx.fillStyle = "rgba(200,240,255,0.6)";
+          ctx.fillRect(x + 2, y + 3 + wy, 3, 1);
+        } else if (tile === "forest") {
+          ctx.fillStyle = "#1e5830";
+          ctx.fillRect(x, y, TILE, TILE);
+          // trunk
+          ctx.fillStyle = "#5a3820";
+          ctx.fillRect(x + 6, y + 9, 4, 7);
+          // canopy layers
+          ctx.fillStyle = "#2a7040";
+          ctx.fillRect(x + 3, y + 4, 10, 8);
+          ctx.fillStyle = "#38904e";
+          ctx.fillRect(x + 4, y + 2, 8, 7);
+          ctx.fillStyle = "#4aaa5e";
+          ctx.fillRect(x + 5, y + 1, 6, 5);
+          // highlight top
+          ctx.fillStyle = "#68cc78";
+          ctx.fillRect(x + 6, y + 1, 3, 2);
+        } else if (tile === "mountain") {
+          ctx.fillStyle = alt ? "#706a64" : "#605c58";
+          ctx.fillRect(x, y, TILE, TILE);
+          // rocky layers
+          ctx.fillStyle = alt ? "#807870" : "#706860";
+          ctx.fillRect(x + 1, y + 8, TILE - 2, 5);
+          // peak
+          ctx.fillStyle = alt ? "#908880" : "#807870";
+          ctx.fillRect(x + 4, y + 3, 8, 6);
+          ctx.fillRect(x + 6, y + 1, 4, 4);
+          // snow cap
+          ctx.fillStyle = "#e8e8e8";
+          ctx.fillRect(x + 6, y + 1, 4, 2);
+          ctx.fillRect(x + 7, y, 2, 2);
+          // crack
+          ctx.fillStyle = "rgba(0,0,0,0.2)";
+          ctx.fillRect(x + 8, y + 4, 1, 5);
+        } else if (tile === "gate") {
+          ctx.fillStyle = "#201830";
+          ctx.fillRect(x, y, TILE, TILE);
+          // pulsing glow
+          const pulse = (Math.sin(performance.now() / 400) + 1) / 2;
+          ctx.fillStyle = `rgba(140,90,220,${0.3 + pulse * 0.35})`;
+          ctx.fillRect(x, y, TILE, TILE);
+          // rune marks
+          ctx.fillStyle = `rgba(200,160,255,${0.6 + pulse * 0.4})`;
+          ctx.fillRect(x + 6, y + 2, 4, 1);
+          ctx.fillRect(x + 7, y + 3, 2, 4);
+          ctx.fillRect(x + 5, y + 6, 6, 1);
+        } else if (tile === "door") {
+          ctx.fillStyle = "#4a3020";
+          ctx.fillRect(x, y, TILE, TILE);
+          // doorstep
+          ctx.fillStyle = "#6a5030";
+          ctx.fillRect(x + 1, y + 12, TILE - 2, 4);
+        } else {
+          ctx.fillStyle = alt ? "#74c462" : "#6cb85a";
+          ctx.fillRect(x, y, TILE, TILE);
+        }
+      }
+
+      function drawDoor(door, camX, camY) {
+        const x = door.x * TILE - camX;
+        const y = door.y * TILE - camY;
+        drawBuilding(x - 12, y - 22, door.interior);
+      }
+
+      function drawBuilding(x, y, type) {
+        const palettes = {
+          inn:     { roof: "#c85c3a", wall: "#f0d898", sign: "#e8a040", smoke: true  },
+          shop:    { roof: "#3870b8", wall: "#f0e8b0", sign: "#58cc70", smoke: false },
+          guild:   { roof: "#5848a0", wall: "#e0d8f8", sign: "#9878e8", smoke: false },
+          forge:   { roof: "#8a3820", wall: "#e8c870", sign: "#e07820", smoke: true  },
+          archive: { roof: "#3858a0", wall: "#d0e4f8", sign: "#6898e0", smoke: false },
+          port:    { roof: "#2a8890", wall: "#d0f0f0", sign: "#40b8b0", smoke: false },
+          bastion: { roof: "#6a5438", wall: "#e8d8b0", sign: "#9a7840", smoke: false },
+          citadel: { roof: "#6840a0", wall: "#f0e8ff", sign: "#b088f8", smoke: false }
+        };
+        const p = palettes[type] || palettes.inn;
+        const t = performance.now();
+
+        // Shadow
+        ctx.fillStyle = "rgba(0,0,0,0.18)";
+        ctx.fillRect(x + 4, y + 34, 28, 4);
+
+        // Wall body
+        ctx.fillStyle = p.wall;
+        ctx.fillRect(x + 4, y + 14, 24, 22);
+        // Wall shading (right edge darker)
+        ctx.fillStyle = "rgba(0,0,0,0.1)";
+        ctx.fillRect(x + 24, y + 14, 4, 22);
+
+        // Roof
+        ctx.fillStyle = p.roof;
+        ctx.fillRect(x, y + 6, 32, 12);
+        ctx.fillRect(x + 5, y, 22, 8);
+        // Roof highlight
+        ctx.fillStyle = "rgba(255,255,255,0.2)";
+        ctx.fillRect(x + 5, y, 22, 2);
+        // Roof eaves
+        ctx.fillStyle = "rgba(0,0,0,0.25)";
+        ctx.fillRect(x, y + 16, 32, 2);
+
+        // Chimney
+        ctx.fillStyle = "#4a3828";
+        ctx.fillRect(x + 22, y - 4, 5, 12);
+        ctx.fillStyle = "#3a2820";
+        ctx.fillRect(x + 22, y - 4, 5, 2);
+        // Chimney smoke
+        if (p.smoke) {
+          const sOff = Math.floor(t / 180) % 3;
+          ctx.fillStyle = "rgba(200,190,180,0.55)";
+          ctx.fillRect(x + 23, y - 6 - sOff, 2, 2);
+          ctx.fillStyle = "rgba(200,190,180,0.35)";
+          ctx.fillRect(x + 22, y - 10 - sOff, 3, 3);
+          ctx.fillStyle = "rgba(200,190,180,0.18)";
+          ctx.fillRect(x + 21, y - 14 - sOff, 4, 4);
+        }
+
+        // Windows
+        ctx.fillStyle = "#283040";
+        ctx.fillRect(x + 5, y + 19, 7, 7);
+        ctx.fillRect(x + 20, y + 19, 7, 7);
+        // Window light glow
+        const lit = Math.sin(t / 900 + x) > -0.3;
+        ctx.fillStyle = lit ? "#ffe89a" : "#c8c060";
+        ctx.fillRect(x + 6, y + 20, 3, 3);
+        ctx.fillRect(x + 21, y + 20, 3, 3);
+        ctx.fillStyle = lit ? "#fff0b0" : "#d8d070";
+        ctx.fillRect(x + 7, y + 20, 2, 2);
+        ctx.fillRect(x + 22, y + 20, 2, 2);
+        // Window pane divider
+        ctx.fillStyle = "#283040";
+        ctx.fillRect(x + 5, y + 22, 7, 1);
+        ctx.fillRect(x + 8, y + 19, 1, 7);
+        ctx.fillRect(x + 20, y + 22, 7, 1);
+        ctx.fillRect(x + 23, y + 19, 1, 7);
+
+        // Door
+        ctx.fillStyle = "#2a1c10";
+        ctx.fillRect(x + 13, y + 24, 6, 12);
+        ctx.fillStyle = "#4a3020";
+        ctx.fillRect(x + 14, y + 25, 4, 10);
+        // Door handle
+        ctx.fillStyle = p.sign;
+        ctx.fillRect(x + 17, y + 30, 1, 1);
+
+        // Hanging sign
+        ctx.fillStyle = "#5a3818";
+        ctx.fillRect(x + 12, y + 13, 1, 4);
+        ctx.fillRect(x + 19, y + 13, 1, 4);
+        ctx.fillStyle = p.sign;
+        ctx.fillRect(x + 11, y + 16, 10, 5);
+        ctx.fillStyle = "rgba(0,0,0,0.3)";
+        ctx.fillRect(x + 11, y + 20, 10, 1);
+      }
+
+      function drawNpc(npc, camX, camY) {
+        const bob = Math.sin(performance.now() / 600 + npc.x) * 1.2;
+        const color = npc.kind === "guide" ? "#d85878" : "#3c75d8";
+        drawPerson(npc.x * TILE - camX, npc.y * TILE - camY + bob, color, "down", 0, "idle");
+        // Speech bubble dot when near hero
+        const hero = focusHero();
+        const tx = Math.floor(hero.x / TILE), ty = Math.floor(hero.y / TILE);
+        if (Math.abs(npc.x - tx) <= 2 && Math.abs(npc.y - ty) <= 2) {
+          const nx = npc.x * TILE - camX, ny = npc.y * TILE - camY + bob - 18;
+          ctx.fillStyle = "#f0f0e0";
+          ctx.fillRect(nx - 5, ny - 6, 10, 8);
+          ctx.fillStyle = "#181818";
+          ctx.fillRect(nx - 4, ny - 5, 8, 6);
+          ctx.fillStyle = color;
+          const dotT = Math.floor(performance.now() / 300) % 3;
+          for (let i = 0; i < 3; i++) {
+            ctx.fillStyle = i <= dotT ? "#f0f0e0" : "#606060";
+            ctx.fillRect(nx - 3 + i * 3, ny - 3, 2, 2);
+          }
+        }
+      }
+
+      function drawGate(region, index, camX, camY) {
+        if (index < game.regionIndex) return;
+        const x = region.bossGate[0] * TILE - camX;
+        const y = region.bossGate[1] * TILE - camY;
+        const t = performance.now();
+        const pulse = (Math.sin(t / 500) + 1) / 2;
+
+        // Gate pillars
+        ctx.fillStyle = "#1e1830";
+        ctx.fillRect(x - 14, y - 18, 8, 34);
+        ctx.fillRect(x + 6, y - 18, 8, 34);
+        // Pillar highlight
+        ctx.fillStyle = "rgba(255,255,255,0.08)";
+        ctx.fillRect(x - 14, y - 18, 2, 34);
+        ctx.fillRect(x + 6, y - 18, 2, 34);
+
+        // Gate archway
+        ctx.fillStyle = `rgba(${hexToRgb(region.color)},${0.25 + pulse * 0.2})`;
+        ctx.fillRect(x - 6, y - 18, 12, 30);
+
+        // Gate face (boss symbol)
+        ctx.fillStyle = region.color;
+        ctx.fillRect(x - 4, y - 12, 8, 10);
+        ctx.fillStyle = "#fff0a8";
+        ctx.fillRect(x - 1, y - 20, 3, 5);
+        // Glowing rune
+        ctx.fillStyle = `rgba(255,240,168,${0.5 + pulse * 0.5})`;
+        ctx.fillRect(x - 3, y - 8, 6, 1);
+        ctx.fillRect(x - 1, y - 10, 2, 5);
+
+        // Floating sparkles
+        for (let i = 0; i < 3; i++) {
+          const sa = t / 900 + i * 2.1;
+          const sx = x + Math.cos(sa) * 10;
+          const sy = y - 5 + Math.sin(sa * 1.3) * 8;
+          ctx.fillStyle = `rgba(255,240,168,${0.4 + pulse * 0.6})`;
+          ctx.fillRect(Math.round(sx), Math.round(sy), 2, 2);
+        }
+      }
+
+      function hexToRgb(hex) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `${r},${g},${b}`;
+      }
+
+      function drawHero(hero, camX, camY) {
+        drawPerson(hero.x - camX, hero.y - camY, hero.color, hero.dir, hero.anim, hero.state, hero.className);
+      }
+
+      function drawPerson(x, y, color, dir = "down", anim = 0, state = "idle", className = "") {
+        const rx = Math.round(x), ry = Math.round(y);
+        const moving  = state === "walk" || state === "dash";
+        const running = state === "dash";
+
+        // Clean 2-frame walk cycle: whole leg+boot units move together,
+        // so the boot never floats inside the leg rect.
+        // stepA = 0 or 1, alternates once per anim unit.
+        const stepA = moving ? Math.floor(anim) % 2 : 0;
+        // step magnitude: 1px walk, 2px sprint
+        const mag = running ? 2 : 1;
+
+        // Left leg unit Y base  (stepA=0 → left foot down, stepA=1 → right foot down)
+        const lLegY = ry + 2 + (stepA === 0 ?  mag : -mag);
+        const rLegY = ry + 2 + (stepA === 1 ?  mag : -mag);
+        // Arms swing opposite to legs
+        const lArmY = ry - 5 + (stepA === 0 ? -mag : mag);
+        const rArmY = ry - 5 + (stepA === 1 ? -mag : mag);
+
+        // Lean body forward only when sprinting
+        const lx = running ? (dir === "right" ? 1 : dir === "left" ? -1 : 0) : 0;
+
+        // Shadow
+        ctx.fillStyle = "rgba(0,0,0,0.22)";
+        ctx.fillRect(rx - 5, ry + 8, 10, 3);
+
+        // ── Legs + boots drawn as one unit each ──────────
+        ctx.fillStyle = "#282038";
+        ctx.fillRect(rx - 4, lLegY, 3, 6);  // left leg
+        ctx.fillRect(rx + 1, rLegY, 3, 6);  // right leg
+        const bootColor = className === "Minstrel" ? "#804020" : "#302838";
+        ctx.fillStyle = bootColor;
+        ctx.fillRect(rx - 5, lLegY + 6, 4, 3);  // left boot — always below its leg
+        ctx.fillRect(rx + 1, rLegY + 6, 4, 3);  // right boot
+
+        // Belt
+        ctx.fillStyle = "#4a3820";
+        ctx.fillRect(rx - 4 + lx, ry + 1, 8, 2);
+
+        // Body / tunic
+        ctx.fillStyle = color;
+        ctx.fillRect(rx - 4 + lx, ry - 7, 8, 9);
+        ctx.fillStyle = "rgba(255,255,255,0.18)";
+        ctx.fillRect(rx - 3 + lx, ry - 7, 3, 4);
+
+        // Arms
+        ctx.fillStyle = color;
+        if (dir !== "up") {
+          ctx.fillRect(rx - 6 + lx, lArmY, 2, 6);
+          ctx.fillRect(rx + 4 + lx, rArmY, 2, 6);
+        } else {
+          ctx.fillRect(rx - 6, ry - 5, 2, 6);
+          ctx.fillRect(rx + 4, ry - 5, 2, 6);
+        }
+
+        // ── Class accessories ────────────────────────────
+        if (className === "Vanguard") {
+          // Sword on hip — fixed, doesn't animate
+          ctx.fillStyle = "#c0c8d0";
+          ctx.fillRect(rx + 5, ry - 2, 1, 7);
+          ctx.fillStyle = "#8090a0";
+          ctx.fillRect(rx + 4, ry - 1, 3, 1);
+
+        } else if (className === "Arcanist") {
+          // Staff held in left hand — tracks lArmY so orb never separates
+          const staffHandY = lArmY;            // where hand is
+          const staffTopY  = staffHandY - 10;  // orb sits here
+          ctx.fillStyle = "#7050c0";
+          ctx.fillRect(rx - 8 + lx, staffHandY, 2, 10);  // staff body
+          ctx.fillStyle = "#c090ff";
+          ctx.fillRect(rx - 9 + lx, staffTopY - 3, 4, 4); // orb at top of staff
+          if (Math.floor(performance.now() / 350) % 2) {
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(rx - 8 + lx, staffTopY - 2, 1, 1);
+          }
+
+        } else if (className === "Minstrel") {
+          // Lute on back — fixed
+          ctx.fillStyle = "#a06030";
+          ctx.fillRect(rx - 7, ry - 6, 3, 6);
+          ctx.fillStyle = "#c07838";
+          ctx.fillRect(rx - 8, ry - 4, 5, 5);
+          ctx.fillStyle = "#201810";
+          ctx.fillRect(rx - 7, ry - 3, 1, 3);
+        }
+
+        // ── Head ─────────────────────────────────────────
+        ctx.fillStyle = "#f0c890";
+        ctx.fillRect(rx - 3 + lx, ry - 13, 6, 7);
+        ctx.fillStyle = "rgba(255,255,255,0.2)";
+        ctx.fillRect(rx - 2 + lx, ry - 13, 2, 2);
+
+        // Hair
+        const hairColor = className === "Arcanist" ? "#c06050" : className === "Minstrel" ? "#504820" : "#3a2818";
+        ctx.fillStyle = hairColor;
+        ctx.fillRect(rx - 3 + lx, ry - 13, 6, 2);
+        ctx.fillRect(rx - 3 + lx, ry - 13, 1, 5);
+        if (dir === "up") ctx.fillRect(rx + 2 + lx, ry - 13, 1, 5);
+
+        // Face
+        if (dir !== "up") {
+          ctx.fillStyle = "#201820";
+          ctx.fillRect(rx - 1 + lx, ry - 10, 1, 1);
+          ctx.fillRect(rx + 1 + lx, ry - 10, 1, 1);
+          if (state === "idle") ctx.fillRect(rx + lx, ry - 8, 2, 1);
+        }
+      }
+
+      function drawOverworldPrompt() {
+        if (game.mode !== "overworld") {
+          ui.interactPrompt.classList.add("hidden");
+          return;
+        }
+        const hero = focusHero();
+        const tx = Math.floor(hero.x / TILE);
+        const ty = Math.floor(hero.y / TILE);
+        const nearDoor = doors.some((d) => Math.abs(d.x - tx) <= 1 && Math.abs(d.y - ty) <= 1);
+        const nearNpc  = npcs.some((n)  => Math.abs(n.x - tx) <= 1 && Math.abs(n.y - ty) <= 1);
+        const region   = Campaign.regions[game.regionIndex];
+        const nearGate = Math.abs(region.bossGate[0] - tx) <= 2 && Math.abs(region.bossGate[1] - ty) <= 2;
+        const show = nearDoor || nearNpc || nearGate;
+        ui.interactPrompt.classList.toggle("hidden", !show);
+        if (show) {
+          ui.interactText.textContent = nearGate ? "Challenge Boss" : nearNpc ? "Talk" : "Enter";
+        }
+      }
+
+      function renderBattle() {
+        const b = game.battle;
+        const boss = BossEncounter[b.bossId];
+        const hero = game.party[0];
+        const t = performance.now() / 1000;
+
+        const sx = shakeAmt > 0.3 ? Math.round((Math.random() - 0.5) * shakeAmt * 2) : 0;
+        const sy = shakeAmt > 0.3 ? Math.round((Math.random() - 0.5) * shakeAmt * 2) : 0;
+        ctx.save();
+        ctx.translate(sx, sy);
+
+        // ── Full-screen arena background ──────────────────
+        ctx.fillStyle = boss.palette[0];
+        ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+
+        // Floor tile grid
+        ctx.fillStyle = "rgba(0,0,0,0.1)";
+        for (let gx = 0; gx < VIEW_W; gx += 16) ctx.fillRect(gx, 0, 1, VIEW_H);
+        for (let gy = 0; gy < VIEW_H; gy += 16) ctx.fillRect(0, gy, VIEW_W, 1);
+
+        // Floor shadow (player depth cue)
+        ctx.fillStyle = "rgba(0,0,0,0.12)";
+        ctx.fillRect(0, VIEW_H - 14, VIEW_W, 14);
+
+        // Arena wall borders
+        ctx.fillStyle = boss.palette[1];
+        ctx.fillRect(0, 0, VIEW_W, 2);
+        ctx.fillRect(0, VIEW_H - 2, VIEW_W, 2);
+        ctx.fillRect(0, 0, 2, VIEW_H);
+        ctx.fillRect(VIEW_W - 2, 0, 2, VIEW_H);
+
+        // ── Boss ─────────────────────────────────────────
+        // Boss shadow
+        ctx.fillStyle = "rgba(0,0,0,0.25)";
+        ctx.fillRect(Math.round(b.bx) - 20, Math.round(b.by) + 18, 40, 6);
+
+        drawBossSprite(Math.round(b.bx), Math.round(b.by), boss, b);
+
+        if (bossFlash > 0) {
+          ctx.fillStyle = `rgba(255,255,255,${bossFlash * 0.65})`;
+          ctx.fillRect(Math.round(b.bx) - 26, Math.round(b.by) - 32, 52, 58);
+        }
+
+        // Dash telegraph: boss vibrates before dash
+        if (b.bState === "dash" && !b.bDashing) {
+          ctx.strokeStyle = boss.palette[1];
+          ctx.lineWidth = 1;
+          ctx.globalAlpha = 0.5;
+          ctx.strokeRect(Math.round(b.bx) - 22, Math.round(b.by) - 22, 44, 44);
+          ctx.globalAlpha = 1;
+        }
+
+        // ── Player projectiles ────────────────────────────
+        b.pProjectiles.forEach(p => {
+          ctx.fillStyle = "rgba(200,160,255,0.22)";
+          ctx.fillRect(Math.round(p.x) - 4, Math.round(p.y) - 4, 8, 8);
+          ctx.fillStyle = hero.className === "Arcanist" ? "#c090ff" : "#60d8ff";
+          ctx.fillRect(Math.round(p.x) - 2, Math.round(p.y) - 2, 4, 4);
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(Math.round(p.x) - 1, Math.round(p.y) - 1, 2, 2);
+        });
+
+        // ── Boss bullets ──────────────────────────────────
+        game.bullets.forEach(blt => {
+          ctx.fillStyle = "rgba(255,255,200,0.14)";
+          ctx.fillRect(Math.round(blt.x) - 5, Math.round(blt.y) - 5, 10, 10);
+          ctx.fillStyle = blt.color;
+          ctx.fillRect(Math.round(blt.x) - 2, Math.round(blt.y) - 2, 5, 5);
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(Math.round(blt.x) - 1, Math.round(blt.y) - 1, 2, 2);
+        });
+
+        // ── Player character ──────────────────────────────
+        const rx = Math.round(b.px), ry = Math.round(b.py);
+        const dodging = b.pDodge > 0;
+
+        if (b.pFlash > 0) {
+          // Damage flash (white outline)
+          ctx.globalAlpha = b.pFlash * 0.9;
+          ctx.fillStyle = "#ff8080";
+          ctx.fillRect(rx - 7, ry - 16, 14, 26);
+          ctx.globalAlpha = 1;
+        }
+
+        // Invincibility blink (during iframes)
+        const showPlayer = b.pInvince <= 0 || Math.floor(t * 14) % 2 === 0;
+        if (showPlayer) {
+          ctx.globalAlpha = dodging ? 0.5 : 1;
+          drawPerson(rx, ry, hero.color,
+            b.px > b.bx ? "right" : "left",
+            b.timer * (dodging ? 14 : 7),
+            dodging ? "dash" : (b.pAtkCd > 0.2 ? "walk" : "idle"),
+            hero.className);
+          ctx.globalAlpha = 1;
+
+          // Dodge afterimage trail
+          if (dodging) {
+            ctx.globalAlpha = 0.22;
+            drawPerson(rx - Math.round(b.pDodgeVx * 8), ry - Math.round(b.pDodgeVy * 8),
+              hero.color, "down", b.timer * 7, "dash", hero.className);
+            ctx.globalAlpha = 1;
+          }
+        }
+
+        // Dodge cooldown bar under player
+        if (b.pDodgeCd > 0) {
+          const fill = 1 - (b.pDodgeCd / 1.4);
+          ctx.fillStyle = "#303040";
+          ctx.fillRect(rx - 8, ry + 11, 16, 2);
+          ctx.fillStyle = fill > 0.9 ? "#60d8ff" : "#4060c8";
+          ctx.fillRect(rx - 8, ry + 11, Math.round(16 * fill), 2);
+        }
+
+        // Attack range indicator (brief flash after attack)
+        if (b.pAtkCd > 0 && hero.className !== "Arcanist") {
+          const range = hero.className === "Minstrel" ? 50 : 34;
+          ctx.globalAlpha = b.pAtkCd * 0.35;
+          ctx.fillStyle = hero.className === "Minstrel" ? "#60d8ff" : "#ffe0a0";
+          ctx.fillRect(rx - range/2, ry - range/3, range, range/1.5);
+          ctx.globalAlpha = 1;
+        }
+
+        // ── Boss HP bar (top strip) ───────────────────────
+        ctx.fillStyle = "rgba(0,0,0,0.65)";
+        ctx.fillRect(0, 0, VIEW_W, 14);
+        ctx.fillStyle = "#f0f0e0";
+        ctx.font = "bold 7px 'Trebuchet MS'";
+        ctx.fillText(boss.name, 5, 9);
+        // HP bar
+        const hpX = VIEW_W / 2 - 56;
+        ctx.fillStyle = "#181818";
+        ctx.fillRect(hpX, 3, 114, 8);
+        ctx.fillStyle = "#201818";
+        ctx.fillRect(hpX + 1, 4, 112, 6);
+        const hpFrac = Math.max(0, b.hp / b.maxHp);
+        ctx.fillStyle = hpFrac > 0.5 ? "#40c840" : hpFrac > 0.25 ? "#e8c028" : "#e03020";
+        ctx.fillRect(hpX + 1, 4, Math.round(112 * hpFrac), 6);
+        ctx.fillStyle = "rgba(255,255,255,0.25)";
+        ctx.fillRect(hpX + 1, 4, Math.round(112 * hpFrac), 2);
+        if (b.phase === 2) {
+          ctx.fillStyle = "#ff6040";
+          ctx.font = "bold 6px 'Trebuchet MS'";
+          ctx.fillText("!! ENRAGED !!", VIEW_W - 60, 9);
+        }
+
+        // ── Screen particles & damage numbers ────────────
+        renderSParts();
+        renderDmgNums();
+
+        // ── Controls reminder ─────────────────────────────
+        ctx.fillStyle = "rgba(240,240,224,0.45)";
+        ctx.font = "5px 'Trebuchet MS'";
+        ctx.fillText("WASD: move   Space: attack   Shift: dodge roll", 5, VIEW_H - 3);
+
+        ctx.restore();
+      }
+
+      function drawBossSprite(x, y, boss, battle) {
+        const t = performance.now() / 1000;
+        const bob = Math.round(Math.sin(t * 2.2) * 2.5);
+        const [c0, c1, c2] = boss.palette;
+        const id = battle.bossId;
+
+        if (id === "bramble") {
+          // Bramble Crown: thorny circular creature
+          // Body
+          ctx.fillStyle = c1;
+          ctx.fillRect(x - 14, y - 14 + bob, 28, 24);
+          ctx.fillStyle = c2;
+          ctx.fillRect(x - 10, y - 18 + bob, 20, 30);
+          // Thorn spikes radiating outward
+          ctx.fillStyle = c0;
+          const spikes = [[0,-22],[12,-18],[20,-8],[20,8],[12,18],[0,22],[-12,18],[-20,8],[-20,-8],[-12,-18]];
+          spikes.forEach(([dx, dy]) => ctx.fillRect(x + dx - 1, y + dy + bob - 1, 3, 3));
+          // Crown thorns (top)
+          ctx.fillStyle = c0;
+          ctx.fillRect(x - 8, y - 24 + bob, 3, 8);
+          ctx.fillRect(x - 2, y - 26 + bob, 4, 10);
+          ctx.fillRect(x + 5, y - 24 + bob, 3, 8);
+          // Eyes
+          ctx.fillStyle = "#ff4040";
+          ctx.fillRect(x - 6, y - 6 + bob, 4, 4);
+          ctx.fillRect(x + 2, y - 6 + bob, 4, 4);
+          ctx.fillStyle = "#ff9090";
+          ctx.fillRect(x - 5, y - 5 + bob, 2, 2);
+          ctx.fillRect(x + 3, y - 5 + bob, 2, 2);
+          // Mouth
+          ctx.fillStyle = c0;
+          ctx.fillRect(x - 6, y + 4 + bob, 12, 3);
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(x - 5, y + 4 + bob, 2, 2);
+          ctx.fillRect(x + 3, y + 4 + bob, 2, 2);
+
+        } else if (id === "brass") {
+          // Brass Maw: industrial mechanical jaw
+          ctx.fillStyle = c1;
+          ctx.fillRect(x - 20, y - 16 + bob, 40, 28);
+          // Gear plates on sides
+          ctx.fillStyle = c0;
+          ctx.fillRect(x - 24, y - 10 + bob, 6, 16);
+          ctx.fillRect(x + 18, y - 10 + bob, 6, 16);
+          // Gear teeth
+          for (let i = -8; i <= 8; i += 4) {
+            ctx.fillRect(x - 26, y + i + bob, 3, 2);
+            ctx.fillRect(x + 23, y + i + bob, 3, 2);
+          }
+          // Jaw (animated open/close)
+          const jawGap = Math.abs(Math.sin(t * 3)) * 8 + 2;
+          ctx.fillStyle = c0;
+          ctx.fillRect(x - 18, y + 4 + bob, 36, 8 + jawGap);
+          ctx.fillStyle = "#801800";
+          ctx.fillRect(x - 14, y + 6 + bob, 28, 6 + jawGap);
+          // Furnace eyes
+          ctx.fillStyle = "#ff8800";
+          ctx.fillRect(x - 12, y - 10 + bob, 8, 8);
+          ctx.fillRect(x + 4, y - 10 + bob, 8, 8);
+          ctx.fillStyle = "#ffcc00";
+          ctx.fillRect(x - 10, y - 8 + bob, 4, 4);
+          ctx.fillRect(x + 6, y - 8 + bob, 4, 4);
+          // Rivets
+          ctx.fillStyle = c2;
+          [[-14,-14],[0,-14],[14,-14],[-14,0],[14,0]].forEach(([dx,dy]) => ctx.fillRect(x+dx, y+dy+bob, 2, 2));
+
+        } else if (id === "silt") {
+          // Silt Oracle: hooded floating figure
+          // Robe/cloak
+          ctx.fillStyle = c0;
+          ctx.fillRect(x - 16, y - 4 + bob, 32, 24);
+          ctx.fillStyle = c1;
+          ctx.fillRect(x - 12, y - 16 + bob, 24, 22);
+          // Hood
+          ctx.fillStyle = c0;
+          ctx.fillRect(x - 10, y - 22 + bob, 20, 10);
+          ctx.fillRect(x - 8, y - 28 + bob, 16, 10);
+          // Single glowing eye
+          const eyePulse = (Math.sin(t * 3) + 1) / 2;
+          ctx.fillStyle = `rgba(100,160,255,${0.7 + eyePulse * 0.3})`;
+          ctx.fillRect(x - 4, y - 16 + bob, 8, 6);
+          ctx.fillStyle = "#d0e8ff";
+          ctx.fillRect(x - 2, y - 15 + bob, 4, 4);
+          // Tentacle drips
+          ctx.fillStyle = c1;
+          const drip = Math.floor(t * 2) % 3;
+          ctx.fillRect(x - 14, y + 16 + drip, 3, 6 - drip);
+          ctx.fillRect(x - 4, y + 18 + ((drip + 1) % 3), 3, 5);
+          ctx.fillRect(x + 8, y + 16 + ((drip + 2) % 3), 3, 7);
+          // Water silt particles around
+          for (let i = 0; i < 4; i++) {
+            const sa = t + i * 1.57;
+            ctx.fillStyle = c1;
+            ctx.fillRect(Math.round(x + Math.cos(sa) * 22), Math.round(y + bob + Math.sin(sa) * 14), 2, 2);
+          }
+
+        } else if (id === "leviathan") {
+          // Harbor Leviathan: serpent head
+          // Neck/body
+          ctx.fillStyle = c0;
+          ctx.fillRect(x - 8, y + 6 + bob, 16, 22);
+          // Head
+          ctx.fillStyle = c1;
+          ctx.fillRect(x - 20, y - 14 + bob, 40, 24);
+          // Snout
+          ctx.fillStyle = c0;
+          ctx.fillRect(x + 12, y - 8 + bob, 14, 12);
+          // Jaw
+          const jaw2 = Math.abs(Math.sin(t * 1.8)) * 6;
+          ctx.fillStyle = c0;
+          ctx.fillRect(x - 20, y + 8 + bob, 40, 4 + jaw2);
+          ctx.fillStyle = "#601818";
+          ctx.fillRect(x - 18, y + 10 + bob, 36, 2 + jaw2);
+          // Teeth
+          ctx.fillStyle = "#f0f0e0";
+          for (let i = -14; i <= 14; i += 6) ctx.fillRect(x + i, y + 8 + bob, 3, 4);
+          // Eyes
+          ctx.fillStyle = "#40e8e0";
+          ctx.fillRect(x - 14, y - 8 + bob, 8, 8);
+          ctx.fillRect(x + 6, y - 8 + bob, 8, 8);
+          ctx.fillStyle = "#000000";
+          ctx.fillRect(x - 12, y - 6 + bob, 4, 4);
+          ctx.fillRect(x + 8, y - 6 + bob, 4, 4);
+          // Frills
+          ctx.fillStyle = c2;
+          ctx.fillRect(x - 26, y - 10 + bob, 8, 16);
+          ctx.fillRect(x - 30, y - 6 + bob, 6, 10);
+          ctx.fillStyle = c1;
+          ctx.fillRect(x - 28, y - 8 + bob, 4, 12);
+          // Scales pattern
+          ctx.fillStyle = "rgba(0,0,0,0.2)";
+          for (let si = -16; si <= 16; si += 8) ctx.fillRect(x + si, y - 12 + bob, 6, 3);
+
+        } else if (id === "anvil") {
+          // Moon-Anvil Titan: block body with hammer arms
+          // Main body block
+          ctx.fillStyle = c1;
+          ctx.fillRect(x - 22, y - 18 + bob, 44, 36);
+          // Plate details
+          ctx.fillStyle = c0;
+          ctx.fillRect(x - 22, y - 18 + bob, 44, 6);
+          ctx.fillRect(x - 22, y + 12 + bob, 44, 6);
+          // Moon symbol on chest
+          ctx.fillStyle = c2;
+          ctx.fillRect(x - 6, y - 10 + bob, 12, 12);
+          ctx.fillStyle = c0;
+          ctx.fillRect(x - 2, y - 8 + bob, 8, 8);
+          ctx.fillStyle = c2;
+          ctx.fillRect(x - 4, y - 8 + bob, 4, 8);
+          // Hammer fists
+          const hammerSwing = Math.sin(t * 1.5) * 4;
+          ctx.fillStyle = c0;
+          ctx.fillRect(x - 36, y - 10 + bob + hammerSwing, 16, 20);
+          ctx.fillRect(x + 20, y - 10 + bob - hammerSwing, 16, 20);
+          ctx.fillStyle = c1;
+          ctx.fillRect(x - 38, y - 6 + bob + hammerSwing, 20, 12);
+          ctx.fillRect(x + 18, y - 6 + bob - hammerSwing, 20, 12);
+          // Eyes (narrow slits)
+          ctx.fillStyle = "#ff8800";
+          ctx.fillRect(x - 12, y - 6 + bob, 8, 3);
+          ctx.fillRect(x + 4, y - 6 + bob, 8, 3);
+          // Rivets
+          ctx.fillStyle = c2;
+          [[-18,-14],[0,-14],[18,-14],[-18,0],[18,0],[-18,14],[18,14]].forEach(([dx,dy]) => ctx.fillRect(x+dx-1, y+dy+bob-1, 3, 3));
+
+        } else {
+          // Null Bell: floating bell shape with void center
+          const voidPulse = (Math.sin(t * 2.5) + 1) / 2;
+          // Bell outer shell
+          ctx.fillStyle = c1;
+          ctx.fillRect(x - 22, y - 6 + bob, 44, 26);
+          ctx.fillRect(x - 16, y - 20 + bob, 32, 18);
+          ctx.fillRect(x - 8, y - 28 + bob, 16, 12);
+          // Bell top handle
+          ctx.fillStyle = c0;
+          ctx.fillRect(x - 4, y - 34 + bob, 8, 10);
+          ctx.fillRect(x - 2, y - 36 + bob, 4, 6);
+          // Void interior
+          ctx.fillStyle = `rgba(20,10,40,${0.85 + voidPulse * 0.15})`;
+          ctx.fillRect(x - 14, y - 4 + bob, 28, 18);
+          ctx.fillRect(x - 8, y - 16 + bob, 16, 14);
+          // Void swirl
+          ctx.fillStyle = `rgba(${hexToRgb(c1)},${0.3 + voidPulse * 0.4})`;
+          for (let i = 0; i < 5; i++) {
+            const sa = t * 1.8 + i * 1.26;
+            ctx.fillRect(Math.round(x + Math.cos(sa) * 8), Math.round(y + 4 + bob + Math.sin(sa) * 6), 3, 3);
+          }
+          // Cracks
+          ctx.fillStyle = c2;
+          ctx.fillRect(x - 10, y - 18 + bob, 1, 12);
+          ctx.fillRect(x + 6, y - 16 + bob, 1, 10);
+          ctx.fillRect(x - 2, y - 6 + bob, 1, 16);
+          // Glowing rim
+          ctx.fillStyle = `rgba(${hexToRgb(c2)},${0.6 + voidPulse * 0.4})`;
+          ctx.fillRect(x - 22, y - 6 + bob, 44, 2);
+          ctx.fillRect(x - 22, y + 18 + bob, 44, 2);
+          ctx.fillRect(x - 22, y - 6 + bob, 2, 26);
+          ctx.fillRect(x + 20, y - 6 + bob, 2, 26);
+        }
+      }
+
+      function updateHud() {
+        const hero = focusHero();
+        const region = Campaign.regions[game.regionIndex];
+        ui.hud.classList.toggle("in-battle", game.mode === "battle");
+        if (game.mode !== "overworld") ui.interactPrompt.classList.add("hidden");
+        ui.heroLabel.textContent = `${hero.name} ${hero.className}`;
+        ui.hpLabel.textContent = `${Math.ceil(hero.hp)}%`;
+        const hpPct = hero.hp / hero.maxHp;
+        ui.hpBar.style.width = `${Math.max(0, hpPct * 100)}%`;
+        ui.hpBar.style.background = hpPct > 0.5 ? "#40c840" : hpPct > 0.25 ? "#e8c028" : "#e03020";
+        ui.partyLabel.textContent = game.playMode === "local" ? "Local co-op" : game.playMode === "online" ? `Online P${game.onlinePlayer + 1}` : "Single player";
+        ui.modeLabel.textContent = game.mode === "battle" ? "Boss battle!" : region.place;
+        ui.chapterLabel.textContent = region.title;
+        ui.noteLabel.textContent = `${game.notes}/6`;
+        ui.questLabel.textContent = game.quest.text || region.objective;
+        if (game.mode === "battle" && game.battle) {
+          const boss = BossEncounter[game.battle.bossId];
+          ui.bossLabel.textContent = boss.name;
+          ui.bossHpLabel.textContent = `${Math.ceil(game.battle.hp)}`;
+          ui.bossHpBar.style.width = `${Math.max(0, game.battle.hp / game.battle.maxHp * 100)}%`;
+        } else {
+          ui.bossLabel.textContent = BossEncounter[region.boss].name;
+          ui.bossHpLabel.textContent = "gate";
+          ui.bossHpBar.style.width = "100%";
+        }
+      }
+
+      function loop(now) {
+        const dt = Math.min(.033, ((now || performance.now()) - (loop.last || performance.now())) / 1000);
+        loop.last = now || performance.now();
+        update(dt);
+        updateEffects(dt);
+        render();
+        updateHud();
+        requestAnimationFrame(loop);
+      }
+
+      function hash(text) {
+        return String(text).split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
+      }
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function distance(a, b) {
+        return Math.hypot(a.x - b.x, a.y - b.y);
+      }
+
+      // ── Chiptune Music Engine ─────────────────────────────
+      const Music = (() => {
+        let actx = null;
+        let stepId = null;
+        let current = null;
+        let step = 0;
+
+        const R = 0; // rest
+        const N = {
+          C3:130.81,D3:146.83,E3:164.81,F3:174.61,G3:196,Ab3:207.65,A3:220,Bb3:233.08,B3:246.94,
+          C4:261.63,Cs4:277.18,D4:293.66,Eb4:311.13,E4:329.63,F4:349.23,Fs4:369.99,G4:392,Ab4:415.30,A4:440,Bb4:466.16,B4:493.88,
+          C5:523.25,Cs5:554.37,D5:587.33,Eb5:622.25,E5:659.25,F5:698.46,Fs5:739.99,G5:783.99,Ab5:830.61,A5:880,Bb5:932.33,B5:987.77
+        };
+
+        // Town: peaceful exploration theme
+        const TOWN = {
+          bpm: 148,
+          mel: [
+            N.G4,R,N.E4,R,N.G4,N.A4,N.G4,R,
+            N.E4,R,N.C4,N.D4,N.E4,R,R,R,
+            N.F4,R,N.D4,R,N.F4,N.G4,N.F4,R,
+            N.D4,R,N.B3,N.C4,N.D4,R,N.C4,R,
+            N.G4,R,N.A4,R,N.B4,R,N.C5,R,
+            N.B4,N.A4,N.G4,R,N.E4,R,N.G4,R,
+            N.A4,R,N.G4,N.F4,N.E4,R,N.D4,R,
+            N.C4,R,R,R,N.G4,R,R,R
+          ],
+          bas: [
+            N.C3,R,N.C3,R,N.G3,R,N.G3,R,
+            N.A3,R,N.A3,R,N.F3,R,N.F3,R,
+            N.F3,R,N.F3,R,N.C3,R,N.C3,R,
+            N.G3,R,N.G3,R,N.C3,R,N.C3,R,
+            N.C3,R,N.C3,R,N.G3,R,N.G3,R,
+            N.A3,R,N.A3,R,N.F3,R,N.F3,R,
+            N.F3,R,N.F3,R,N.C3,R,N.C3,R,
+            N.G3,R,N.G3,R,N.C3,R,N.E3,R
+          ]
+        };
+
+        // Battle: intense boss fight theme
+        const BATTLE = {
+          bpm: 192,
+          mel: [
+            N.E5,N.E5,R,N.E5,R,N.C5,N.E5,R,
+            N.G5,R,R,R,N.G4,R,R,R,
+            N.C5,R,R,N.G4,R,R,N.E4,R,
+            N.A4,R,N.B4,R,N.Bb4,N.A4,R,R,
+            N.G4,N.E5,N.G5,N.A5,R,N.F5,N.G5,R,
+            N.E5,R,N.C5,N.D5,N.B4,R,R,R,
+            N.Ab5,R,N.G5,R,N.Eb5,R,N.D5,R,
+            N.C5,R,R,R,N.E5,N.Eb5,N.D5,N.Cs5
+          ],
+          bas: [
+            N.C3,N.G3,R,N.C3,N.G3,R,N.C3,R,
+            N.G3,N.D3,R,N.G3,R,R,N.G3,R,
+            N.Ab3,N.Eb3,R,N.Ab3,R,N.E3,R,R,
+            N.F3,N.C3,R,N.F3,N.C3,R,N.F3,R,
+            N.G3,N.D3,R,N.G3,R,R,N.G3,R,
+            N.E3,N.B3,R,N.E3,R,R,N.E3,R,
+            N.Ab3,N.Eb3,R,N.Ab3,R,N.Bb3,R,R,
+            N.F3,N.C3,R,N.F3,R,N.G3,N.Ab3,N.G3
+          ]
+        };
+
+        function note(freq, type, vol, dur, when) {
+          if (!freq || !actx) return;
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.connect(gain);
+          gain.connect(actx.destination);
+          osc.type = type;
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(vol, when);
+          gain.gain.exponentialRampToValueAtTime(0.0001, when + dur * 0.82);
+          osc.start(when);
+          osc.stop(when + dur);
+        }
+
+        function play(trackName) {
+          if (!actx) return;
+          if (actx.state === "suspended") actx.resume();
+          if (current === trackName) return;
+          stop();
+          current = trackName;
+          step = 0;
+          const track = trackName === "battle" ? BATTLE : TOWN;
+          const sd = 60 / track.bpm / 2;
+          function tick() {
+            if (!current) return;
+            const mi = step % track.mel.length;
+            const bi = step % track.bas.length;
+            const t = actx.currentTime;
+            note(track.mel[mi], "square", 0.065, sd, t);
+            note(track.bas[bi], "triangle", 0.05, sd, t);
+            step++;
+          }
+          tick();
+          stepId = setInterval(tick, sd * 1000);
+        }
+
+        function stop() {
+          if (stepId) { clearInterval(stepId); stepId = null; }
+          current = null;
+        }
+
+        function init() {
+          if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function update(mode) {
+          if (!actx || !musicEnabled) return;
+          if (mode === "title" || mode === "gameover") stop();
+          else if (mode === "battle") play("battle");
+          else play("town");
+        }
+
+        return { init, update, stop };
+      })();
+
+      // ─────────────────────────────────────────────────────
+
+      document.querySelector("#singleBtn").addEventListener("click", () => start("single"));
+      document.querySelector("#localBtn").addEventListener("click", () => start("local"));
+      document.querySelector("#onlineBtn").addEventListener("click", () => start("online"));
+      document.querySelector("#continueBtn").addEventListener("click", loadGame);
+      document.querySelector("#retryBtn").addEventListener("click", retry);
+      document.querySelector("#titleBtn").addEventListener("click", () => {
+        ui.gameOverMenu.classList.add("hidden");
+        ui.titleMenu.classList.remove("hidden");
+        game.mode = "title";
+        Music.stop();
+      });
+
+      addEventListener("keydown", (event) => {
+        Music.init(); // initialize AudioContext on first user gesture
+        keys.add(event.key.toLowerCase());
+        if (event.key.toLowerCase() === "e") interact();
+        if (event.key === " " || event.key === "Enter") {
+          if (!ui.dialogue.classList.contains("hidden")) showNextDialogue();
+        }
+        if ([" ", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(event.key.toLowerCase())) event.preventDefault();
+      });
+
+      // Also init audio on any click (covers button presses)
+      addEventListener("click", () => Music.init(), { once: true });
+      document.querySelector("#musicToggle").addEventListener("click", toggleMusic);
+
+      addEventListener("keyup", (event) => keys.delete(event.key.toLowerCase()));
+
+      render();
+      requestAnimationFrame(loop);
+    </script>
+  </body>
+</html>

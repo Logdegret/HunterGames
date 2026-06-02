@@ -113,6 +113,10 @@ const googleSiteGames = [
   ["Poly Track v0.4.1", "Arcade", "https://sites.google.com/view/newcargame/poly-track-0-4-1", "https://htmlunblockedgames.github.io/polytrack/", "https://lh3.googleusercontent.com/sitesv/AA5AbUDcQKnWAfTdpOi9rZiRmEuupJHYlpC0I7og_sD5n6cWN0rZNRm6dbRhWzd4e64b-CpVsxylWUq5zhA_VFyKU14TfWjLEOZCAtE_pEkJpvUHbUPMmyrXjULJmGXs6BKs2njB-3w-NSVxQ_zeP0oK0Gx4Z06tCRFiPOhNdMTnoz-5BAjvd2XYalEsqyJRWMvUJ1Rmhb2R-tl1lNILqCVMMwe1gu7pvlJNC1HyE4w=w1280", "Play an older PolyTrack version with replays and mobile support.", "Keyboard"]
 ];
 
+const localGames = [
+  ["Bossbound Party", "Multiplayer", "local", "./games/bossbound/index.html", "art:bossbound", "Play a pixel-art isometric story RPG with solo, local co-op, online rooms, towns, cities, side quests, and boss hunts.", "Solo/Online: WASD, Space, Shift, E. Local P2: arrows, Enter, /"]
+];
+
 const categoryGroups = {
   arcade: ["Arcade", "Clicker", "Idle", "2 Player"],
   skill: ["Skill", "3D", "Action", "Escape", "Multiplayer", "Minecraft"],
@@ -164,12 +168,25 @@ const googleSiteCatalog = googleSiteGames.map(([title, category, sourcePage, emb
   tags: [category, ...category.toLowerCase().split(/\s+/), "google sites", "new car game"]
 }));
 
-const games = [...googleSiteCatalog, ...itchCatalog, ...classroomCatalog, ...freezeNovaCatalog];
+const localCatalog = localGames.map(([title, category, sourcePage, embed, image, description, controls]) => ({
+  id: slug(title),
+  title,
+  category,
+  source: "Hunter Games",
+  sourcePage,
+  embed,
+  image,
+  description,
+  controls,
+  tags: [category, ...category.toLowerCase().split(/\s+/), "coop", "co-op", "isometric", "boss rush", "open world", "local"]
+}));
+
+const games = [...localCatalog, ...googleSiteCatalog, ...itchCatalog, ...classroomCatalog, ...freezeNovaCatalog];
 const blockedTitleTerms = ["brainrot"];
 const blockedTitles = new Set(["Greed II", "Closer", "Among Us", "Snow Rider 3D", "Golf Bit"]);
 const cleanGames = games.filter((game) => {
   const title = game.title.toLowerCase();
-  const allowedSource = game.source === "Google Sites" || game.source === "itch.io" || game.source === "Classroom 6x" || game.title === "Golf Bit";
+  const allowedSource = game.source === "Hunter Games" || game.source === "Google Sites" || game.source === "itch.io" || game.source === "Classroom 6x" || game.title === "Golf Bit";
   return allowedSource && !blockedTitles.has(game.title) && game.title !== "Drift Hunters" && !blockedTitleTerms.some((term) => title.includes(term));
 });
 
@@ -403,6 +420,9 @@ function thumbStyle(game) {
   }
   if (game.image === "art:stacktris") {
     return "--accent:#65d6ff;--accent2:#ff5e8a;--accent3:#ffc857";
+  }
+  if (game.image === "art:bossbound") {
+    return "--accent:#53e58f;--accent2:#60c7ff;--accent3:#ff5e8a";
   }
   return artColors(game.title);
 }

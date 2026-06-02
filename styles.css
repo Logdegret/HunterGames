@@ -517,6 +517,7 @@ body.theater-mode #gameFrame {
 .stats dd {
   margin: 0;
   font-weight: 800;
+  overflow-wrap: anywhere;
 }
 
 .icon-button {
