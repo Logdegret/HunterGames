@@ -117,6 +117,20 @@ const localGames = [
   ["Bossbound Party", "Multiplayer", "local", "./games/bossbound/index.html", "art:bossbound", "Play a pixel-art isometric story RPG with solo, local co-op, online rooms, towns, cities, side quests, and boss hunts.", "Solo/Online: WASD, Space, Shift, E. Local P2: arrows, Enter, /"]
 ];
 
+const openSourceGames = [
+  {
+    title: "Open Golf Online",
+    category: "Sports",
+    source: "Open Source",
+    sourcePage: "https://github.com/mgerdes/Open-Golf",
+    embed: "./games/open-golf-online/index.html",
+    image: "https://i.imgur.com/TBlXedl.gif",
+    description: "Play Open Golf with shared online rooms, synced scorecards, chat, and friend room codes.",
+    controls: "Mouse or touch to play. Room tools sync score, turns, and chat.",
+    license: "MIT"
+  }
+];
+
 const categoryGroups = {
   arcade: ["Arcade", "Clicker", "Idle", "2 Player"],
   skill: ["Skill", "3D", "Action", "Escape", "Multiplayer", "Minecraft"],
@@ -181,12 +195,18 @@ const localCatalog = localGames.map(([title, category, sourcePage, embed, image,
   tags: [category, ...category.toLowerCase().split(/\s+/), "coop", "co-op", "isometric", "boss rush", "open world", "local"]
 }));
 
-const games = [...localCatalog, ...googleSiteCatalog, ...itchCatalog, ...classroomCatalog, ...freezeNovaCatalog];
+const openSourceCatalog = openSourceGames.map((game) => ({
+  ...game,
+  id: slug(game.title),
+  tags: [game.category, game.source, game.license, "minigolf", "golf", "3d", "physics", "open source"]
+}));
+
+const games = [...openSourceCatalog, ...localCatalog, ...googleSiteCatalog, ...itchCatalog, ...classroomCatalog, ...freezeNovaCatalog];
 const blockedTitleTerms = ["brainrot"];
 const blockedTitles = new Set(["Greed II", "Closer", "Among Us", "Snow Rider 3D", "Golf Bit"]);
 const cleanGames = games.filter((game) => {
   const title = game.title.toLowerCase();
-  const allowedSource = game.source === "Hunter Games" || game.source === "Google Sites" || game.source === "itch.io" || game.source === "Classroom 6x" || game.title === "Golf Bit";
+  const allowedSource = game.source === "Open Source" || game.source === "Hunter Games" || game.source === "Google Sites" || game.source === "itch.io" || game.source === "Classroom 6x" || game.title === "Golf Bit";
   return allowedSource && !blockedTitles.has(game.title) && game.title !== "Drift Hunters" && !blockedTitleTerms.some((term) => title.includes(term));
 });
 

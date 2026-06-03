@@ -1,0 +1,11 @@
+name = "hunter-open-golf"
+main = "src/index.js"
+compatibility_date = "2026-06-03"
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "GolfRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["GolfRoom"]

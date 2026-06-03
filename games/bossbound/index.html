@@ -36,57 +36,63 @@
         background: #101929;
       }
 
-      /* ── HUD panels ─── */
+      /* ── HUD — hidden normally, slim HP strip at bottom during battle ─── */
       .hud {
+        display: none;
+      }
+
+      .hud.in-battle {
+        display: flex;
         position: fixed;
-        inset: 8px;
-        display: grid;
-        grid-template-columns: minmax(160px, 230px) 1fr minmax(160px, 230px);
-        gap: 8px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        align-items: center;
+        gap: 10px;
+        padding: 5px 14px 6px;
+        background: rgba(10, 10, 20, 0.82);
+        border-top: 2px solid #383828;
         pointer-events: none;
+        z-index: 40;
       }
 
       .pixel-panel {
-        align-self: start;
-        padding: 8px 10px 9px;
-        background: #f0f0e0;
-        border: 3px solid #181818;
-        box-shadow: 3px 3px 0 #787860;
+        display: contents; /* children flow directly into hud flex */
       }
 
-      .pk-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 6px;
-        font-size: 6px;
-        line-height: 1.6;
-      }
+      .pk-row { display: none; } /* name/% handled separately below */
 
-      /* HP rows hidden until battle */
       .pk-hp-row {
         display: none;
         align-items: center;
-        gap: 4px;
-        margin-top: 4px;
+        gap: 6px;
+        flex: 1;
       }
 
       .hud.in-battle .pk-hp-row { display: flex; }
-      .hud.in-battle #hpLabel,
-      .hud.in-battle #bossHpLabel { display: inline; }
+
+      /* Player name label shown in battle strip */
+      .hud.in-battle #heroLabel {
+        display: inline-block;
+        color: #f0f0e0;
+        font-size: 6px;
+        white-space: nowrap;
+        min-width: 80px;
+      }
 
       .pk-hp-label {
-        font-size: 5px;
-        color: #383838;
+        font-size: 6px;
+        color: #a0a090;
         flex-shrink: 0;
-        letter-spacing: 0.5px;
       }
 
       .bar {
         flex: 1;
-        height: 6px;
+        height: 7px;
         border: 2px solid #181818;
         background: #282820;
+        min-width: 80px;
+        max-width: 180px;
       }
 
       .fill {
@@ -98,12 +104,10 @@
 
       .fill.red { background: #e03020; }
 
-      .pixel-panel p {
-        margin: 5px 0 0;
-        color: #505050;
-        font-size: 5px;
-        line-height: 1.8;
-      }
+      /* Hide elements we don't need in the slim strip */
+      #hpLabel, #bossLabel, #bossHpLabel, #bossHpBar,
+      #modeLabel, #chapterLabel, #noteLabel, #questLabel,
+      #partyLabel, .pixel-panel p { display: none !important; }
 
       /* ── Overlay menus ─── */
       .menu {
@@ -210,30 +214,31 @@
       button.red   { background: #e03020; color: #f0f0f0; }
       button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #787860; }
 
-      /* ── Dialogue box (Pokemon bottom-bar style) ─── */
+      /* ── Dialogue box ─── */
       .dialogue {
         position: fixed;
         left: 50%;
-        bottom: 10px;
-        width: min(600px, calc(100vw - 18px));
+        bottom: 12px;
+        width: min(780px, calc(100vw - 10px));
         transform: translateX(-50%);
         pointer-events: none;
+        z-index: 60;
       }
 
       .dialogue-box {
         display: grid;
-        grid-template-columns: 54px 1fr;
-        gap: 10px;
-        min-height: 76px;
-        padding: 10px 12px;
+        grid-template-columns: 72px 1fr;
+        gap: 14px;
+        min-height: 112px;
+        padding: 14px 18px;
         background: #f0f0e0;
         border: 4px solid #181818;
         box-shadow: 4px 4px 0 #787860;
       }
 
       .portrait {
-        width: 50px;
-        height: 50px;
+        width: 64px;
+        height: 64px;
         border: 2px solid #181818;
         background: #c8c8b8;
         image-rendering: pixelated;
@@ -248,16 +253,16 @@
 
       .dialogue-copy strong {
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
         color: #181818;
-        font-size: 7px;
+        font-size: 10px;
       }
 
       .dialogue-copy span {
         display: block;
         color: #181818;
-        line-height: 2.2;
-        font-size: 6px;
+        line-height: 1.9;
+        font-size: 9px;
       }
 
       .pk-cursor {
@@ -339,26 +344,30 @@
 
     <button class="music-btn" id="musicToggle" title="Toggle music">♪</button>
 
+    <!-- Slim HP strip — only visible during battle -->
     <div class="hud" id="hud" aria-hidden="true">
+      <span id="heroLabel" style="display:none">Bellbound</span>
       <div class="pixel-panel">
-        <div class="pk-row"><span id="heroLabel">Bellbound</span><span id="hpLabel">100%</span></div>
-        <div class="pk-hp-row"><span class="pk-hp-label">HP</span><div class="bar"><div class="fill" id="hpBar"></div></div></div>
-        <p id="partyLabel">Single player</p>
+        <div class="pk-hp-row">
+          <span class="pk-hp-label" id="heroLabelStrip">Player</span>
+          <div class="bar"><div class="fill" id="hpBar"></div></div>
+        </div>
       </div>
-      <div class="pixel-panel">
-        <div class="pk-row"><span id="bossLabel">Boss dormant</span><span id="bossHpLabel">--</span></div>
-        <div class="pk-hp-row"><span class="pk-hp-label">HP</span><div class="bar"><div class="fill red" id="bossHpBar"></div></div></div>
-        <p id="modeLabel">Choose a mode</p>
-      </div>
-      <div class="pixel-panel">
-        <div class="pk-row"><span id="chapterLabel">Prologue</span><span id="noteLabel">0/6</span></div>
-        <p id="questLabel">Start the Bellbound story.</p>
-      </div>
+      <!-- Hidden elements kept for updateHud() compatibility -->
+      <span id="hpLabel" style="display:none"></span>
+      <span id="bossLabel" style="display:none"></span>
+      <span id="bossHpLabel" style="display:none"></span>
+      <div style="display:none"><div class="fill red" id="bossHpBar"></div></div>
+      <span id="modeLabel" style="display:none"></span>
+      <span id="chapterLabel" style="display:none"></span>
+      <span id="noteLabel" style="display:none"></span>
+      <span id="questLabel" style="display:none"></span>
+      <p id="partyLabel" style="display:none"></p>
     </div>
 
     <div class="dialogue hidden" id="dialogue">
       <div class="dialogue-box">
-        <canvas class="portrait" id="portrait" width="32" height="32" aria-hidden="true"></canvas>
+        <canvas class="portrait" id="portrait" width="40" height="40" aria-hidden="true"></canvas>
         <div class="dialogue-copy">
           <strong id="speaker">Guide</strong>
           <span id="line"></span>
@@ -372,9 +381,13 @@
         <h1>Bossbound Party</h1>
         <p>Alderreach is held together by ancient Bell Towers. Restore the lost notes before the final silence spreads.</p>
         <div class="grid">
-          <label><b>Hero name</b><span>Up to 12 chars</span><input id="heroNameInput" maxlength="12" value="Rowan"></label>
-          <label><b>Class</b><span>Your fighting style</span><select id="classInput"><option value="Vanguard">Vanguard</option><option value="Arcanist">Arcanist</option><option value="Minstrel">Minstrel</option></select></label>
+          <label><b>P1 Name</b><span>Up to 12 chars</span><input id="heroNameInput" maxlength="12" value="Rowan"></label>
+          <label><b>P1 Class</b><span>Your fighting style</span><select id="classInput"><option value="Vanguard">Vanguard</option><option value="Arcanist">Arcanist</option><option value="Minstrel">Minstrel</option></select></label>
           <label><b>Room ID</b><span>Online room name</span><input id="roomInput" maxlength="18" value="party"></label>
+        </div>
+        <div class="grid">
+          <label><b>P2 Name</b><span>Local &amp; Arena only</span><input id="hero2NameInput" maxlength="12" value="Ember"></label>
+          <label><b>P2 Class</b><span>Player 2 class</span><select id="class2Input"><option value="Vanguard">Vanguard</option><option value="Arcanist">Arcanist</option><option value="Minstrel" selected>Minstrel</option></select></label>
         </div>
         <div class="grid">
           <div class="option-card"><b>Single Player</b><span>One hero, full story, personal camera.</span></div>
@@ -388,6 +401,7 @@
           <button id="singleBtn">Solo Story</button>
           <button id="localBtn" class="gold">Local Co-op</button>
           <button id="onlineBtn" class="blue">Join Online</button>
+          <button id="arenaBtn" class="red">⚔ Arena</button>
           <button id="continueBtn" class="gold">Continue</button>
         </div>
       </div>
@@ -456,7 +470,10 @@
         hud: document.querySelector("#hud"),
         interactPrompt: document.querySelector("#interactPrompt"),
         interactText: document.querySelector("#interactText"),
-        musicToggle: document.querySelector("#musicToggle")
+        musicToggle: document.querySelector("#musicToggle"),
+        hero2NameInput: document.querySelector("#hero2NameInput"),
+        class2Input: document.querySelector("#class2Input"),
+        heroLabelStrip: document.querySelector("#heroLabelStrip")
       };
 
       let musicEnabled = true;
@@ -726,7 +743,9 @@
         game.flags = {};
         game.quest = Quest.tutorial;
         game.party[0] = { ...game.party[0], name: game.hero.name, className: game.hero.className, x: 15 * TILE, y: 18 * TILE, hp: 100, maxHp: 100, active: true };
-        game.party[1] = { ...game.party[1], x: 16 * TILE, y: 18 * TILE, hp: 100, active: mode === "local" };
+        const p2Name = (ui.hero2NameInput?.value || "").trim() || "Ember";
+        const p2Class = ui.class2Input?.value || "Minstrel";
+        game.party[1] = { ...game.party[1], name: p2Name, className: p2Class, x: 16 * TILE, y: 18 * TILE, hp: 100, maxHp: 100, active: mode === "local" };
         ui.titleMenu.classList.add("hidden");
         ui.gameOverMenu.classList.add("hidden");
         game.camera.x = game.party[0].x - VIEW_W / 2;
@@ -804,6 +823,7 @@
       }
 
       function update(dt) {
+        if (game.mode === "arena") { updateArena(dt); return; }
         if (game.mode !== "overworld" && game.mode !== "battle") return;
         if (!ui.dialogue.classList.contains("hidden") || !ui.choiceMenu.classList.contains("hidden")) return;
         if (game.mode === "battle") {
@@ -917,7 +937,7 @@
         const hero = focusHero();
         const tx = Math.floor(hero.x / TILE);
         const ty = Math.floor(hero.y / TILE);
-        const npc = npcs.find((item) => Math.abs(item.x - tx) <= 1 && Math.abs(item.y - ty) <= 1);
+        const npc = npcs.find((item) => Math.abs(item.x - tx) <= 2 && Math.abs(item.y - ty) <= 2);
         if (npc) {
           if (npc.id === "mira") {
             game.flags[StoryFlag.innVisited] = true;
@@ -928,7 +948,7 @@
           }
           return;
         }
-        const door = doors.find((item) => Math.abs(item.x - tx) <= 1 && Math.abs(item.y - ty) <= 1);
+        const door = doors.find((item) => Math.abs(item.x - tx) <= 2 && Math.abs(item.y - ty) <= 2);
         if (door) {
           openInterior(door.interior);
           return;
@@ -1013,12 +1033,19 @@
           bAtkCd: 0, bAtkPattern: 0,
           bDashVx: 0, bDashVy: 0, bDashing: false,
           // Player in arena
-          px: 120, py: 128,
+          px: 100, py: 128,
           pAtkCd: 0,
           pDodge: 0, pDodgeCd: 0, pDodgeVx: 0, pDodgeVy: 0,
           pInvince: 0, pContactCd: 0,
           pFlash: 0,
           pProjectiles: [],
+          // Player 2 (local co-op)
+          p2x: 140, p2y: 128,
+          p2AtkCd: 0,
+          p2Dodge: 0, p2DodgeCd: 0, p2DodgeVx: 0, p2DodgeVy: 0,
+          p2Invince: 0, p2ContactCd: 0,
+          p2Flash: 0,
+          p2Projectiles: [],
           remote
         };
         game.bullets = [];
@@ -1107,12 +1134,55 @@
           }
         }
 
+        // ── Player 2 (local co-op) ────────────────────────
+        if (game.playMode === "local") {
+          const h2 = game.party[1];
+          b.p2Flash    = Math.max(0, b.p2Flash    - dt * 5);
+          b.p2Invince  = Math.max(0, b.p2Invince  - dt);
+          b.p2Dodge    = Math.max(0, b.p2Dodge    - dt);
+          b.p2DodgeCd  = Math.max(0, b.p2DodgeCd  - dt);
+          b.p2AtkCd    = Math.max(0, b.p2AtkCd    - dt);
+          b.p2ContactCd= Math.max(0, b.p2ContactCd - dt);
+          const i2 = readInput(1);
+          const spd2 = b.p2Dodge > 0 ? 95 : 54;
+          if (b.p2Dodge > 0) {
+            b.p2x = clamp(b.p2x + b.p2DodgeVx * spd2 * dt, 8, 232);
+            b.p2y = clamp(b.p2y + b.p2DodgeVy * spd2 * dt, 16, 150);
+          } else if (i2.x || i2.y) {
+            const len2 = Math.hypot(i2.x, i2.y) || 1;
+            b.p2x = clamp(b.p2x + i2.x / len2 * spd2 * dt, 8, 232);
+            b.p2y = clamp(b.p2y + i2.y / len2 * spd2 * dt, 16, 150);
+          }
+          if (i2.dash && b.p2DodgeCd <= 0 && b.p2Dodge <= 0) {
+            b.p2Dodge = 0.32; b.p2DodgeCd = 1.4; b.p2Invince = 0.36;
+            const l2 = Math.hypot(i2.x, i2.y) || 1;
+            b.p2DodgeVx = i2.x / l2 || 0; b.p2DodgeVy = i2.y / l2 || 1;
+          }
+          if (i2.attack && b.p2AtkCd <= 0) {
+            const dmg2 = h2.className === "Arcanist" ? 16 : h2.className === "Minstrel" ? 11 : 20;
+            b.p2AtkCd = h2.className === "Arcanist" ? 0.26 : h2.className === "Minstrel" ? 0.60 : 0.35;
+            if (h2.className === "Arcanist") {
+              const dx2 = b.bx - b.p2x, dy2 = b.by - b.p2y, d2 = Math.hypot(dx2, dy2) || 1;
+              b.p2Projectiles.push({ x: b.p2x, y: b.p2y, vx: dx2/d2*150, vy: dy2/d2*150, life: 2.5, dmg: dmg2 });
+            } else {
+              const range = h2.className === "Minstrel" ? 50 : 34;
+              if (Math.hypot(b.bx - b.p2x, b.by - b.p2y) < range) dealBossDmg(b, boss, dmg2);
+            }
+          }
+          for (let i = b.p2Projectiles.length - 1; i >= 0; i--) {
+            const pp = b.p2Projectiles[i];
+            pp.x += pp.vx * dt; pp.y += pp.vy * dt; pp.life -= dt;
+            if (Math.hypot(pp.x - b.bx, pp.y - b.by) < 18) { dealBossDmg(b, boss, pp.dmg); b.p2Projectiles.splice(i, 1); }
+            else if (pp.life <= 0 || pp.x < 4 || pp.x > 236 || pp.y < 12 || pp.y > 154) b.p2Projectiles.splice(i, 1);
+          }
+        }
+
         // ── Boss AI ──────────────────────────────────────
         updateBossAI(dt, b, boss);
         updateBullets(dt);
 
         if (b.hp <= 0) winBattle();
-        if (hero.hp <= 0) showGameOver();
+        if (hero.hp <= 0 && (game.playMode !== "local" || game.party[1].hp <= 0)) showGameOver();
       }
 
       function dealBossDmg(b, boss, dmg) {
@@ -1275,12 +1345,19 @@
         for (let i = game.bullets.length - 1; i >= 0; i--) {
           const blt = game.bullets[i];
           blt.x += blt.vx * dt; blt.y += blt.vy * dt; blt.life -= dt;
-          if (b.pInvince <= 0 && Math.hypot(blt.x-b.px, blt.y-b.py) < 6) {
-            dealPlayerDmg(b, 10 + b.phase * 4);
-            game.bullets.splice(i, 1);
-          } else if (blt.life <= 0 || blt.x < 2 || blt.x > 238 || blt.y < 12 || blt.y > 155) {
-            game.bullets.splice(i, 1);
+          let hit = false;
+          if (b.pInvince <= 0 && Math.hypot(blt.x - b.px, blt.y - b.py) < 6) {
+            dealPlayerDmg(b, 10 + b.phase * 4); hit = true;
           }
+          if (!hit && game.playMode === "local" && b.p2Invince <= 0 && Math.hypot(blt.x - b.p2x, blt.y - b.p2y) < 6) {
+            const dmg = 10 + b.phase * 4;
+            game.party[1].hp = Math.max(0, game.party[1].hp - dmg);
+            b.p2Invince = 0.5; b.p2Flash = 0.7; addShake(3);
+            dmgNum(b.p2x, b.p2y - 14, `-${dmg}`, "#ff6060");
+            hit = true;
+          }
+          if (hit) game.bullets.splice(i, 1);
+          else if (blt.life <= 0 || blt.x < 2 || blt.x > 238 || blt.y < 12 || blt.y > 155) game.bullets.splice(i, 1);
         }
       }
 
@@ -1361,6 +1438,7 @@
       function render() {
         ctx.clearRect(0, 0, VIEW_W, VIEW_H);
         if (game.mode === "battle") renderBattle();
+        else if (game.mode === "arena") renderArena();
         else renderOverworld();
       }
 
@@ -1788,8 +1866,8 @@
         const hero = focusHero();
         const tx = Math.floor(hero.x / TILE);
         const ty = Math.floor(hero.y / TILE);
-        const nearDoor = doors.some((d) => Math.abs(d.x - tx) <= 1 && Math.abs(d.y - ty) <= 1);
-        const nearNpc  = npcs.some((n)  => Math.abs(n.x - tx) <= 1 && Math.abs(n.y - ty) <= 1);
+        const nearDoor = doors.some((d) => Math.abs(d.x - tx) <= 2 && Math.abs(d.y - ty) <= 2);
+        const nearNpc  = npcs.some((n)  => Math.abs(n.x - tx) <= 2 && Math.abs(n.y - ty) <= 2);
         const region   = Campaign.regions[game.regionIndex];
         const nearGate = Math.abs(region.bossGate[0] - tx) <= 2 && Math.abs(region.bossGate[1] - ty) <= 2;
         const show = nearDoor || nearNpc || nearGate;
@@ -1912,13 +1990,46 @@
           ctx.fillRect(rx - 8, ry + 11, Math.round(16 * fill), 2);
         }
 
-        // Attack range indicator (brief flash after attack)
-        if (b.pAtkCd > 0 && hero.className !== "Arcanist") {
-          const range = hero.className === "Minstrel" ? 50 : 34;
-          ctx.globalAlpha = b.pAtkCd * 0.35;
-          ctx.fillStyle = hero.className === "Minstrel" ? "#60d8ff" : "#ffe0a0";
-          ctx.fillRect(rx - range/2, ry - range/3, range, range/1.5);
-          ctx.globalAlpha = 1;
+        // ── Weapon attack flash effects ───────────────────
+        drawWeaponFlash(b.px, b.py, hero.className, b.pAtkCd, b.bx, b.by);
+
+        // ── Player 2 (local co-op) ────────────────────────
+        if (game.playMode === "local") {
+          const h2 = game.party[1];
+          const r2x = Math.round(b.p2x), r2y = Math.round(b.p2y);
+          // P2 projectiles
+          b.p2Projectiles.forEach(pp => {
+            ctx.fillStyle = "rgba(100,200,255,0.2)";
+            ctx.fillRect(Math.round(pp.x)-4, Math.round(pp.y)-4, 8, 8);
+            ctx.fillStyle = "#60d8ff"; ctx.fillRect(Math.round(pp.x)-2, Math.round(pp.y)-2, 4, 4);
+            ctx.fillStyle = "#ffffff"; ctx.fillRect(Math.round(pp.x)-1, Math.round(pp.y)-1, 2, 2);
+          });
+          // P2 damage flash
+          if (b.p2Flash > 0) {
+            ctx.globalAlpha = b.p2Flash * 0.9;
+            ctx.fillStyle = "#ff8080";
+            ctx.fillRect(r2x - 7, r2y - 16, 14, 26);
+            ctx.globalAlpha = 1;
+          }
+          // P2 character
+          const show2 = b.p2Invince <= 0 || Math.floor(t * 14) % 2 === 0;
+          if (show2) {
+            ctx.globalAlpha = b.p2Dodge > 0 ? 0.5 : 1;
+            drawPerson(r2x, r2y, h2.color, b.p2x > b.bx ? "right" : "left",
+              b.timer * (b.p2Dodge > 0 ? 14 : 7), b.p2Dodge > 0 ? "dash" : "idle", h2.className);
+            ctx.globalAlpha = 1;
+          }
+          // P2 dodge cooldown bar
+          if (b.p2DodgeCd > 0) {
+            const f2 = 1 - (b.p2DodgeCd / 1.4);
+            ctx.fillStyle = "#303040"; ctx.fillRect(r2x - 8, r2y + 11, 16, 2);
+            ctx.fillStyle = f2 > 0.9 ? "#60d8ff" : "#4060c8";
+            ctx.fillRect(r2x - 8, r2y + 11, Math.round(16 * f2), 2);
+          }
+          drawWeaponFlash(b.p2x, b.p2y, h2.className, b.p2AtkCd, b.bx, b.by);
+          // P2 HP label
+          ctx.fillStyle = "#f0f0e0"; ctx.font = "bold 6px 'Trebuchet MS'";
+          ctx.fillText(`${h2.name} ${Math.ceil(h2.hp)}HP`, VIEW_W - 80, VIEW_H - 3);
         }
 
         // ── Boss HP bar (top strip) ───────────────────────
@@ -1951,9 +2062,67 @@
         // ── Controls reminder ─────────────────────────────
         ctx.fillStyle = "rgba(240,240,224,0.45)";
         ctx.font = "5px 'Trebuchet MS'";
-        ctx.fillText("WASD: move   Space: attack   Shift: dodge roll", 5, VIEW_H - 3);
+        const hint = game.playMode === "local"
+          ? "P1: WASD/Space/Shift   P2: Arrows/Enter/Slash"
+          : "WASD: move   Space: attack   Shift: dodge";
+        ctx.fillText(hint, 5, VIEW_H - 3);
 
         ctx.restore();
+      }
+
+      // Draw class-specific weapon attack flash overlay
+      function drawWeaponFlash(px, py, className, atkCd, tx, ty) {
+        if (atkCd <= 0) return;
+        const rx = Math.round(px), ry = Math.round(py);
+        const dx = tx - px, dy = ty - py, dist = Math.hypot(dx, dy) || 1;
+
+        if (className === "Vanguard" && atkCd > 0.15) {
+          // Sword slash arc — bright yellow line toward boss
+          const alpha = (atkCd - 0.15) / 0.2;
+          ctx.globalAlpha = Math.min(1, alpha * 1.5);
+          ctx.fillStyle = "#ffe860";
+          const ex = Math.round(rx + dx/dist * 14), ey = Math.round(ry + dy/dist * 14);
+          ctx.fillRect(rx - 1, ry - 1, 3, 3); // hilt flash
+          for (let s = 0; s < 4; s++) {
+            const t = s / 3;
+            ctx.fillRect(Math.round(rx + dx/dist * t * 14) - 1, Math.round(ry + dy/dist * t * 14) - 1, 2, 2);
+          }
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(ex - 1, ey - 1, 3, 3); // tip
+          ctx.globalAlpha = 1;
+
+        } else if (className === "Arcanist" && atkCd > 0.18) {
+          // Staff orb white flash + purple beam to projectile
+          const alpha = (atkCd - 0.18) / 0.08;
+          ctx.globalAlpha = Math.min(1, alpha);
+          // Orb glow
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(rx - 10, ry - 26, 5, 5);
+          // Beam line
+          ctx.fillStyle = "#c090ff";
+          for (let s = 0; s < 5; s++) {
+            const t = s / 4;
+            ctx.fillRect(Math.round(rx - 8 + dx/dist * t * 20) - 1, Math.round(ry - 20 + dy/dist * t * 20) - 1, 2, 2);
+          }
+          ctx.globalAlpha = 1;
+
+        } else if (className === "Minstrel" && atkCd > 0.30) {
+          // Musical note particles
+          const noteColors = ["#60d8ff", "#a8e870", "#ffe040"];
+          if (Math.floor(performance.now() / 60) % 3 === 0) {
+            for (let n = 0; n < 3; n++) {
+              sPart(rx + (Math.random()-0.5)*22, ry - 5, (Math.random()-0.5)*28, -20 - Math.random()*25, noteColors[n], 0.55);
+            }
+          }
+          // Ring burst visual
+          ctx.globalAlpha = (atkCd - 0.30) * 0.8;
+          ctx.fillStyle = "#60d8ff";
+          for (let a = 0; a < 8; a++) {
+            const ang = a / 8 * Math.PI * 2;
+            ctx.fillRect(Math.round(rx + Math.cos(ang)*18) - 1, Math.round(ry + Math.sin(ang)*12) - 1, 2, 2);
+          }
+          ctx.globalAlpha = 1;
+        }
       }
 
       function drawBossSprite(x, y, boss, battle) {
@@ -2162,6 +2331,7 @@
         const region = Campaign.regions[game.regionIndex];
         ui.hud.classList.toggle("in-battle", game.mode === "battle");
         if (game.mode !== "overworld") ui.interactPrompt.classList.add("hidden");
+        if (game.mode === "battle" && ui.heroLabelStrip) ui.heroLabelStrip.textContent = hero.name;
         ui.heroLabel.textContent = `${hero.name} ${hero.className}`;
         ui.hpLabel.textContent = `${Math.ceil(hero.hp)}%`;
         const hpPct = hero.hp / hero.maxHp;
@@ -2204,6 +2374,258 @@
 
       function distance(a, b) {
         return Math.hypot(a.x - b.x, a.y - b.y);
+      }
+
+      // ── Arena (PvP) ──────────────────────────────────────
+      function startArena() {
+        const p1Name  = (ui.heroNameInput.value.trim() || "Rowan");
+        const p1Class = ui.classInput.value;
+        const p2Name  = (ui.hero2NameInput?.value || "").trim() || "Ember";
+        const p2Class = ui.class2Input?.value || "Minstrel";
+        game.mode = "arena";
+        game.arena = {
+          p1: { x: 55,  y: 80, hp: 100, maxHp: 100, invince: 0, dodge: 0, dodgeCd: 0, dodgeVx: 0, dodgeVy: 0,
+                atkCd: 0, flash: 0, projectiles: [], color: "#3a8f56", className: p1Class, name: p1Name },
+          p2: { x: 185, y: 80, hp: 100, maxHp: 100, invince: 0, dodge: 0, dodgeCd: 0, dodgeVx: 0, dodgeVy: 0,
+                atkCd: 0, flash: 0, projectiles: [], color: "#4a80c8", className: p2Class, name: p2Name },
+          timer: 0, roundPause: 0,
+          p1Wins: 0, p2Wins: 0,
+          roundWinner: null, matchWinner: null
+        };
+        ui.titleMenu.classList.add("hidden");
+        Music.update("battle");
+      }
+
+      function arenaAttack(attacker, defender, atkInput) {
+        if (!atkInput || attacker.atkCd > 0) return;
+        const cls = attacker.className;
+        attacker.atkCd = cls === "Arcanist" ? 0.28 : cls === "Minstrel" ? 0.65 : 0.38;
+        const dmg = cls === "Arcanist" ? 16 : cls === "Minstrel" ? 13 : 20;
+        const dx = defender.x - attacker.x, dy = defender.y - attacker.y;
+        const dist = Math.hypot(dx, dy) || 1;
+        if (cls === "Arcanist") {
+          attacker.projectiles.push({ x: attacker.x, y: attacker.y, vx: dx/dist*150, vy: dy/dist*150, life: 3, dmg });
+        } else {
+          const range = cls === "Minstrel" ? 50 : 36;
+          if (dist < range && defender.invince <= 0) {
+            defender.hp = Math.max(0, defender.hp - dmg);
+            defender.invince = 0.5; defender.flash = 0.8;
+            addShake(3);
+            dmgNum(defender.x, defender.y - 14, `-${dmg}`, "#ff4848");
+          }
+        }
+        drawWeaponFlash(attacker.x, attacker.y, cls, attacker.atkCd + 0.3, defender.x, defender.y);
+      }
+
+      function updateArenaPlayer(p, inp, dt) {
+        p.flash    = Math.max(0, p.flash    - dt * 5);
+        p.invince  = Math.max(0, p.invince  - dt);
+        p.dodge    = Math.max(0, p.dodge    - dt);
+        p.dodgeCd  = Math.max(0, p.dodgeCd  - dt);
+        p.atkCd    = Math.max(0, p.atkCd    - dt);
+        const spd = p.dodge > 0 ? 95 : 56;
+        if (p.dodge > 0) {
+          p.x = clamp(p.x + p.dodgeVx * spd * dt, 8, 232);
+          p.y = clamp(p.y + p.dodgeVy * spd * dt, 16, 150);
+        } else if (inp.x || inp.y) {
+          const len = Math.hypot(inp.x, inp.y) || 1;
+          p.x = clamp(p.x + inp.x / len * spd * dt, 8, 232);
+          p.y = clamp(p.y + inp.y / len * spd * dt, 16, 150);
+        }
+        if (inp.dash && p.dodgeCd <= 0 && p.dodge <= 0) {
+          p.dodge = 0.30; p.dodgeCd = 1.3; p.invince = 0.33;
+          const l = Math.hypot(inp.x, inp.y) || 1;
+          p.dodgeVx = inp.x / l || 0; p.dodgeVy = inp.y / l || 1;
+          for (let k = 0; k < 4; k++) sPart(p.x + (Math.random()-.5)*8, p.y + 6, (Math.random()-.5)*30, -15 - Math.random()*20, "#d0c8a0", 0.3);
+        }
+        // Projectiles
+        for (let i = p.projectiles.length - 1; i >= 0; i--) {
+          const pr = p.projectiles[i];
+          pr.x += pr.vx * dt; pr.y += pr.vy * dt; pr.life -= dt;
+          if (pr.life <= 0 || pr.x < 4 || pr.x > 236 || pr.y < 12 || pr.y > 154) p.projectiles.splice(i, 1);
+        }
+      }
+
+      function updateArena(dt) {
+        const ar = game.arena;
+        if (ar.matchWinner) return;
+        ar.timer += dt;
+
+        if (ar.roundPause > 0) {
+          ar.roundPause -= dt;
+          if (ar.roundPause <= 0) {
+            // Reset for next round
+            ar.roundWinner = null;
+            ar.p1.x = 55;  ar.p1.y = 80; ar.p1.hp = ar.p1.maxHp; ar.p1.invince = 0;
+            ar.p2.x = 185; ar.p2.y = 80; ar.p2.hp = ar.p2.maxHp; ar.p2.invince = 0;
+            ar.p1.projectiles = []; ar.p2.projectiles = [];
+            game.bullets = [];
+          }
+          return;
+        }
+
+        const i1 = readInput(0), i2 = readInput(1);
+        updateArenaPlayer(ar.p1, i1, dt);
+        updateArenaPlayer(ar.p2, i2, dt);
+
+        // Projectile collision (each player's shots hit the other)
+        [{ shooter: ar.p1, target: ar.p2 }, { shooter: ar.p2, target: ar.p1 }].forEach(({ shooter, target }) => {
+          for (let i = shooter.projectiles.length - 1; i >= 0; i--) {
+            const pr = shooter.projectiles[i];
+            if (target.invince <= 0 && Math.hypot(pr.x - target.x, pr.y - target.y) < 7) {
+              target.hp = Math.max(0, target.hp - pr.dmg);
+              target.invince = 0.5; target.flash = 0.8; addShake(2);
+              dmgNum(target.x, target.y - 14, `-${pr.dmg}`, "#ff4848");
+              for (let k = 0; k < 5; k++) sPart(pr.x, pr.y, (Math.random()-.5)*60, (Math.random()-.5)*60, "#c090ff", 0.35);
+              shooter.projectiles.splice(i, 1);
+            }
+          }
+        });
+
+        // Attack inputs
+        arenaAttack(ar.p1, ar.p2, i1.attack);
+        arenaAttack(ar.p2, ar.p1, i2.attack);
+
+        // Check round end
+        if (!ar.roundWinner) {
+          if (ar.p1.hp <= 0) ar.roundWinner = "p2";
+          else if (ar.p2.hp <= 0) ar.roundWinner = "p1";
+          if (ar.roundWinner) {
+            if (ar.roundWinner === "p1") ar.p1Wins++; else ar.p2Wins++;
+            addShake(6);
+            if (ar.p1Wins >= 2 || ar.p2Wins >= 2) {
+              ar.matchWinner = ar.p1Wins >= 2 ? "p1" : "p2";
+              const winner = ar.matchWinner === "p1" ? ar.p1.name : ar.p2.name;
+              ui.gameOverText.textContent = `${winner} wins the match! Best of 3 complete.`;
+              setTimeout(() => ui.gameOverMenu.classList.remove("hidden"), 1800);
+              Music.update("gameover");
+            } else {
+              ar.roundPause = 2.0;
+            }
+          }
+        }
+        updateEffects(0); // ensure particles update (called again in main loop but harmless)
+      }
+
+      function renderArenaPlayer(p, isP1) {
+        const rx = Math.round(p.x), ry = Math.round(p.y);
+        const t = performance.now() / 1000;
+        if (p.flash > 0) {
+          ctx.globalAlpha = p.flash * 0.85;
+          ctx.fillStyle = "#ff8080";
+          ctx.fillRect(rx - 7, ry - 16, 14, 26);
+          ctx.globalAlpha = 1;
+        }
+        const show = p.invince <= 0 || Math.floor(t * 14) % 2 === 0;
+        if (show) {
+          ctx.globalAlpha = p.dodge > 0 ? 0.5 : 1;
+          const dir = isP1 ? (p.x < game.arena.p2.x ? "right" : "left") : (p.x < game.arena.p1.x ? "right" : "left");
+          drawPerson(rx, ry, p.color, dir, t * (p.dodge > 0 ? 14 : 7), p.dodge > 0 ? "dash" : "idle", p.className);
+          ctx.globalAlpha = 1;
+        }
+        // Dodge cooldown bar
+        if (p.dodgeCd > 0) {
+          const f = 1 - (p.dodgeCd / 1.3);
+          ctx.fillStyle = "#303040"; ctx.fillRect(rx - 8, ry + 11, 16, 2);
+          ctx.fillStyle = f > 0.9 ? "#60d8ff" : "#4060c8";
+          ctx.fillRect(rx - 8, ry + 11, Math.round(16 * f), 2);
+        }
+        // Projectiles
+        p.projectiles.forEach(pr => {
+          ctx.fillStyle = "rgba(200,160,255,0.2)"; ctx.fillRect(Math.round(pr.x)-4, Math.round(pr.y)-4, 8, 8);
+          ctx.fillStyle = p.color; ctx.fillRect(Math.round(pr.x)-2, Math.round(pr.y)-2, 4, 4);
+          ctx.fillStyle = "#ffffff"; ctx.fillRect(Math.round(pr.x)-1, Math.round(pr.y)-1, 2, 2);
+        });
+      }
+
+      function renderArena() {
+        const ar = game.arena;
+        const t = performance.now() / 1000;
+
+        const sx = shakeAmt > 0.3 ? Math.round((Math.random()-.5)*shakeAmt*2) : 0;
+        const sy = shakeAmt > 0.3 ? Math.round((Math.random()-.5)*shakeAmt*2) : 0;
+        ctx.save(); ctx.translate(sx, sy);
+
+        // Floor
+        for (let gy = 0; gy < VIEW_H; gy += 16) {
+          for (let gx = 0; gx < VIEW_W; gx += 16) {
+            ctx.fillStyle = (Math.floor(gx/16) + Math.floor(gy/16)) % 2 === 0 ? "#1a1e2e" : "#141726";
+            ctx.fillRect(gx, gy, 16, 16);
+          }
+        }
+        // Grid lines
+        ctx.fillStyle = "rgba(255,255,255,0.04)";
+        for (let gx = 0; gx < VIEW_W; gx += 16) ctx.fillRect(gx, 0, 1, VIEW_H);
+        for (let gy = 0; gy < VIEW_H; gy += 16) ctx.fillRect(0, gy, VIEW_W, 1);
+        // Center line
+        ctx.fillStyle = "rgba(255,255,255,0.08)";
+        ctx.fillRect(VIEW_W/2 - 1, 14, 2, VIEW_H - 14);
+        // Wall borders
+        ctx.fillStyle = "#4060c8";
+        ctx.fillRect(0, 0, VIEW_W, 2); ctx.fillRect(0, VIEW_H-2, VIEW_W, 2);
+        ctx.fillRect(0, 0, 2, VIEW_H); ctx.fillRect(VIEW_W-2, 0, 2, VIEW_H);
+
+        // Both player shadows
+        ctx.fillStyle = "rgba(0,0,0,0.22)";
+        ctx.fillRect(Math.round(ar.p1.x)-5, Math.round(ar.p1.y)+8, 10, 3);
+        ctx.fillRect(Math.round(ar.p2.x)-5, Math.round(ar.p2.y)+8, 10, 3);
+
+        // Players
+        renderArenaPlayer(ar.p1, true);
+        renderArenaPlayer(ar.p2, false);
+        // Weapon flashes
+        drawWeaponFlash(ar.p1.x, ar.p1.y, ar.p1.className, ar.p1.atkCd, ar.p2.x, ar.p2.y);
+        drawWeaponFlash(ar.p2.x, ar.p2.y, ar.p2.className, ar.p2.atkCd, ar.p1.x, ar.p1.y);
+
+        renderSParts(); renderDmgNums();
+
+        // ── HUD bars ─────────────────────────────────────
+        ctx.fillStyle = "rgba(0,0,0,0.7)";
+        ctx.fillRect(0, 0, VIEW_W, 16);
+        // P1 HP bar
+        ctx.fillStyle = "#f0f0e0"; ctx.font = "bold 6px 'Trebuchet MS'";
+        ctx.fillText(ar.p1.name, 4, 9);
+        const p1f = Math.max(0, ar.p1.hp / ar.p1.maxHp);
+        ctx.fillStyle = "#282820"; ctx.fillRect(4, 11, 70, 4);
+        ctx.fillStyle = p1f > 0.5 ? "#40c840" : p1f > 0.25 ? "#e8c028" : "#e03020";
+        ctx.fillRect(4, 11, Math.round(70 * p1f), 4);
+        // P2 HP bar (right-aligned)
+        const p2f = Math.max(0, ar.p2.hp / ar.p2.maxHp);
+        ctx.fillStyle = "#f0f0e0"; ctx.textAlign = "right";
+        ctx.fillText(ar.p2.name, VIEW_W - 4, 9);
+        ctx.textAlign = "left";
+        ctx.fillStyle = "#282820"; ctx.fillRect(VIEW_W - 74, 11, 70, 4);
+        ctx.fillStyle = p2f > 0.5 ? "#40c840" : p2f > 0.25 ? "#e8c028" : "#e03020";
+        ctx.fillRect(VIEW_W - 74 + Math.round(70 * (1 - p2f)), 11, Math.round(70 * p2f), 4);
+
+        // Round win pips (●/○) at center top
+        const pipColors = ["#f0f0e0", "#404040"];
+        for (let i = 0; i < 2; i++) {
+          ctx.fillStyle = ar.p1Wins > i ? "#40c840" : "#303030";
+          ctx.fillRect(VIEW_W/2 - 14 + i * 7, 4, 5, 5);
+          ctx.fillStyle = ar.p2Wins > i ? "#e03020" : "#303030";
+          ctx.fillRect(VIEW_W/2 + 2 + i * 7, 4, 5, 5);
+        }
+
+        // Round pause banner
+        if (ar.roundPause > 0) {
+          ctx.fillStyle = `rgba(0,0,0,${Math.min(0.7, ar.roundPause * 0.5)})`;
+          ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+          const wname = ar.roundWinner === "p1" ? ar.p1.name : ar.p2.name;
+          ctx.fillStyle = "#f8f060"; ctx.font = "bold 10px 'Trebuchet MS'";
+          ctx.textAlign = "center";
+          ctx.fillText(`${wname} wins round!`, VIEW_W/2, VIEW_H/2 - 6);
+          ctx.fillStyle = "#f0f0e0"; ctx.font = "6px 'Trebuchet MS'";
+          ctx.fillText(`${ar.p1.name}: ${ar.p1Wins}  ${ar.p2.name}: ${ar.p2Wins}`, VIEW_W/2, VIEW_H/2 + 8);
+          ctx.textAlign = "left";
+        }
+
+        // Controls
+        ctx.fillStyle = "rgba(240,240,224,0.4)";
+        ctx.font = "5px 'Trebuchet MS'";
+        ctx.fillText("P1: WASD/Space/Shift   P2: Arrows/Enter/Slash", 5, VIEW_H - 3);
+
+        ctx.restore();
       }
 
       // ── Chiptune Music Engine ─────────────────────────────
@@ -2328,14 +2750,20 @@
       // ─────────────────────────────────────────────────────
 
       document.querySelector("#singleBtn").addEventListener("click", () => start("single"));
+      document.querySelector("#arenaBtn").addEventListener("click", () => startArena());
       document.querySelector("#localBtn").addEventListener("click", () => start("local"));
       document.querySelector("#onlineBtn").addEventListener("click", () => start("online"));
       document.querySelector("#continueBtn").addEventListener("click", loadGame);
-      document.querySelector("#retryBtn").addEventListener("click", retry);
+      document.querySelector("#retryBtn").addEventListener("click", () => {
+        ui.gameOverMenu.classList.add("hidden");
+        if (game.mode === "arena" || (game.arena && !game.inBattle)) startArena();
+        else retry();
+      });
       document.querySelector("#titleBtn").addEventListener("click", () => {
         ui.gameOverMenu.classList.add("hidden");
         ui.titleMenu.classList.remove("hidden");
         game.mode = "title";
+        game.arena = null;
         Music.stop();
       });
 

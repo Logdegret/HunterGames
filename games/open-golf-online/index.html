@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script src="coi-serviceworker.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Open Golf Online</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0e1112;
+        --panel: #171c1e;
+        --panel-2: #20282b;
+        --line: #344044;
+        --text: #f4f7f5;
+        --muted: #a9b7b2;
+        --green: #52e39a;
+        --amber: #ffc857;
+        --cyan: #65d6ff;
+      }
+
+      * { box-sizing: border-box; }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      body { overflow: hidden; }
+
+      button,
+      input { font: inherit; }
+
+      .shell {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 360px;
+        width: 100%;
+        height: 100%;
+      }
+
+      .game-area {
+        position: relative;
+        min-width: 0;
+        background: #000;
+      }
+
+      .game-frame {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        background: #000;
+      }
+
+      .game-fallback {
+        position: absolute;
+        inset: auto 18px 18px;
+        display: none;
+        max-width: 560px;
+        border: 1px solid rgba(255, 200, 87, .48);
+        border-radius: 8px;
+        background: rgba(14, 17, 18, .9);
+        padding: 14px;
+        box-shadow: 0 18px 60px rgba(0, 0, 0, .36);
+      }
+
+      .game-fallback.show { display: grid; gap: 10px; }
+
+      .side {
+        display: grid;
+        align-content: start;
+        gap: 12px;
+        height: 100%;
+        border-left: 1px solid var(--line);
+        background: rgba(23, 28, 30, .98);
+        padding: 14px;
+        overflow: auto;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      h1,
+      h2,
+      p { margin-top: 0; }
+
+      h1 {
+        margin-bottom: 4px;
+        font-size: 22px;
+        line-height: 1.05;
+      }
+
+      h2 {
+        margin-bottom: 8px;
+        font-size: 15px;
+      }
+
+      .subtle {
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .status {
+        display: inline-flex;
+        min-height: 30px;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0 10px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .status.online {
+        border-color: rgba(82, 227, 154, .7);
+        color: var(--green);
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 11px;
+      }
+
+      .notice {
+        border-color: rgba(255, 200, 87, .4);
+        background: rgba(255, 200, 87, .08);
+      }
+
+      .room-fields {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .room-fields .field:first-child {
+        grid-column: 1 / -1;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 9px;
+      }
+
+      label {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      input {
+        width: 100%;
+        min-height: 38px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #0f1314;
+        color: var(--text);
+        padding: 0 10px;
+        outline: none;
+      }
+
+      input:focus {
+        border-color: var(--cyan);
+        box-shadow: 0 0 0 3px rgba(101, 214, 255, .16);
+      }
+
+      .actions,
+      .score-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      button,
+      .button-link {
+        display: inline-flex;
+        min-height: 38px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel-2);
+        color: var(--text);
+        padding: 0 11px;
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      button.primary,
+      .button-link.primary {
+        border-color: transparent;
+        background: var(--green);
+        color: #07100d;
+      }
+
+      button.warn {
+        border-color: rgba(255, 200, 87, .6);
+        color: var(--amber);
+      }
+
+      button:hover,
+      .button-link:hover {
+        border-color: var(--cyan);
+      }
+
+      .players {
+        display: grid;
+        gap: 8px;
+      }
+
+      .player {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #111617;
+        padding: 8px;
+      }
+
+      .player strong {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .player span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .score-scroll { overflow: auto; }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid var(--line);
+        padding: 7px 6px;
+        text-align: left;
+      }
+
+      th {
+        color: var(--muted);
+        font-size: 11px;
+        text-transform: uppercase;
+      }
+
+      td:last-child,
+      th:last-child { text-align: right; }
+
+      .score-input {
+        width: 58px;
+        min-height: 30px;
+        text-align: center;
+      }
+
+      .chat-log {
+        display: grid;
+        align-content: start;
+        gap: 8px;
+        min-height: 120px;
+        max-height: 190px;
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #0f1314;
+        padding: 8px;
+      }
+
+      .chat-line {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.35;
+      }
+
+      .chat-line strong { color: var(--text); }
+
+      .chat-form {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .copy-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .share-link {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #0f1314;
+        color: var(--muted);
+        padding: 9px 10px;
+        font-size: 12px;
+      }
+
+      @media (max-width: 980px) {
+        body { overflow: auto; }
+
+        .shell {
+          grid-template-columns: 1fr;
+          grid-template-rows: 62vh auto;
+          min-height: 100%;
+        }
+
+        .side {
+          height: auto;
+          min-height: 38vh;
+          border-left: 0;
+          border-top: 1px solid var(--line);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="game-area" aria-label="Open Golf game">
+        <iframe
+          class="game-frame"
+          id="gameFrame"
+          title="Open Golf"
+          src="../open-golf/index.html"
+          allow="fullscreen *; pointer-lock *; gamepad *; autoplay *"
+          allowfullscreen></iframe>
+        <div class="game-fallback" id="gameFallback">
+          <p class="subtle">If Open Golf stays black, open it once in its own tab so the browser can activate the local game files.</p>
+          <a class="button-link primary" href="../open-golf/index.html" target="_blank" rel="noopener noreferrer">Open game tab</a>
+        </div>
+      </section>
+
+      <aside class="side" aria-label="Online room tools">
+        <section class="brand">
+          <div>
+            <h1>Open Golf Online</h1>
+            <p class="subtle">Open-Golf build files plus Cloudflare rooms.</p>
+          </div>
+          <span class="status" id="status">Offline</span>
+        </section>
+
+        <section class="card notice">
+          <p class="subtle">Play the Open-Golf build on the left. Use this panel for friend rooms, synced scores, and chat.</p>
+        </section>
+
+        <section class="card">
+          <h2>Room</h2>
+          <div class="room-fields">
+            <div class="field">
+              <label for="serverInput">Server</label>
+              <input id="serverInput" placeholder="wss://hunter-open-golf.logankao99.workers.dev">
+            </div>
+            <div class="field">
+              <label for="nameInput">Name</label>
+              <input id="nameInput" maxlength="18" placeholder="Player">
+            </div>
+            <div class="field">
+              <label for="roomInput">Room</label>
+              <input id="roomInput" maxlength="12" placeholder="PARTY">
+            </div>
+          </div>
+          <div class="actions">
+            <button class="primary" id="joinBtn" type="button">Join</button>
+            <button id="newRoomBtn" type="button">New code</button>
+            <button id="leaveBtn" type="button">Leave</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Share</h2>
+          <div class="copy-row">
+            <div class="share-link" id="shareLink">Join a room first</div>
+            <button id="copyBtn" type="button">Copy</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Players</h2>
+          <div class="players" id="players"></div>
+        </section>
+
+        <section class="card">
+          <h2>Scorecard</h2>
+          <div class="score-actions">
+            <button id="prevHoleBtn" type="button">Prev</button>
+            <button id="nextHoleBtn" type="button">Next</button>
+            <button class="warn" id="resetBtn" type="button">Reset</button>
+          </div>
+          <div class="score-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th id="holeLabel">Hole 1</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody id="scoreRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Chat</h2>
+          <div class="chat-log" id="chatLog"></div>
+          <form class="chat-form" id="chatForm">
+            <input id="chatInput" maxlength="160" placeholder="Nice shot">
+            <button type="submit">Send</button>
+          </form>
+        </section>
+      </aside>
+    </main>
+
+    <script>
+      const DEFAULT_SERVER = "wss://hunter-open-golf.logankao99.workers.dev";
+      const HOLES = 18;
+      const playerId = localStorage.getItem("openGolfPlayerId") || crypto.randomUUID();
+      localStorage.setItem("openGolfPlayerId", playerId);
+
+      const els = {
+        gameFallback: document.querySelector("#gameFallback"),
+        status: document.querySelector("#status"),
+        serverInput: document.querySelector("#serverInput"),
+        nameInput: document.querySelector("#nameInput"),
+        roomInput: document.querySelector("#roomInput"),
+        joinBtn: document.querySelector("#joinBtn"),
+        newRoomBtn: document.querySelector("#newRoomBtn"),
+        leaveBtn: document.querySelector("#leaveBtn"),
+        shareLink: document.querySelector("#shareLink"),
+        copyBtn: document.querySelector("#copyBtn"),
+        players: document.querySelector("#players"),
+        holeLabel: document.querySelector("#holeLabel"),
+        scoreRows: document.querySelector("#scoreRows"),
+        prevHoleBtn: document.querySelector("#prevHoleBtn"),
+        nextHoleBtn: document.querySelector("#nextHoleBtn"),
+        resetBtn: document.querySelector("#resetBtn"),
+        chatLog: document.querySelector("#chatLog"),
+        chatForm: document.querySelector("#chatForm"),
+        chatInput: document.querySelector("#chatInput")
+      };
+
+      let socket = null;
+      let roomState = { hole: 1, players: [], scores: {}, chat: [] };
+
+      const params = new URLSearchParams(location.search);
+      els.serverInput.value = params.get("server") || localStorage.getItem("openGolfServer") || DEFAULT_SERVER;
+      els.nameInput.value = params.get("name") || localStorage.getItem("openGolfName") || `Player ${String(playerId).slice(0, 4)}`;
+      els.roomInput.value = cleanRoom(params.get("room") || localStorage.getItem("openGolfRoom") || "PARTY");
+
+      render();
+      setTimeout(() => els.gameFallback.classList.add("show"), 5000);
+
+      els.joinBtn.addEventListener("click", joinRoom);
+      els.leaveBtn.addEventListener("click", leaveRoom);
+      els.newRoomBtn.addEventListener("click", () => {
+        els.roomInput.value = Math.random().toString(36).slice(2, 8).toUpperCase();
+        joinRoom();
+      });
+      els.copyBtn.addEventListener("click", async () => {
+        const text = els.shareLink.textContent;
+        if (!text || text === "Join a room first") return;
+        await navigator.clipboard.writeText(text);
+        els.copyBtn.textContent = "Copied";
+        setTimeout(() => els.copyBtn.textContent = "Copy", 1100);
+      });
+      els.prevHoleBtn.addEventListener("click", () => send({ type: "setHole", hole: Math.max(1, Number(roomState.hole || 1) - 1) }));
+      els.nextHoleBtn.addEventListener("click", () => send({ type: "setHole", hole: Math.min(HOLES, Number(roomState.hole || 1) + 1) }));
+      els.resetBtn.addEventListener("click", () => send({ type: "resetScores" }));
+      els.chatForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const text = els.chatInput.value.trim();
+        if (!text) return;
+        send({ type: "chat", text });
+        els.chatInput.value = "";
+      });
+
+      if (els.serverInput.value) joinRoom();
+
+      function joinRoom() {
+        const server = normalizeServer(els.serverInput.value);
+        const room = cleanRoom(els.roomInput.value);
+        const name = cleanName(els.nameInput.value);
+        if (!server) {
+          setStatus("Paste your Cloudflare URL", false);
+          els.serverInput.focus();
+          return;
+        }
+        leaveRoom();
+        localStorage.setItem("openGolfServer", server);
+        localStorage.setItem("openGolfRoom", room);
+        localStorage.setItem("openGolfName", name);
+        els.serverInput.value = server;
+        els.roomInput.value = room;
+        els.nameInput.value = name;
+        const url = `${server.replace(/\/$/, "")}/room/${encodeURIComponent(room)}?player=${encodeURIComponent(playerId)}&name=${encodeURIComponent(name)}`;
+        socket = new WebSocket(url);
+        setStatus("Connecting", false);
+        socket.addEventListener("open", () => setStatus("Online", true));
+        socket.addEventListener("message", (event) => {
+          const message = JSON.parse(event.data);
+          if (message.type === "state") {
+            roomState = message.state;
+            render();
+          }
+        });
+        socket.addEventListener("close", () => setStatus("Offline", false));
+        socket.addEventListener("error", () => setStatus("Connection error", false));
+      }
+
+      function leaveRoom() {
+        if (socket) socket.close();
+        socket = null;
+        setStatus("Offline", false);
+      }
+
+      function send(message) {
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+          setStatus("Join first", false);
+          return;
+        }
+        socket.send(JSON.stringify(message));
+      }
+
+      function render() {
+        const players = roomState.players || [];
+        const scores = roomState.scores || {};
+        const hole = Number(roomState.hole || 1);
+        els.holeLabel.textContent = `Hole ${hole}`;
+        els.players.innerHTML = players.length ? players.map((player) => `
+          <div class="player">
+            <strong>${escapeHtml(player.name)}</strong>
+            <span>${player.online ? "online" : "away"}</span>
+          </div>
+        `).join("") : `<p class="subtle">No one has joined yet.</p>`;
+
+        els.scoreRows.innerHTML = players.map((player) => {
+          const playerScores = scores[player.id] || {};
+          const total = totalScore(playerScores);
+          const value = playerScores[String(hole)] || "";
+          return `
+            <tr>
+              <td>${escapeHtml(player.name)}</td>
+              <td>
+                ${player.id === playerId ? `<input class="score-input" type="number" min="1" max="99" value="${escapeHtml(value)}" data-hole="${hole}">` : escapeHtml(value || "-")}
+              </td>
+              <td>${total || "-"}</td>
+            </tr>
+          `;
+        }).join("");
+
+        document.querySelectorAll(".score-input").forEach((input) => {
+          input.addEventListener("change", () => {
+            send({ type: "setScore", hole: Number(input.dataset.hole), strokes: Number(input.value) || 0 });
+          });
+        });
+
+        els.chatLog.innerHTML = (roomState.chat || []).slice(-20).map((line) => `
+          <div class="chat-line"><strong>${escapeHtml(line.name)}:</strong> ${escapeHtml(line.text)}</div>
+        `).join("") || `<div class="chat-line">Chat appears here.</div>`;
+        els.chatLog.scrollTop = els.chatLog.scrollHeight;
+
+        const server = normalizeServer(els.serverInput.value);
+        const room = cleanRoom(els.roomInput.value);
+        els.shareLink.textContent = server
+          ? `${location.origin}${location.pathname}?server=${encodeURIComponent(server)}&room=${encodeURIComponent(room)}`
+          : "Join a room first";
+      }
+
+      function setStatus(text, online) {
+        els.status.textContent = text;
+        els.status.classList.toggle("online", online);
+      }
+
+      function cleanRoom(value) {
+        return String(value || "PARTY").toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 12) || "PARTY";
+      }
+
+      function cleanName(value) {
+        return String(value || "Player").replace(/[<>]/g, "").trim().slice(0, 18) || "Player";
+      }
+
+      function normalizeServer(value) {
+        const text = String(value || "").trim().replace(/\/$/, "");
+        if (!text) return "";
+        if (text.startsWith("wss://") || text.startsWith("ws://")) return text;
+        if (text.startsWith("https://")) return `wss://${text.slice(8)}`;
+        if (text.startsWith("http://")) return `ws://${text.slice(7)}`;
+        return `wss://${text}`;
+      }
+
+      function totalScore(playerScores) {
+        return Object.values(playerScores).reduce((sum, value) => sum + (Number(value) || 0), 0);
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+    </script>
+  </body>
+</html>

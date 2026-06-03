@@ -74,3 +74,47 @@ Protocol: WebSockets through Colyseus
 ```
 
 For animated characters, the easiest path is **Spine 2D** if you want polished skeletal animation, or **Aseprite** if you want pixel-art sprite sheets. For free/lower-cost tools, use **LibreSprite** for sprite sheets or **DragonBones** for skeletal rigs. Phaser 3 can play sprite sheets directly, and PixiJS works well with Spine-style rigs.
+
+## Open Golf integration
+
+Open Golf is MIT licensed and has an official browser build at:
+
+```text
+https://mgerdes.github.io/minigolf.html
+```
+
+The portal currently loads `games/open-golf-online/index.html`, which embeds the local Open-Golf web build from `games/open-golf/index.html` plus an online room panel. The Open Golf source repository is:
+
+```text
+https://github.com/mgerdes/Open-Golf
+```
+
+The mirrored Open-Golf build files in this repo are:
+
+```text
+games/open-golf/index.html
+games/open-golf/golf.js
+games/open-golf/golf.wasm
+games/open-golf/golf.worker.js
+games/open-golf/coi-serviceworker.min.js
+games/open-golf/LICENSE
+```
+
+For a stronger production setup, fork `mgerdes/Open-Golf`, keep the MIT license file with the game, and publish your own fresh web build from GitHub Pages, Cloudflare Pages, or Netlify.
+
+The added Cloudflare Worker in `cloudflare/open-golf-worker/` provides online rooms, synced scorecards, connected players, and chat. The Open-Golf game itself is still the original client-side WebAssembly build.
+
+### Cloudflare multiplayer setup
+
+1. Go to `cloudflare/open-golf-worker/`.
+2. Run `npm install -g wrangler` if Wrangler is not already installed.
+3. Run `wrangler login`.
+4. Run `wrangler deploy`.
+5. Copy the deployed URL and change `https://` to `wss://`.
+6. Open the GitHub Pages site, load **Open Golf Online**, paste that WebSocket URL into the room panel, and click **Join**.
+
+Example:
+
+```text
+wss://hunter-open-golf.YOURNAME.workers.dev
+```
