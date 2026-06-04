@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hunter Games</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%234fe39a' d='M32 4 60 52H4z'/%3E%3Cpath fill='%2365d6ff' d='M32 4 4 52h28z' opacity='.88'/%3E%3Cpath fill='%23ffc857' d='M32 52h28L46 28z'/%3E%3C/svg%3E">
-    <meta name="google-adsense-account" content="ca-pub-4125872061932966">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4125872061932966"
-     crossorigin="anonymous"></script>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
@@ -26,13 +23,6 @@
       </div>
 
       <main id="top">
-        <aside class="ad-slot ad-slot-banner" aria-label="Advertisement">
-          <ins class="adsbygoogle"
-               style="display:inline-block;width:728px;height:90px"
-               data-ad-client="ca-pub-4125872061932966"
-               data-ad-slot="BANNER_SLOT_ID"></ins>
-          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-        </aside>
 
         <section class="hero" aria-labelledby="pageTitle">
           <div class="hero-copy">
@@ -71,7 +61,16 @@
             <p id="dailyText">Play one new game today to keep your streak alive.</p>
             <div class="mini-stats" aria-label="Player progress">
               <span class="streak-stat"><img class="streak-flame small" src="assets/streak-flame.svg" alt=""><strong id="streakCount">0</strong> day streak</span>
-              <span><strong id="xpCount">0</strong> XP</span>
+              <div class="xp-container">
+                <div class="xp-header">
+                  <span id="level-text">Level 1</span>
+                  <span id="xp-text">0 / 100 XP</span>
+                </div>
+                <div class="xp-track" aria-hidden="true">
+                  <div id="xp-fill"></div>
+                </div>
+              </div>
+
               <span><strong id="levelCount">1</strong> level</span>
             </div>
           </div>
@@ -93,24 +92,7 @@
           </div>
         </section>
 
-        <section class="play-shell" aria-label="Game player and ads">
-          <div class="player-ad-row">
-            <aside class="ad-slot ad-slot-player" aria-label="Advertisement">
-              <ins class="adsbygoogle"
-                   style="display:inline-block;width:300px;height:250px"
-                   data-ad-client="ca-pub-4125872061932966"
-                   data-ad-slot="PLAYER_SLOT_ID_1"></ins>
-              <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-            </aside>
-            <aside class="ad-slot ad-slot-player" aria-label="Advertisement">
-              <ins class="adsbygoogle"
-                   style="display:inline-block;width:300px;height:250px"
-                   data-ad-client="ca-pub-4125872061932966"
-                   data-ad-slot="PLAYER_SLOT_ID_2"></ins>
-              <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-            </aside>
-          </div>
-
+        <section class="play-shell" aria-label="Game player">
           <section class="player-section" id="player" aria-labelledby="playerTitle">
             <div class="player-info">
               <p class="eyebrow" id="activeGenre">Arcade</p>
@@ -146,13 +128,6 @@
                 <div class="overlay-message">
                   <strong>Loading games</strong>
                   <span>Pick a title from the shelf</span>
-                </div>
-                <div id="adPanel" class="ad-panel hidden">
-                  <p class="ad-label">Advertisement</p>
-                  <h3 id="adTitle">Hunter Games Sponsor</h3>
-                  <p id="adText">Your ad creative can go here before the selected game opens.</p>
-                  <a id="adLink" class="ad-link" href="#" target="_blank" rel="noopener noreferrer">Visit sponsor</a>
-                  <button id="skipAdBtn" class="skip-ad" type="button" disabled>Game starts in 5</button>
                 </div>
               </div>
             </div>

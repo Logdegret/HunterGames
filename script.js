@@ -123,10 +123,10 @@ const openSourceGames = [
     category: "Sports",
     source: "Open Source",
     sourcePage: "https://github.com/mgerdes/Open-Golf",
-    embed: "./games/open-golf-online/index.html",
+    embed: "./games/open-golf/index.html",
     image: "https://i.imgur.com/TBlXedl.gif",
-    description: "Play Open Golf with shared online rooms, synced scorecards, chat, and friend room codes.",
-    controls: "Mouse or touch to play. Room tools sync score, turns, and chat.",
+    description: "Play the rebuilt Open-Golf web game with built-in party rooms, synced shots, scorecards, and chat.",
+    controls: "Mouse or touch to shoot. Use the in-game Party panel for rooms and chat.",
     license: "MIT"
   }
 ];
@@ -219,11 +219,6 @@ const frame = document.querySelector("#gameFrame");
 const cabinet = document.querySelector(".cabinet");
 const overlay = document.querySelector("#overlay");
 const overlayMessage = document.querySelector(".overlay-message");
-const adPanel = document.querySelector("#adPanel");
-const adTitle = document.querySelector("#adTitle");
-const adText = document.querySelector("#adText");
-const adLink = document.querySelector("#adLink");
-const skipAdBtn = document.querySelector("#skipAdBtn");
 const loadBtn = document.querySelector("#startBtn");
 const fullscreenBtn = document.querySelector("#pauseBtn");
 const blankBtn = document.querySelector("#blankBtn");
@@ -234,6 +229,9 @@ const categoryEl = document.querySelector("#score");
 const controlsEl = document.querySelector("#controls");
 const streakCount = document.querySelector("#streakCount");
 const xpCount = document.querySelector("#xpCount");
+const levelText = document.querySelector("#levelText") || document.querySelector("#level-text");
+const xpText = document.querySelector("#xpText") || document.querySelector("#xp-text");
+const xpFill = document.querySelector("#xpFill") || document.querySelector("#xp-fill");
 const levelCount = document.querySelector("#levelCount");
 const dailyText = document.querySelector("#dailyText");
 const spotlightTitle = document.querySelector("#spotlightTitle");
@@ -255,18 +253,8 @@ let activeFilter = "all";
 let activeMood = "";
 let activeGame = null;
 let frameTimer = 0;
-let adTimer = 0;
-let adFinishTimer = 0;
-let adCountdown = 0;
 let toastTimer = 0;
 
-const adSlot = {
-  title: "Hunter Games Sponsor",
-  text: "Place your video, banner, or sponsor message here. The game loads after this short break.",
-  href: "#"
-};
-const adClient = "ca-pub-4125872061932966";
-const galleryAdSlots = ["GALLERY_SLOT_ID_1", "GALLERY_SLOT_ID_2"];
 const iframeAllow = "fullscreen *; pointer-lock *; gamepad *; autoplay *; clipboard-write *; accelerometer *; gyroscope *";
 const todayKey = new Date().toISOString().slice(0, 10);
 const moodGroups = {
@@ -370,50 +358,20 @@ function loadActiveGame() {
 
 function startPreRoll(game) {
   clearTimeout(frameTimer);
-  clearInterval(adTimer);
-  clearTimeout(adFinishTimer);
   frame.removeAttribute("src");
   overlay.classList.remove("hidden");
-  overlayMessage.classList.add("hidden");
-  adPanel.classList.remove("hidden");
-  adTitle.textContent = adSlot.title;
-  adText.textContent = adSlot.text;
-  adLink.href = adSlot.href;
-  adCountdown = 5;
-  skipAdBtn.disabled = true;
-  skipAdBtn.textContent = `Game starts in ${adCountdown}`;
-  adTimer = setInterval(() => {
-    adCountdown -= 1;
-    if (adCountdown > 0) {
-      skipAdBtn.textContent = `Game starts in ${adCountdown}`;
-      return;
-    }
-    finishPreRoll(game);
-  }, 1000);
-  adFinishTimer = setTimeout(() => finishPreRoll(game), 5200);
-}
-
-function finishPreRoll(game) {
-  clearInterval(adTimer);
-  clearTimeout(adFinishTimer);
-  skipAdBtn.disabled = false;
-  skipAdBtn.textContent = "Loading game";
-  adPanel.classList.add("hidden");
-  overlayMessage.classList.remove("hidden");
   activeGame = game;
   awardPlay(game);
   setOverlay(activeGame.title, "Loading game");
   frame.setAttribute("allow", iframeAllow);
   frame.src = activeGame.embed;
   setTimeout(() => frame.focus(), 300);
-  clearTimeout(frameTimer);
   frameTimer = setTimeout(() => overlay.classList.add("hidden"), 1800);
 }
 
 function setOverlay(title, subtitle) {
   overlay.classList.remove("hidden");
   overlayMessage.classList.remove("hidden");
-  adPanel.classList.add("hidden");
   overlay.querySelector("strong").textContent = title;
   overlay.querySelector("span").textContent = subtitle;
 }
@@ -471,6 +429,14 @@ function thumbnailUrl(image) {
   if (!/^https?:\/\//i.test(image)) return image;
   const source = image.replace(/^https?:\/\//i, "");
   return `https://images.weserv.nl/?url=${encodeURIComponent(source)}&w=640&h=360&fit=cover&output=webp`;
+}
+
+function resolveGameUrl(url) {
+  try {
+    return new URL(url, location.href).href;
+  } catch {
+    return url;
+  }
 }
 
 function artColors(seed) {
@@ -542,9 +508,6 @@ reportBtn.addEventListener("click", () => {
 });
 shortcutsBtn.addEventListener("click", openShortcuts);
 closeShortcutsBtn.addEventListener("click", () => shortcutsDialog.close());
-skipAdBtn.addEventListener("click", () => {
-  if (!skipAdBtn.disabled && activeGame) finishPreRoll(activeGame);
-});
 
 fullscreenBtn.addEventListener("click", () => {
   const target = frame.src ? cabinet : document.querySelector("#player");
@@ -587,20 +550,39 @@ blankBtn.addEventListener("click", () => {
   const blank = window.open("about:blank", "_blank");
   if (!blank) return;
   const title = escapeHtml(activeGame.title);
-  const src = escapeHtml(activeGame.embed);
+  const src = escapeHtml(resolveGameUrl(activeGame.embed));
+  const base = escapeHtml(location.href);
   blank.document.open();
   blank.document.write(`<!doctype html>
 <html>
   <head>
     <title>${title}</title>
+    <base href="${base}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
       html, body { margin: 0; width: 100%; height: 100%; background: #050608; overflow: hidden; }
       iframe { width: 100%; height: 100%; border: 0; display: block; background: #050608; }
+      .fallback {
+        position: fixed;
+        left: 16px;
+        bottom: 16px;
+        max-width: min(520px, calc(100% - 32px));
+        border: 1px solid rgba(255, 200, 87, .5);
+        border-radius: 8px;
+        background: rgba(12, 14, 16, .88);
+        color: #f5f7fb;
+        padding: 12px 14px;
+        font: 14px system-ui, sans-serif;
+        line-height: 1.4;
+      }
+      .fallback a { color: #52e39a; font-weight: 800; }
     </style>
   </head>
   <body>
-    <iframe src="${src}" allow="${iframeAllow}" allowfullscreen></iframe>
+    <iframe src="${src}" allow="${iframeAllow}" allowfullscreen credentialless></iframe>
+    <div class="fallback">
+      If the game stays black, <a href="${src}" target="_self">load it directly in this blank tab</a>.
+    </div>
   </body>
 </html>`);
   blank.document.close();
@@ -681,9 +663,17 @@ function awardPlay(game) {
 }
 
 function renderProgress() {
+  const xpPerLevel = 100;
+  const level = Math.floor(state.xp / xpPerLevel) + 1;
+  const xpIntoLevel = state.xp % xpPerLevel;
+  const progressPercent = (xpIntoLevel / xpPerLevel) * 100;
+
   streakCount.textContent = state.streak;
-  xpCount.textContent = state.xp;
-  levelCount.textContent = Math.floor(state.xp / 100) + 1;
+  if (xpCount) xpCount.textContent = state.xp;
+  if (levelText) levelText.textContent = `Level ${level}`;
+  if (xpText) xpText.textContent = `${xpIntoLevel} / ${xpPerLevel} XP`;
+  if (xpFill) xpFill.style.width = `${progressPercent}%`;
+  levelCount.textContent = level;
   dailyText.textContent = state.playedToday
     ? "Daily challenge complete. Come back tomorrow to keep the streak alive."
     : "Play one game today to keep your streak alive.";

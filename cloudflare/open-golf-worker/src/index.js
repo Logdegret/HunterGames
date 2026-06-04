@@ -84,6 +84,29 @@ export class GolfRoom extends DurableObject {
       await this.saveAndBroadcast();
     }
 
+    if (data.type === "shot") {
+      this.broadcast({
+        type: "shot",
+        playerId: meta.playerId,
+        name: meta.name,
+        level: clamp(Number(data.level) || 1, 1, HOLES),
+        stroke: clamp(Number(data.stroke) || 1, 1, 999),
+        position: cleanVec3(data.position),
+        velocity: cleanVec3(data.velocity),
+        at: Date.now()
+      });
+    }
+
+    if (data.type === "holeFinished") {
+      const level = clamp(Number(data.level) || this.room.hole, 1, HOLES);
+      const strokes = clamp(Number(data.strokes) || 0, 0, 99);
+      this.room.scores[meta.playerId] ||= {};
+      if (strokes > 0) this.room.scores[meta.playerId][String(level)] = strokes;
+      this.room.hole = level;
+      this.room.updatedAt = Date.now();
+      await this.saveAndBroadcast();
+    }
+
     if (data.type === "setHole") {
       this.room.hole = clamp(Number(data.hole) || 1, 1, HOLES);
       this.room.updatedAt = Date.now();
@@ -142,7 +165,11 @@ export class GolfRoom extends DurableObject {
 
   async saveAndBroadcast() {
     await this.ctx.storage.put("state", this.room);
-    const message = JSON.stringify({ type: "state", state: this.publicState() });
+    this.broadcast({ type: "state", state: this.publicState() });
+  }
+
+  broadcast(data) {
+    const message = JSON.stringify(data);
     for (const ws of this.clients.keys()) {
       try {
         ws.send(message);
@@ -210,6 +237,20 @@ function cleanName(value) {
 
 function cleanChat(value) {
   return String(value || "").replace(/[<>]/g, "").trim().slice(0, 160);
+}
+
+function cleanVec3(value) {
+  return {
+    x: cleanNumber(value?.x),
+    y: cleanNumber(value?.y),
+    z: cleanNumber(value?.z)
+  };
+}
+
+function cleanNumber(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return 0;
+  return Math.max(-10000, Math.min(10000, number));
 }
 
 function clamp(value, min, max) {

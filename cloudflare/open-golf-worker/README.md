@@ -58,5 +58,8 @@ The copied link includes the server and room code, so friends should land in the
 - Current hole
 - Scorecard
 - Chat
+- Open-Golf shot events
 
-The embedded Open Golf game is still the original client-side browser build. Players enter strokes in the online scorecard after each hole. Deep physics sync would require modifying the Open-Golf C/WebAssembly source directly.
+The embedded Open Golf game has been rebuilt with a small WebAssembly bridge. Local shots are sent to the Durable Object, and remote shots are applied inside the Open-Golf engine through `golf_multiplayer_apply_remote_shot`.
+
+This is still a client-simulated multiplayer model. The Durable Object relays turn/shot events; it does not run the Open-Golf physics simulation server-side.
