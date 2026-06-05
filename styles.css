@@ -551,25 +551,6 @@ h2 {
   transition: width .25s ease;
 }
 
-.streak-flame {
-  display: block;
-  flex: 0 0 auto;
-  object-fit: contain;
-}
-
-.streak-flame.small {
-  width: 28px;
-  height: 28px;
-  margin-left: -2px;
-}
-
-.streak-flame.large {
-  width: 126px;
-  height: 126px;
-  margin-bottom: 8px;
-  filter: drop-shadow(0 18px 24px rgba(0, 245, 0, .2));
-}
-
 .tool-panel {
   display: grid;
   align-content: start;
