@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hunter Games</title>
+    <meta name="description" content="Hunter Games is a curated HTML5 browser game library with quick arcade, puzzle, sports, strategy, and multiplayer picks, plus original notes on controls and play style.">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%234fe39a' d='M32 4 60 52H4z'/%3E%3Cpath fill='%2365d6ff' d='M32 4 4 52h28z' opacity='.88'/%3E%3Cpath fill='%23ffc857' d='M32 52h28L46 28z'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="styles.css">
   </head>
@@ -36,11 +37,17 @@
             </div>
             <p class="eyebrow">Browser games that load fast</p>
             <h1 id="pageTitle">Pick a game and start playing.</h1>
-            <p class="intro">A fast HTML5 game portal.</p>
+            <p class="intro">Hunter Games is a curated HTML5 game shelf for quick browser play. Each pick includes plain-English notes about the genre, controls, and why it is worth opening, so you can find a match before loading a large game frame.</p>
             <div class="hero-actions">
               <a class="primary-action" href="#player">Play now</a>
               <a class="secondary-action" href="#library">Browse library</a>
             </div>
+            <nav class="site-links" aria-label="Site information">
+              <a href="about.html">About</a>
+              <a href="contact.html">Contact</a>
+              <a href="privacy.html">Privacy</a>
+              <a href="terms.html">Terms</a>
+            </nav>
           </div>
           <div class="hero-art" aria-hidden="true">
             <div class="orbit one"></div>
@@ -89,6 +96,28 @@
               <button class="mood-chip" data-mood="rage" type="button">Challenge</button>
               <button class="mood-chip" data-mood="friend" type="button">2 player</button>
             </div>
+          </div>
+        </section>
+
+        <section class="guide-section" aria-labelledby="guideTitle">
+          <div class="guide-copy">
+            <p class="eyebrow">How the shelf is built</p>
+            <h2 id="guideTitle">Curated for short sessions, clear controls, and fewer dead ends.</h2>
+            <p>Many free game portals are just long lists. Hunter Games keeps the front page focused on games that can be described clearly, categorized cleanly, and launched from a modern browser. Games that feel broken, misleading, overly repetitive, or unsuitable for the current library are removed from the visible shelf.</p>
+          </div>
+          <div class="guide-grid" aria-label="Curation notes">
+            <article>
+              <h3>Original play notes</h3>
+              <p>Cards summarize what the game asks you to do, the likely session length, and the controls to try first. The descriptions are written for this site instead of being copied from a store listing.</p>
+            </article>
+            <article>
+              <h3>Source transparency</h3>
+              <p>The library mixes local projects, open-source games, open-licensed itch.io entries, and externally hosted HTML5 games. When a game has a known open license, the card shows it.</p>
+            </article>
+            <article>
+              <h3>Maintenance loop</h3>
+              <p>The player includes a broken-game report button, and the visible collection is filtered so questionable or unreliable entries can be held back while they are reviewed.</p>
+            </article>
           </div>
         </section>
 
@@ -173,6 +202,18 @@
           <div class="game-grid" id="gameGrid"></div>
         </section>
       </main>
+      <footer class="site-footer">
+        <div>
+          <strong>Hunter Games</strong>
+          <p>Curated browser games, control notes, and quick-play tools for casual HTML5 sessions.</p>
+        </div>
+        <nav aria-label="Footer">
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms</a>
+        </nav>
+      </footer>
     </div>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <dialog id="shortcutsDialog" class="shortcuts-dialog" aria-labelledby="shortcutsTitle">

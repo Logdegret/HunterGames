@@ -202,6 +202,8 @@ const openSourceCatalog = openSourceGames.map((game) => ({
 }));
 
 const games = [...openSourceCatalog, ...localCatalog, ...googleSiteCatalog, ...itchCatalog, ...classroomCatalog, ...freezeNovaCatalog];
+const adClient = "";
+const galleryAdSlots = [];
 const blockedTitleTerms = ["brainrot"];
 const blockedTitles = new Set(["Greed II", "Closer", "Among Us", "Snow Rider 3D", "Golf Bit"]);
 const cleanGames = games.filter((game) => {
@@ -293,7 +295,7 @@ function renderCards() {
     `;
     card.addEventListener("click", () => selectGame(game.id, true));
     grid.appendChild(card);
-    if ((grid.children.length === 4 || grid.children.length === 10) && visible.length > grid.children.length) {
+    if (adClient && galleryAdSlots.length && (grid.children.length === 4 || grid.children.length === 10) && visible.length > grid.children.length) {
       grid.appendChild(createGalleryAd(grid.querySelectorAll(".ad-slot-gallery").length));
     }
   });

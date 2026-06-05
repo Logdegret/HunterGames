@@ -266,6 +266,25 @@ h2 {
   flex-wrap: wrap;
 }
 
+.site-links {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.site-links a,
+.site-footer a {
+  color: var(--muted);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.site-links a:hover,
+.site-footer a:hover {
+  color: var(--green);
+}
+
 .primary-action,
 .secondary-action {
   display: inline-flex;
@@ -408,6 +427,51 @@ h2 {
   display: grid;
   align-content: start;
   gap: 14px;
+}
+
+.guide-section {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.35fr);
+  gap: 24px;
+  align-items: start;
+  margin: 26px 0 42px;
+  padding: 28px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.guide-copy h2 {
+  max-width: 560px;
+  font-size: clamp(30px, 4vw, 52px);
+}
+
+.guide-copy p:not(.eyebrow),
+.guide-grid p,
+.content-page p,
+.content-page li,
+.site-footer p {
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.guide-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.guide-grid article {
+  min-height: 230px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(24, 27, 34, .78);
+  padding: 18px;
+}
+
+.guide-grid h3,
+.content-page h2,
+.content-page h3 {
+  margin-top: 0;
 }
 
 .mood-row {
@@ -1100,9 +1164,58 @@ body.theater-mode #gameFrame {
   font-size: 12px;
 }
 
+.site-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 22px;
+  align-items: start;
+  padding: 30px 0 42px;
+  border-top: 1px solid var(--line);
+}
+
+.site-footer strong {
+  font-size: 20px;
+}
+
+.site-footer p {
+  max-width: 520px;
+  margin: 8px 0 0;
+}
+
+.site-footer nav {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.content-page {
+  width: min(860px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 42px 0 64px;
+}
+
+.content-page header {
+  margin-bottom: 30px;
+}
+
+.content-page h1 {
+  font-size: clamp(42px, 7vw, 74px);
+}
+
+.content-page section {
+  padding: 24px 0;
+  border-top: 1px solid var(--line);
+}
+
+.content-page a {
+  color: var(--green);
+}
+
 @media (max-width: 880px) {
   .hero,
   .engagement,
+  .guide-section,
   .play-shell,
   .player-section {
     grid-template-columns: 1fr;
@@ -1145,6 +1258,22 @@ body.theater-mode #gameFrame {
 
   .rail {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .guide-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .guide-grid article {
+    min-height: auto;
+  }
+
+  .site-footer {
+    flex-direction: column;
+  }
+
+  .site-footer nav {
+    justify-content: flex-start;
   }
 }
 
