@@ -51,6 +51,48 @@ a {
   margin: 0 auto;
 }
 
+.site-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  padding: 24px 0 10px;
+}
+
+.home-mark {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  color: var(--text);
+  font-size: 22px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.home-mark svg {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+}
+
+.top-nav {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.top-nav a {
+  color: var(--muted);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.top-nav a:hover {
+  color: var(--green);
+}
+
 .floating-search {
   position: fixed;
   top: max(16px, env(safe-area-inset-top));
@@ -256,6 +298,111 @@ h2 {
   color: var(--muted);
   font-size: 18px;
   line-height: 1.65;
+}
+
+.personal-hero {
+  min-height: 520px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  gap: 40px;
+  align-items: center;
+  padding: 46px 0 34px;
+}
+
+.home-board {
+  display: grid;
+  gap: 14px;
+}
+
+.home-board article,
+.project-grid article,
+.readme-steps article,
+.summer-list article,
+.game-notes {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(24, 27, 34, .78);
+  padding: 20px;
+}
+
+.home-board span,
+.readme-steps span {
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.home-board strong {
+  display: block;
+  margin: 8px 0;
+  font-size: 28px;
+  line-height: 1.05;
+}
+
+.home-board p,
+.project-grid p,
+.readme-section p,
+.readme-steps p,
+.summer-section p,
+.summer-list p,
+.game-notes p {
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.project-section,
+.readme-section,
+.summer-section,
+.game-notes {
+  margin: 24px 0 54px;
+}
+
+.project-grid,
+.summer-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.project-grid h3,
+.readme-steps h3,
+.summer-list h3 {
+  margin: 0 0 10px;
+  font-size: 24px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.compact-link {
+  min-height: 38px;
+  padding: 0 14px;
+}
+
+.readme-section {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.readme-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.summer-section {
+  display: grid;
+  grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr);
+  gap: 24px;
+  align-items: start;
 }
 
 .hero-actions,
@@ -1287,6 +1434,18 @@ body.theater-mode #gameFrame {
 }
 
 @media (max-width: 880px) {
+  .site-top,
+  .personal-hero,
+  .readme-section,
+  .summer-section {
+    grid-template-columns: 1fr;
+  }
+
+  .site-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
   .hero,
   .engagement,
   .guide-section,
@@ -1328,6 +1487,12 @@ body.theater-mode #gameFrame {
 
   .game-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .project-grid,
+  .summer-list,
+  .readme-steps {
+    grid-template-columns: 1fr;
   }
 
   .rail {

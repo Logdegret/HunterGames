@@ -3,295 +3,165 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hunter Games</title>
-    <meta name="description" content="Hunter Games is a small HTML5 game site for Bossbound Party and Open Golf Online, with original play notes, controls, and local/open-source game details.">
+    <title>Logdegret</title>
+    <meta name="description" content="Logdegret's GitHub Pages homepage: projects, build notes, README writing help, browser games, and current maker events.">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%234fe39a' d='M32 4 60 52H4z'/%3E%3Cpath fill='%2365d6ff' d='M32 4 4 52h28z' opacity='.88'/%3E%3Cpath fill='%23ffc857' d='M32 52h28L46 28z'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <div class="app">
-      <div class="floating-search">
-        <button id="searchToggle" class="search-toggle" type="button" aria-label="Search games" aria-expanded="false">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M10.8 4.4a6.4 6.4 0 1 1 0 12.8 6.4 6.4 0 0 1 0-12.8Zm0 2a4.4 4.4 0 1 0 0 8.8 4.4 4.4 0 0 0 0-8.8Z"></path>
-            <path d="m15.5 15.2 4.1 4.1-1.4 1.4-4.1-4.1z"></path>
+    <div class="app personal-home">
+      <header class="site-top">
+        <a class="home-mark" href="#top" aria-label="Logdegret home">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <path fill="#4fe39a" d="M32 4 60 52H4z"></path>
+            <path fill="#65d6ff" d="M32 4 4 52h28z" opacity=".88"></path>
+            <path fill="#ffc857" d="M32 52h28L46 28z"></path>
           </svg>
-        </button>
-        <label class="search is-collapsed" id="searchPanel">
-          <span>Search games</span>
-          <input id="searchInput" type="search" placeholder="Search games">
-        </label>
-      </div>
-
-      <main id="top">
-
-        <section class="hero" aria-labelledby="pageTitle">
-          <div class="hero-copy">
-            <div class="hero-brand" aria-label="Hunter Games">
-              <svg viewBox="0 0 64 64" aria-hidden="true">
-                <path fill="#4fe39a" d="M32 4 60 52H4z"></path>
-                <path fill="#65d6ff" d="M32 4 4 52h28z" opacity=".88"></path>
-                <path fill="#ffc857" d="M32 52h28L46 28z"></path>
-              </svg>
-              <span>Hunter Games</span>
-            </div>
-            <p class="eyebrow">Original and open-source browser games</p>
-            <h1 id="pageTitle">Pick a game and start playing.</h1>
-            <p class="intro">Hunter Games is a small HTML5 game site built around games hosted in this project: Bossbound Party and Open Golf Online. The page includes original play notes, control help, and maintenance details instead of copying a large third-party game catalog.</p>
-            <div class="hero-actions">
-              <a class="primary-action" href="#player">Play now</a>
-              <a class="secondary-action" href="#library">Browse library</a>
-            </div>
-            <nav class="site-links" aria-label="Site information">
-              <a href="about.html">About</a>
-              <a href="contact.html">Contact</a>
-              <a href="privacy.html">Privacy</a>
-              <a href="terms.html">Terms</a>
-            </nav>
-          </div>
-          <div class="hero-art" aria-hidden="true">
-            <div class="orbit one"></div>
-            <div class="orbit two"></div>
-            <div class="pixel-board">
-              <span></span><span></span><span></span><span></span>
-              <span></span><span></span><span></span><span></span>
-              <span></span><span></span><span></span><span></span>
-              <span></span><span></span><span></span><span></span>
-            </div>
-          </div>
-        </section>
-
-        <section class="engagement" aria-label="Player tools">
-          <div class="daily-panel">
-            <p class="eyebrow">Daily loop</p>
-            <h2 id="dailyTitle">Daily challenge</h2>
-            <p id="dailyText">Play one new game today to keep your streak alive.</p>
-            <div class="mini-stats" aria-label="Player progress">
-              <span class="streak-stat"><img class="streak-flame small" src="assets/streak-flame.svg" alt=""><strong id="streakCount">0</strong> day streak</span>
-              <div class="xp-container">
-                <div class="xp-header">
-                  <span id="level-text">Level 1</span>
-                  <span id="xp-text">0 / 100 XP</span>
-                </div>
-                <div class="xp-track" aria-hidden="true">
-                  <div id="xp-fill"></div>
-                </div>
-              </div>
-
-              <span><strong id="levelCount">1</strong> level</span>
-            </div>
-          </div>
-          <div class="spotlight-panel">
-            <p class="eyebrow">Game of the day</p>
-            <h2 id="spotlightTitle">Loading</h2>
-            <p id="spotlightText">A rotating pick from the library.</p>
-            <button id="spotlightBtn" class="text-button" type="button">Open spotlight</button>
-          </div>
-          <div class="tool-panel">
-            <p class="eyebrow">Discovery</p>
-            <button id="surpriseBtn" class="primary-action" type="button">Surprise me</button>
-            <div class="mood-row" aria-label="Mood filters">
-              <button class="mood-chip" data-mood="quick" type="button">Quick</button>
-              <button class="mood-chip" data-mood="chill" type="button">Chill</button>
-              <button class="mood-chip" data-mood="rage" type="button">Challenge</button>
-              <button class="mood-chip" data-mood="friend" type="button">2 player</button>
-            </div>
-          </div>
-        </section>
-
-        <section class="guide-section" aria-labelledby="guideTitle">
-          <div class="guide-copy">
-            <p class="eyebrow">How the shelf is built</p>
-            <h2 id="guideTitle">Built around a small library that can be checked and explained.</h2>
-            <p>Hunter Games now keeps the monetized page focused on games hosted with this project or included from an open-source build. That means the page can provide real notes about the controls, modes, and expected experience instead of surrounding ads with copied or unexplained embedded content.</p>
-          </div>
-          <div class="guide-grid" aria-label="Curation notes">
-            <article>
-              <h3>Original play notes</h3>
-              <p>Cards summarize what the game asks you to do, the likely session length, and the controls to try first. The descriptions and guide notes are written for this site.</p>
-            </article>
-            <article>
-              <h3>Source transparency</h3>
-              <p>The library is limited to local project content and the bundled Open Golf build. When a game has a known open-source license, the card shows it.</p>
-            </article>
-            <article>
-              <h3>Maintenance loop</h3>
-              <p>The player includes a broken-game report button, and the visible collection stays small enough to review after code, hosting, or browser changes.</p>
-            </article>
-          </div>
-        </section>
-
-        <section class="play-shell" aria-label="Game player">
-          <section class="player-section" id="player" aria-labelledby="playerTitle">
-            <div class="player-info">
-              <p class="eyebrow" id="activeGenre">Arcade</p>
-              <h2 id="playerTitle">Loading</h2>
-              <p id="playerDescription">Choose a game from the shelf to load it here.</p>
-              <dl class="stats">
-                <div>
-                  <dt>Category</dt>
-                  <dd id="score">Arcade</dd>
-                </div>
-                <div>
-                  <dt>Controls</dt>
-                  <dd id="controls">Shown in each game</dd>
-                </div>
-              </dl>
-              <div class="controls-row">
-                <button id="startBtn" class="icon-button" aria-label="Load selected game" title="Load game">
-                  <span class="play-icon"></span>
-                </button>
-                <button id="pauseBtn" class="icon-button" aria-label="Open game fullscreen" title="Fullscreen">
-                  <span class="fullscreen-icon"></span>
-                </button>
-                <button id="blankBtn" class="icon-button" aria-label="Open game in blank tab" title="Open in blank tab">
-                  <span class="blank-icon"></span>
-                </button>
-                <button id="reportBtn" class="text-button compact" type="button">Report broken</button>
-                <button id="shortcutsBtn" class="text-button compact" type="button">Shortcuts</button>
-              </div>
-            </div>
-            <div class="cabinet">
-              <iframe id="gameFrame" title="Selected HTML5 game" tabindex="0" allow="fullscreen *; pointer-lock *; gamepad *; autoplay *; clipboard-write *; accelerometer *; gyroscope *" allowfullscreen></iframe>
-              <div id="overlay" class="overlay">
-                <div class="overlay-message">
-                  <strong>Loading games</strong>
-                  <span>Pick a title from the shelf</span>
-                </div>
-              </div>
-            </div>
-          </section>
-        </section>
-
-        <section class="library" id="library" aria-labelledby="libraryTitle">
-          <section class="rail-section" id="continueSection" aria-labelledby="continueTitle" hidden>
-            <div class="section-heading">
-              <div>
-                <p class="eyebrow">Pick up</p>
-                <h2 id="continueTitle">Continue playing</h2>
-              </div>
-            </div>
-            <div class="rail" id="continueRail"></div>
-          </section>
-
-          <section class="rail-section" aria-labelledby="recommendTitle">
-            <div class="section-heading">
-              <div>
-                <p class="eyebrow">For you</p>
-                <h2 id="recommendTitle">Recommended</h2>
-              </div>
-            </div>
-            <div class="rail" id="recommendRail"></div>
-          </section>
-
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Game shelf</p>
-              <h2 id="libraryTitle">Playable library</h2>
-            </div>
-            <div class="library-tools">
-              <nav class="nav" aria-label="Game categories">
-                <button class="chip active" data-filter="all">All</button>
-                <button class="chip" data-filter="arcade">Bossbound</button>
-                <button class="chip" data-filter="skill">Open Golf</button>
-              </nav>
-              <p id="resultCount">0 games</p>
-            </div>
-          </div>
-          <div class="game-grid" id="gameGrid"></div>
-        </section>
-
-        <section class="notes-section" aria-labelledby="notesTitle">
-          <p class="eyebrow">Original notes</p>
-          <h2 id="notesTitle">What to play first</h2>
-          <div class="notes-grid">
-            <article>
-              <h3>Bossbound Party</h3>
-              <p>Start here if you want a longer session. Bossbound Party is the site's local pixel-art RPG: you move through towns and field areas, take side quests, fight bosses, and can switch between solo play, local co-op, and online rooms.</p>
-              <p>The fastest way to learn it is to walk with WASD, interact with E, dash with Shift, and use Space when combat begins. Local second-player controls use the arrow keys plus Enter, so it works well on one keyboard when two people are sharing a screen.</p>
-            </article>
-            <article>
-              <h3>Open Golf Online</h3>
-              <p>Choose Open Golf Online if you want a shorter, calmer game. It is a browser build of the open-source Open Golf project with party-room features layered in for shared rounds, scorecards, synchronized shots, and chat.</p>
-              <p>Most shots start with the mouse or touch input. New players should focus on small aim adjustments and power control before trying risky angles, because the short courses reward consistency more than speed.</p>
-            </article>
-            <article>
-              <h3>How This Page Avoids Thin Inventory</h3>
-              <p>The homepage no longer uses a large list of externally embedded games as its main content. The playable inventory is intentionally smaller, but each game is connected to local files, source notes, controls, and written guidance that belongs to this site.</p>
-            </article>
-          </div>
-        </section>
-
-        <section class="deep-guides" aria-labelledby="deepGuidesTitle">
-          <div>
-            <p class="eyebrow">Game guides</p>
-            <h2 id="deepGuidesTitle">Read before you play</h2>
-            <p>Each guide is written specifically for Hunter Games and explains what the game is, who it is best for, how to start, and what was checked on the site. These are not copied store descriptions or placeholder pages.</p>
-          </div>
-          <div class="guide-link-grid">
-            <a href="bossbound-guide.html">
-              <span>Bossbound Party Guide</span>
-              <p>Controls, solo versus co-op notes, room setup, and first-session advice.</p>
-            </a>
-            <a href="open-golf-guide.html">
-              <span>Open Golf Online Guide</span>
-              <p>Shot control, party-room etiquette, course strategy, and source/license notes.</p>
-            </a>
-          </div>
-        </section>
-
-        <section class="quality-log" aria-labelledby="qualityLogTitle">
-          <p class="eyebrow">Site quality log</p>
-          <h2 id="qualityLogTitle">What changed for the AdSense review</h2>
-          <div class="quality-list">
-            <article>
-              <h3>Replicated inventory removed</h3>
-              <p>The previous large catalog of externally hosted games was removed from the visible library. The current homepage focuses only on games that are local to this project or bundled from an open-source build.</p>
-            </article>
-            <article>
-              <h3>Original content added</h3>
-              <p>The site now includes homepage play notes, source explanations, standalone game guides, support pages, a privacy policy, and a clear explanation of how the playable inventory is maintained.</p>
-            </article>
-            <article>
-              <h3>Navigation simplified</h3>
-              <p>The page links to About, Contact, Privacy, Terms, and game guides from normal navigation areas so visitors and reviewers can understand the site without guessing what each screen is for.</p>
-            </article>
-          </div>
-        </section>
-      </main>
-      <footer class="site-footer">
-        <div>
-          <strong>Hunter Games</strong>
-          <p>Curated browser games, control notes, and quick-play tools for casual HTML5 sessions.</p>
-        </div>
-        <nav aria-label="Footer">
+          <span>Logdegret</span>
+        </a>
+        <nav class="top-nav" aria-label="Main navigation">
+          <a href="#projects">Projects</a>
+          <a href="#readme-guide">README Help</a>
+          <a href="#summer">Summer Picks</a>
           <a href="about.html">About</a>
           <a href="contact.html">Contact</a>
+        </nav>
+      </header>
+
+      <main id="top">
+        <section class="personal-hero" aria-labelledby="pageTitle">
+          <div>
+            <p class="eyebrow">GitHub Pages homepage</p>
+            <h1 id="pageTitle">Projects, notes, and useful things I am building.</h1>
+            <p class="intro">This is Logdegret's home base: a small directory for my games, experiments, project writeups, README advice, and seasonal maker links worth checking out. It is meant to be more like a working notebook than a one-topic landing page.</p>
+            <div class="hero-actions">
+              <a class="primary-action" href="#projects">My projects</a>
+              <a class="secondary-action" href="#readme-guide">Write a better README</a>
+            </div>
+          </div>
+          <div class="home-board" aria-label="Homepage highlights">
+            <article>
+              <span>Now</span>
+              <strong>Summer maker season</strong>
+              <p>Build a project, write down what changed, and ship something small enough to explain.</p>
+            </article>
+            <article>
+              <span>Focus</span>
+              <strong>Games and guides</strong>
+              <p>Browser games stay here, but they are part of the portfolio rather than the whole site.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="project-section" id="projects" aria-labelledby="projectsTitle">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">My projects</p>
+              <h2 id="projectsTitle">Things to open first</h2>
+            </div>
+          </div>
+          <div class="project-grid">
+            <article>
+              <p class="eyebrow">Game</p>
+              <h3>Bossbound Party</h3>
+              <p>A local pixel-art RPG with solo play, local co-op, online rooms, towns, quests, and boss fights. Start here if you want the biggest playable project on the site.</p>
+              <div class="card-actions">
+                <a class="primary-action compact-link" href="games/bossbound/index.html">Play</a>
+                <a class="secondary-action compact-link" href="bossbound-guide.html">Guide</a>
+              </div>
+            </article>
+            <article>
+              <p class="eyebrow">Open source</p>
+              <h3>Open Golf Online</h3>
+              <p>A browser build of Open Golf with party-room features, synced shots, scorecards, and chat. Good for shorter rounds and calmer testing sessions.</p>
+              <div class="card-actions">
+                <a class="primary-action compact-link" href="games/open-golf/index.html">Play</a>
+                <a class="secondary-action compact-link" href="open-golf-guide.html">Guide</a>
+              </div>
+            </article>
+            <article>
+              <p class="eyebrow">Site</p>
+              <h3>Hunter Games archive</h3>
+              <p>The game section is still available, but this homepage now treats it as one project area. That keeps the site useful for visitors who want more than a launcher.</p>
+              <div class="card-actions">
+                <a class="secondary-action compact-link" href="#game-notes">Game notes</a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="readme-section" id="readme-guide" aria-labelledby="readmeTitle">
+          <div>
+            <p class="eyebrow">Project help</p>
+            <h2 id="readmeTitle">How to write a README people can actually use</h2>
+            <p>A good README should answer the questions someone has before they clone, play, test, or contribute. It does not need to be huge. It needs to be honest, specific, and easy to scan.</p>
+          </div>
+          <div class="readme-steps">
+            <article>
+              <span>1</span>
+              <h3>Say what it is</h3>
+              <p>Open with one plain sentence: what the project does, who it is for, and why it exists. Avoid vague lines like "a cool app" or "my project."</p>
+            </article>
+            <article>
+              <span>2</span>
+              <h3>Show how to run it</h3>
+              <p>Include the exact command or link someone needs first. If there are extra steps, list them in order and mention anything that is optional.</p>
+            </article>
+            <article>
+              <span>3</span>
+              <h3>Explain the status</h3>
+              <p>Tell visitors what works, what is unfinished, and what you want to improve next. A clear limitation is better than pretending everything is polished.</p>
+            </article>
+            <article>
+              <span>4</span>
+              <h3>Add useful proof</h3>
+              <p>Screenshots, controls, demo links, credits, license notes, and a small changelog make the project easier to trust and easier to return to later.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="summer-section" id="summer" aria-labelledby="summerTitle">
+          <div>
+            <p class="eyebrow">Summer 2026</p>
+            <h2 id="summerTitle">Fun things to build or follow right now</h2>
+            <p>These are current picks for project energy: places to build, write, and share something instead of just scrolling. I will keep this section small so it stays curated.</p>
+          </div>
+          <div class="summer-list">
+            <article>
+              <h3>Stardance by Hack Club</h3>
+              <p>Stardance is a free online summer program for teens 13-18 where you make technical projects, log hours, and earn prizes. It runs June 1 through September 30, 2026, so it fits the build-something-this-summer mood perfectly.</p>
+              <a class="primary-action compact-link" href="https://stardance.space">Visit stardance.space</a>
+            </article>
+            <article>
+              <h3>Make a tiny launch page</h3>
+              <p>Pick one project and give it a page with a title, screenshot, what changed this week, and a link to try it. A small clear page is better than a big unfinished redesign.</p>
+            </article>
+            <article>
+              <h3>Keep a shipping log</h3>
+              <p>Once a week, write three bullets: what shipped, what broke, and what you learned. Those notes become README updates, portfolio content, and better commit messages.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="game-notes" id="game-notes" aria-labelledby="gameNotesTitle">
+          <p class="eyebrow">Game area</p>
+          <h2 id="gameNotesTitle">Why the games are still here</h2>
+          <p>Games are one of the easiest ways to see whether a project really works: controls, loading, layout, and browser behavior all matter immediately. Bossbound Party and Open Golf Online stay linked here because they are playable projects with notes, source context, and maintenance history.</p>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div>
+          <strong>Logdegret</strong>
+          <p>Personal GitHub Pages homepage for projects, notes, games, and maker links.</p>
+        </div>
+        <nav aria-label="Footer">
+          <a href="#projects">Projects</a>
+          <a href="#readme-guide">README Help</a>
           <a href="privacy.html">Privacy Policy</a>
           <a href="terms.html">Terms</a>
         </nav>
       </footer>
     </div>
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <dialog id="shortcutsDialog" class="shortcuts-dialog" aria-labelledby="shortcutsTitle">
-      <h2 id="shortcutsTitle">Shortcuts</h2>
-      <dl>
-        <div><dt>?</dt><dd>Show shortcuts</dd></div>
-        <div><dt>/</dt><dd>Search games</dd></div>
-        <div><dt>R</dt><dd>Surprise me</dd></div>
-        <div><dt>F</dt><dd>Fullscreen player</dd></div>
-        <div><dt>Esc</dt><dd>Close panels</dd></div>
-      </dl>
-      <button id="closeShortcutsBtn" class="primary-action" type="button">Close</button>
-    </dialog>
-    <div class="streak-celebration" id="streakCelebration" aria-hidden="true">
-      <div class="streak-card">
-        <img class="streak-flame large" src="assets/streak-flame.svg" alt="">
-        <span>Streak saved</span>
-        <strong id="streakCelebrationCount">1</strong>
-        <p>day streak</p>
-      </div>
-    </div>
-    <script src="script.js?v=20260601-thumbnail-labels"></script>
   </body>
 </html>
