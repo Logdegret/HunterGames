@@ -124,5 +124,6 @@ This project is less than 30% AI-assisted. [Claude](https://claude.ai) (Anthropi
 - Finding working iframe URLs for games
 - Processing and cropping the favicon image
 - Writing this README
+- Pushing some things to github
 
 The majority of the design, code, and project decisions were made by [Logdegret](https://github.com/Logdegret).
