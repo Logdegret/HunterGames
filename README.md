@@ -112,3 +112,18 @@ HunterGames/
 ## Credits
 
 Built by [Logdegret](https://github.com/Logdegret). Game assets and thumbnails belong to their respective creators.
+
+---
+
+## AI Usage
+
+This project was built with the assistance of [Claude](https://claude.ai) (Anthropic). AI was used throughout development for:
+
+- Writing and debugging all frontend code (`app.js`, `styles.css`, `index.html`)
+- Designing and writing the Supabase schema, RLS policies, and RPCs
+- Finding working iframe URLs for each game
+- Processing and cropping the favicon image
+- Fixing bugs (session persistence, RLS violations, broken embeds, UI layout issues)
+- Writing this README
+
+All code was reviewed and the project is owned and maintained by Logdegret.
