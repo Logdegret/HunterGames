@@ -675,26 +675,35 @@ setInterval(() => {
   heartbeat();
 }, 15000);
 
-// Restore session on page load — onAuthStateChange fires with the stored
-// session automatically, so we use it as the single boot signal.
+async function hydrateSession(session) {
+  if (!session) { state.user = null; state.friends = []; return; }
+  try {
+    const [{ data: profile }, { data: playtime }] = await Promise.all([
+      sb.from("profiles").select("*").eq("id", session.user.id).single(),
+      sb.from("playtime").select("*").eq("user_id", session.user.id)
+    ]);
+    if (profile) {
+      state.user = { id: session.user.id, username: profile.username, initials: initials(profile.username) };
+      state.stats = buildStatsFromDB(playtime, profile);
+      await loadFriends();
+    }
+  } catch {}
+}
+
+// Boot: getSession() is the reliable way to read the persisted session on
+// page load. onAuthStateChange handles live changes (sign in/out, refresh).
 let booted = false;
+async function boot() {
+  const { data: { session } } = await sb.auth.getSession();
+  await hydrateSession(session);
+  route();
+  renderAll();
+  booted = true;
+}
+boot();
+
 sb.auth.onAuthStateChange(async (_event, session) => {
-  if (session) {
-    try {
-      const [{ data: profile }, { data: playtime }] = await Promise.all([
-        sb.from("profiles").select("*").eq("id", session.user.id).single(),
-        sb.from("playtime").select("*").eq("user_id", session.user.id)
-      ]);
-      if (profile) {
-        state.user = { id: session.user.id, username: profile.username, initials: initials(profile.username) };
-        state.stats = buildStatsFromDB(playtime, profile);
-        await loadFriends();
-      }
-    } catch {}
-  } else {
-    state.user = null;
-    state.friends = [];
-  }
-  if (!booted) { booted = true; route(); }
+  if (!booted) return; // boot() is already handling the initial session
+  await hydrateSession(session);
   renderAll();
 });

@@ -699,6 +699,13 @@ input:focus {
   background: rgba(18, 5, 6, 0.66);
 }
 
+.time-row > div strong,
+.time-row > div span,
+.friend-row > div strong,
+.friend-row > div span {
+  display: block;
+}
+
 .time-row {
   grid-template-columns: 58px 1fr auto;
 }
