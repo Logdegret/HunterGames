@@ -671,7 +671,26 @@ setInterval(() => {
   heartbeat();
 }, 15000);
 
-loadMe().then(() => {
-  route();
+// Restore session on page load — onAuthStateChange fires with the stored
+// session automatically, so we use it as the single boot signal.
+let booted = false;
+sb.auth.onAuthStateChange(async (_event, session) => {
+  if (session) {
+    try {
+      const [{ data: profile }, { data: playtime }] = await Promise.all([
+        sb.from("profiles").select("*").eq("id", session.user.id).single(),
+        sb.from("playtime").select("*").eq("user_id", session.user.id)
+      ]);
+      if (profile) {
+        state.user = { id: session.user.id, username: profile.username, initials: initials(profile.username) };
+        state.stats = buildStatsFromDB(playtime, profile);
+        await loadFriends();
+      }
+    } catch {}
+  } else {
+    state.user = null;
+    state.friends = [];
+  }
+  if (!booted) { booted = true; route(); }
   renderAll();
 });
