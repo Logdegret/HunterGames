@@ -551,22 +551,20 @@ els.searchInput.addEventListener("input", () => {
   renderLibrary();
 });
 
-// Show username field only when Sign up button is focused/clicked
-els.authForm.querySelectorAll("[data-auth]").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const isSignup = btn.dataset.auth === "signup";
-    els.usernameInput.classList.toggle("hidden", !isSignup);
-    els.usernameInput.required = isSignup;
-    els.emailInput.autocomplete = isSignup ? "email" : "email";
-  });
-});
-
 els.authForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const action   = event.submitter?.dataset.auth || "login";
   const email    = els.emailInput.value.trim();
   const password = els.passwordInput.value;
   setNotice("");
+
+  // First "Sign up" click — just reveal the username field, don't submit yet
+  if (action === "signup" && els.usernameInput.classList.contains("hidden")) {
+    els.usernameInput.classList.remove("hidden");
+    els.usernameInput.required = true;
+    els.usernameInput.focus();
+    return;
+  }
 
   if (password.length < 4) {
     setNotice("Password must be at least 4 characters.");
