@@ -43,6 +43,7 @@ const els = {
   statsMostPlayedTime: document.getElementById("statsMostPlayedTime"),
   timeList: document.getElementById("timeList"),
   authForm: document.getElementById("authForm"),
+  emailInput: document.getElementById("emailInput"),
   usernameInput: document.getElementById("usernameInput"),
   passwordInput: document.getElementById("passwordInput"),
   authNotice: document.getElementById("authNotice"),
@@ -550,18 +551,23 @@ els.searchInput.addEventListener("input", () => {
   renderLibrary();
 });
 
+// Show username field only when Sign up button is focused/clicked
+els.authForm.querySelectorAll("[data-auth]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const isSignup = btn.dataset.auth === "signup";
+    els.usernameInput.classList.toggle("hidden", !isSignup);
+    els.usernameInput.required = isSignup;
+    els.emailInput.autocomplete = isSignup ? "email" : "email";
+  });
+});
+
 els.authForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const action = event.submitter?.dataset.auth || "login";
-  const username = els.usernameInput.value.trim().toLowerCase().replace(/\s+/g, "_").slice(0, 24);
+  const action   = event.submitter?.dataset.auth || "login";
+  const email    = els.emailInput.value.trim();
   const password = els.passwordInput.value;
-  const email    = `${username}@huntergames.local`;
   setNotice("");
 
-  if (!/^[a-z0-9_-]{3,24}$/.test(username)) {
-    setNotice("Username must be 3–24 letters, numbers, _ or -.");
-    return;
-  }
   if (password.length < 4) {
     setNotice("Password must be at least 4 characters.");
     return;
@@ -569,15 +575,23 @@ els.authForm.addEventListener("submit", async (event) => {
 
   try {
     if (action === "signup") {
-      const { data, error } = await sb.auth.signUp({ email, password });
+      const username = els.usernameInput.value.trim().toLowerCase().replace(/\s+/g, "_").slice(0, 24);
+      if (!/^[a-z0-9_-]{3,24}$/.test(username)) {
+        setNotice("Username must be 3–24 letters, numbers, _ or -.");
+        return;
+      }
+      const { data, error } = await sb.auth.signUp({
+        email,
+        password,
+        options: { data: { username } }
+      });
       if (error) throw new Error(error.message);
-      // Profile is created automatically by the Supabase trigger.
       state.user = { id: data.user.id, username, initials: initials(username) };
       state.stats = buildStatsFromDB([], null);
       setNotice("Account created — you're signed in.");
     } else {
       const { data, error } = await sb.auth.signInWithPassword({ email, password });
-      if (error) throw new Error("Username or password is wrong.");
+      if (error) throw new Error("Email or password is wrong.");
       const [{ data: profile }, { data: playtime }] = await Promise.all([
         sb.from("profiles").select("*").eq("id", data.user.id).single(),
         sb.from("playtime").select("*").eq("user_id", data.user.id)

@@ -134,7 +134,8 @@
               <h2 id="authTitle">Sign in or create an account</h2>
               <p class="muted-copy">Accounts unlock real friends, online status, and synced play stats on this device.</p>
               <form class="auth-form" id="authForm">
-                <input id="usernameInput" name="username" placeholder="Username" autocomplete="username" required>
+                <input id="emailInput" name="email" type="email" placeholder="Email" autocomplete="email" required>
+                <input id="usernameInput" name="username" placeholder="Choose a username" autocomplete="username" class="hidden">
                 <input id="passwordInput" name="password" placeholder="Password" type="password" autocomplete="current-password" required>
                 <div class="form-actions">
                   <button class="primary-btn" data-auth="login" type="submit">Log in</button>
