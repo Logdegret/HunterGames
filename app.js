@@ -589,7 +589,11 @@ els.authForm.addEventListener("submit", async (event) => {
       setNotice("Account created — you're signed in.");
     } else {
       const { data, error } = await sb.auth.signInWithPassword({ email, password });
-      if (error) throw new Error("Email or password is wrong.");
+      if (error) {
+        if (error.message.toLowerCase().includes("email not confirmed"))
+          throw new Error("Check your inbox and confirm your email before signing in.");
+        throw new Error(error.message);
+      }
       const [{ data: profile }, { data: playtime }] = await Promise.all([
         sb.from("profiles").select("*").eq("id", data.user.id).single(),
         sb.from("playtime").select("*").eq("user_id", data.user.id)
