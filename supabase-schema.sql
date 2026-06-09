@@ -98,6 +98,24 @@ begin
 end;
 $$;
 
+-- Add a friend (inserts both directions, bypasses RLS safely)
+create or replace function public.add_friend(p_username text)
+returns void language plpgsql security definer set search_path = public as $$
+declare
+  v_friend_id uuid;
+begin
+  select id into v_friend_id from public.profiles where lower(username) = lower(p_username);
+  if v_friend_id is null then
+    raise exception 'No user with that username.';
+  end if;
+  if v_friend_id = auth.uid() then
+    raise exception 'That''s you!';
+  end if;
+  insert into public.friendships(user_id, friend_id) values (auth.uid(), v_friend_id) on conflict do nothing;
+  insert into public.friendships(user_id, friend_id) values (v_friend_id, auth.uid()) on conflict do nothing;
+end;
+$$;
+
 -- Update heartbeat (online presence + current game)
 create or replace function public.update_heartbeat(p_current_game text)
 returns void language plpgsql security definer set search_path = public as $$

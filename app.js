@@ -622,19 +622,8 @@ els.addFriendForm.addEventListener("submit", async (event) => {
   if (!state.user) { setNotice("Sign in before adding friends."); return; }
   const friendName = els.friendInput.value.trim().toLowerCase();
   try {
-    const { data: friend, error } = await sb
-      .from("profiles")
-      .select("id")
-      .eq("username", friendName)
-      .single();
-    if (error || !friend) throw new Error("No user with that username.");
-    if (friend.id === state.user.id) throw new Error("That's you!");
-    // Insert both directions so each side can query just by user_id
-    const { error: insErr } = await sb.from("friendships").upsert([
-      { user_id: state.user.id, friend_id: friend.id },
-      { user_id: friend.id, friend_id: state.user.id }
-    ]);
-    if (insErr) throw new Error(insErr.message);
+    const { error } = await sb.rpc("add_friend", { p_username: friendName });
+    if (error) throw new Error(error.message);
     els.friendInput.value = "";
     await loadFriends();
     setNotice("Friend added.");
