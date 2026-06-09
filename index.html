@@ -3,165 +3,222 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Logdegret</title>
-    <meta name="description" content="Logdegret's GitHub Pages homepage: projects, build notes, README writing help, browser games, and current maker events.">
-    <meta name="google-adsense-account" content="ca-pub-4125872061932966">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4125872061932966" crossorigin="anonymous"></script>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%234fe39a' d='M32 4 60 52H4z'/%3E%3Cpath fill='%2365d6ff' d='M32 4 4 52h28z' opacity='.88'/%3E%3Cpath fill='%23ffc857' d='M32 52h28L46 28z'/%3E%3C/svg%3E">
-    <link rel="stylesheet" href="styles.css">
+    <title>Hunter Games</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   </head>
   <body>
-    <div class="app personal-home">
-      <header class="site-top">
-        <a class="home-mark" href="#top" aria-label="Logdegret home">
-          <svg viewBox="0 0 64 64" aria-hidden="true">
-            <path fill="#4fe39a" d="M32 4 60 52H4z"></path>
-            <path fill="#65d6ff" d="M32 4 4 52h28z" opacity=".88"></path>
-            <path fill="#ffc857" d="M32 52h28L46 28z"></path>
-          </svg>
-          <span>Logdegret</span>
-        </a>
-        <nav class="top-nav" aria-label="Main navigation">
-          <a href="#projects">Projects</a>
-          <a href="#readme-guide">README Help</a>
-          <a href="#summer">Summer Picks</a>
-          <a href="about.html">About</a>
-          <a href="contact.html">Contact</a>
+    <div class="app-shell">
+      <aside class="left-rail" aria-label="Main navigation">
+        <button class="brand-mark" data-route="#home" type="button" aria-label="Home">H</button>
+        <nav class="rail-nav">
+          <button class="rail-btn active" data-route="#home" type="button" title="Home" aria-label="Home">
+            <svg viewBox="0 0 24 24"><path d="m12 3 9 8h-3v9h-5v-6h-2v6H6v-9H3z"/></svg>
+          </button>
+          <button class="rail-btn" data-route="#games" type="button" title="Games" aria-label="Games">
+            <svg viewBox="0 0 24 24"><path d="M7 8h10a5 5 0 0 1 4.8 6.4l-.8 2.7a2.7 2.7 0 0 1-4.8.8L14.6 15H9.4l-1.6 2.9a2.7 2.7 0 0 1-4.8-.8l-.8-2.7A5 5 0 0 1 7 8m1 3v2H6v2H4v-2H2v-2h2V9h2v2zm10 3a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4m-3-2.8a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4"/></svg>
+          </button>
+          <button class="rail-btn" data-route="#stats" type="button" title="Stats" aria-label="Stats">
+            <svg viewBox="0 0 24 24"><path d="M4 20V9h4v11zm6 0V4h4v16zm6 0v-7h4v7z"/></svg>
+          </button>
+          <button class="rail-btn" data-route="#friends" type="button" title="Friends" aria-label="Friends">
+            <svg viewBox="0 0 24 24"><path d="M16 11a4 4 0 1 0-3.9-5A5 5 0 0 1 12 16a7 7 0 0 1 6 3h4a6 6 0 0 0-6-8M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8m0 2a6 6 0 0 0-6 6h12a6 6 0 0 0-6-6"/></svg>
+          </button>
+          <button class="rail-btn" data-route="#profile" type="button" title="Profile" aria-label="Profile">
+            <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10m-9 9a9 9 0 0 1 18 0z"/></svg>
+          </button>
         </nav>
-      </header>
+        <button class="rail-plus" id="surpriseBtn" type="button" title="Surprise me" aria-label="Surprise me">
+          <svg viewBox="0 0 24 24"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>
+        </button>
+      </aside>
 
-      <main id="top">
-        <section class="personal-hero" aria-labelledby="pageTitle">
+      <main class="main-stage">
+        <header class="topbar">
           <div>
-            <p class="eyebrow">GitHub Pages homepage</p>
-            <h1 id="pageTitle">Projects, notes, and useful things I am building.</h1>
-            <p class="intro">This is Logdegret's home base: a small directory for my games, experiments, project writeups, README advice, and seasonal maker links worth checking out. It is meant to be more like a working notebook than a one-topic landing page.</p>
-            <div class="hero-actions">
-              <a class="primary-action" href="#projects">My projects</a>
-              <a class="secondary-action" href="#readme-guide">Write a better README</a>
+            <p class="eyebrow" id="sessionLabel">Offline profile</p>
+            <h1 id="pageTitle">Hunter Games</h1>
+          </div>
+          <label class="search-wrap" aria-label="Search games">
+            <svg viewBox="0 0 24 24"><path d="m19.6 21-6.3-6.3a7.2 7.2 0 1 1 1.4-1.4l6.3 6.3zM8.8 14.8a5 5 0 1 0 0-10 5 5 0 0 0 0 10"/></svg>
+            <input id="searchInput" type="search" placeholder="Search games" autocomplete="off">
+          </label>
+          <div class="top-actions">
+            <button class="icon-btn" data-route="#games" type="button" aria-label="Library"><svg viewBox="0 0 24 24"><path d="M5 4h14a2 2 0 0 1 2 2v14H7a4 4 0 0 1-4-4V6a2 2 0 0 1 2-2m2 12h12V6H5v10a2 2 0 0 0 2 2z"/></svg></button>
+            <button class="icon-btn" data-route="#profile" type="button" aria-label="Profile"><span class="pulse-dot"></span><svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10m-9 9a9 9 0 0 1 18 0z"/></svg></button>
+          </div>
+        </header>
+
+        <section class="view active" id="homeView">
+          <div class="dashboard-grid">
+            <article class="featured-card" id="featuredCard">
+              <div class="game-orbit" aria-hidden="true"></div>
+              <div class="featured-copy">
+                <div class="chip-row">
+                  <span class="chip light">Featured</span>
+                  <span class="chip" id="featuredCategory">Arcade</span>
+                  <span class="chip" id="featuredTag">Quick</span>
+                </div>
+                <h2 id="featuredTitle">Snow Rider 3D</h2>
+                <p id="featuredDescription">Slide down snowy tracks, dodge hazards, and chase a cleaner run.</p>
+                <button class="primary-btn" id="featuredPlay" type="button">Play featured</button>
+              </div>
+            </article>
+
+            <aside class="stack-list" id="quickList"></aside>
+          </div>
+
+          <div class="section-bar">
+            <h2>Latest Activities</h2>
+            <button class="text-btn" data-route="#stats" type="button">View stats</button>
+          </div>
+          <div class="activity-grid" id="activityGrid"></div>
+
+          <div class="lower-grid">
+            <article class="last-card">
+              <div class="thumb-wide" id="lastThumb"></div>
+              <div>
+                <p class="eyebrow">Last Played</p>
+                <h3 id="lastTitle">Snow Rider 3D</h3>
+                <span id="lastMeta">Ready to play</span>
+                <div class="progress"><span id="xpProgress"></span></div>
+              </div>
+              <button class="round-hot" id="resumeBtn" type="button" aria-label="Resume"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+            </article>
+
+            <aside class="stats-card">
+              <div class="section-bar compact">
+                <h2>Your Statistics</h2>
+                <button class="text-btn" data-route="#stats" type="button">Open</button>
+              </div>
+              <div class="stat-ring" id="statRing"><div><span>Total Playtime</span><strong id="totalPlaytime">0m</strong></div></div>
+              <div class="stats-mini">
+                <div><strong id="playsStat">0</strong><span>Plays</span></div>
+                <div><strong id="xpStat">0</strong><span>XP</span></div>
+                <div><strong id="mostPlayedStat">None</strong><span>Most Played</span></div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="gamesView">
+          <div class="section-bar">
+            <h2>Game Library</h2>
+            <div class="filters" id="filters"></div>
+          </div>
+          <div class="game-grid" id="gameGrid"></div>
+          <div class="empty-state" id="emptyState">No games match that search.</div>
+        </section>
+
+        <section class="view" id="statsView">
+          <div class="stats-page-grid">
+            <article class="metric-panel hero-metric">
+              <p class="eyebrow">Total Playtime</p>
+              <strong id="statsTotalPlaytime">0m</strong>
+              <span id="statsLastPlayed">No game played yet</span>
+            </article>
+            <article class="metric-panel"><p class="eyebrow">Plays</p><strong id="statsPlays">0</strong><span>Game launches</span></article>
+            <article class="metric-panel"><p class="eyebrow">XP</p><strong id="statsXp">0</strong><span>Earned from real sessions</span></article>
+            <article class="metric-panel"><p class="eyebrow">Most Played</p><strong id="statsMostPlayed">None</strong><span id="statsMostPlayedTime">0m</span></article>
+          </div>
+          <div class="section-bar">
+            <h2>Per-Game Time</h2>
+          </div>
+          <div class="time-list" id="timeList"></div>
+        </section>
+
+        <section class="view" id="friendsView">
+          <div class="friends-layout">
+            <article class="auth-card">
+              <p class="eyebrow">Account</p>
+              <h2 id="authTitle">Sign in or create an account</h2>
+              <p class="muted-copy">Accounts unlock real friends, online status, and synced play stats on this device.</p>
+              <form class="auth-form" id="authForm">
+                <input id="usernameInput" name="username" placeholder="Username" autocomplete="username" required>
+                <input id="passwordInput" name="password" placeholder="Password" type="password" autocomplete="current-password" required>
+                <div class="form-actions">
+                  <button class="primary-btn" data-auth="login" type="submit">Log in</button>
+                  <button class="ghost-btn" data-auth="signup" type="submit">Sign up</button>
+                </div>
+              </form>
+              <div class="signed-in hidden" id="signedInBox">
+                <div class="big-avatar" id="profileAvatar">P</div>
+                <div>
+                  <h3 id="profileName">Player</h3>
+                  <span>Online now</span>
+                </div>
+                <button class="ghost-btn" id="logoutBtn" type="button">Log out</button>
+              </div>
+              <p class="notice" id="authNotice"></p>
+            </article>
+
+            <article class="friend-panel">
+              <div class="section-bar compact">
+                <h2>Add Friend</h2>
+              </div>
+              <form class="add-friend-form" id="addFriendForm">
+                <input id="friendInput" placeholder="Friend username" autocomplete="off">
+                <button class="primary-btn" type="submit">Add Friend</button>
+              </form>
+              <div class="section-bar compact">
+                <h2>Friends</h2>
+                <span class="count-pill" id="friendCount">0</span>
+              </div>
+              <div class="friend-list" id="fullFriendList"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="profileView">
+          <div class="profile-grid">
+            <article class="profile-card">
+              <div class="big-avatar" id="settingsAvatar">P</div>
+              <div>
+                <p class="eyebrow">Profile</p>
+                <h2 id="settingsName">Guest Player</h2>
+                <span id="settingsStatus">Sign in to save friends and play stats.</span>
+              </div>
+            </article>
+            <article class="metric-panel">
+              <p class="eyebrow">Current Game</p>
+              <strong id="currentGameLabel">None</strong>
+              <span>Your status updates while a game page is active.</span>
+            </article>
+          </div>
+        </section>
+
+        <section class="view play-view" id="playView">
+          <div class="play-head">
+            <button class="back-btn" id="backBtn" type="button" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5L12 20 4 12l8-8 1.5 1.5L8 11z"/></svg></button>
+            <div class="play-title">
+              <p class="eyebrow" id="playCategory">Arcade</p>
+              <h2 id="playTitle">Game</h2>
+              <span id="playDescription">Ready.</span>
+            </div>
+            <div class="play-actions">
+              <button class="primary-btn" id="blankBtn" type="button">Open in about:blank</button>
+              <button class="ghost-btn" id="reloadBtn" type="button">Reload</button>
+              <button class="ghost-btn" id="fullscreenBtn" type="button">Fullscreen</button>
             </div>
           </div>
-          <div class="home-board" aria-label="Homepage highlights">
-            <article>
-              <span>Now</span>
-              <strong>Summer maker season</strong>
-              <p>Build a project, write down what changed, and ship something small enough to explain.</p>
-            </article>
-            <article>
-              <span>Focus</span>
-              <strong>Games and guides</strong>
-              <p>Browser games stay here, but they are part of the portfolio rather than the whole site.</p>
-            </article>
-          </div>
-        </section>
-
-        <section class="project-section" id="projects" aria-labelledby="projectsTitle">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">My projects</p>
-              <h2 id="projectsTitle">Things to open first</h2>
+          <article class="play-panel" id="playPanel">
+            <div class="play-toolbar">
+              <div><strong id="toolbarTitle">Game</strong><span id="toolbarMeta">Ready to play</span></div>
+              <span class="live-pill" id="trackingPill">Tracking when active</span>
             </div>
-          </div>
-          <div class="project-grid">
-            <article>
-              <p class="eyebrow">Game</p>
-              <h3>Bossbound Party</h3>
-              <p>A pixel-art RPG project with solo play, local co-op, online rooms, towns, quests, and boss fights. It belongs in the project list, but the full game files live in the games repository.</p>
-              <div class="card-actions">
-                <a class="primary-action compact-link" href="https://github.com/Logdegret/HunterGames/tree/main/games/bossbound">Project files</a>
-              </div>
-            </article>
-            <article>
-              <p class="eyebrow">Open source</p>
-              <h3>Open Golf Online</h3>
-              <p>A browser build of Open Golf with party-room features, synced shots, scorecards, and chat. The project link points to the source and hosted-game files instead of copying the whole game into this homepage repo.</p>
-              <div class="card-actions">
-                <a class="primary-action compact-link" href="https://github.com/Logdegret/HunterGames/tree/main/games/open-golf">Project files</a>
-              </div>
-            </article>
-            <article>
-              <p class="eyebrow">Site</p>
-              <h3>Homepage notes</h3>
-              <p>This site is the front door for projects, short guides, and seasonal links. It should stay lightweight enough to explain quickly and update without dragging in unrelated app files.</p>
-              <div class="card-actions">
-                <a class="secondary-action compact-link" href="#readme-guide">README guide</a>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section class="readme-section" id="readme-guide" aria-labelledby="readmeTitle">
-          <div>
-            <p class="eyebrow">Project help</p>
-            <h2 id="readmeTitle">How to write a README people can actually use</h2>
-            <p>A good README should answer the questions someone has before they clone, play, test, or contribute. It does not need to be huge. It needs to be honest, specific, and easy to scan.</p>
-          </div>
-          <div class="readme-steps">
-            <article>
-              <span>1</span>
-              <h3>Say what it is</h3>
-              <p>Open with one plain sentence: what the project does, who it is for, and why it exists. Avoid vague lines like "a cool app" or "my project."</p>
-            </article>
-            <article>
-              <span>2</span>
-              <h3>Show how to run it</h3>
-              <p>Include the exact command or link someone needs first. If there are extra steps, list them in order and mention anything that is optional.</p>
-            </article>
-            <article>
-              <span>3</span>
-              <h3>Explain the status</h3>
-              <p>Tell visitors what works, what is unfinished, and what you want to improve next. A clear limitation is better than pretending everything is polished.</p>
-            </article>
-            <article>
-              <span>4</span>
-              <h3>Add useful proof</h3>
-              <p>Screenshots, controls, demo links, credits, license notes, and a small changelog make the project easier to trust and easier to return to later.</p>
-            </article>
-          </div>
-        </section>
-
-        <section class="summer-section" id="summer" aria-labelledby="summerTitle">
-          <div>
-            <p class="eyebrow">Summer 2026</p>
-            <h2 id="summerTitle">Fun things to build or follow right now</h2>
-            <p>These are current picks for project energy: places to build, write, and share something instead of just scrolling. I will keep this section small so it stays curated.</p>
-          </div>
-          <div class="summer-list">
-            <article>
-              <h3>Stardance by Hack Club</h3>
-              <p>Stardance is a free online summer program for teens 13-18 where you make technical projects, log hours, and earn prizes. It runs June 1 through September 30, 2026, so it fits the build-something-this-summer mood perfectly.</p>
-              <a class="primary-action compact-link" href="https://stardance.space">Visit stardance.space</a>
-            </article>
-            <article>
-              <h3>Make a tiny launch page</h3>
-              <p>Pick one project and give it a page with a title, screenshot, what changed this week, and a link to try it. A small clear page is better than a big unfinished redesign.</p>
-            </article>
-            <article>
-              <h3>Keep a shipping log</h3>
-              <p>Once a week, write three bullets: what shipped, what broke, and what you learned. Those notes become README updates, portfolio content, and better commit messages.</p>
-            </article>
-          </div>
-        </section>
-
-        <section class="game-notes" id="project-notes" aria-labelledby="projectNotesTitle">
-          <p class="eyebrow">Project notes</p>
-          <h2 id="projectNotesTitle">Why this homepage is intentionally small</h2>
-          <p>The user homepage should explain what exists and where to go next. Large game builds, worker code, and development artifacts belong in project repositories, while this site keeps the curated summary, useful writing notes, and current links.</p>
+            <div class="player-box" id="playerBox"></div>
+          </article>
         </section>
       </main>
 
-      <footer class="site-footer">
-        <div>
-          <strong>Logdegret</strong>
-          <p>Personal GitHub Pages homepage for projects, notes, games, and maker links.</p>
-        </div>
-        <nav aria-label="Footer">
-          <a href="#projects">Projects</a>
-          <a href="#readme-guide">README Help</a>
-          <a href="privacy.html">Privacy Policy</a>
-          <a href="terms.html">Terms</a>
-        </nav>
-      </footer>
+      <aside class="right-rail" aria-label="Friends status">
+        <button class="avatar profile" data-route="#profile" type="button" id="railProfile">G</button>
+        <div class="rail-friends" id="railFriends"></div>
+        <button class="icon-btn" data-route="#friends" type="button" aria-label="Friends"><svg viewBox="0 0 24 24"><path d="M16 11a4 4 0 1 0-3.9-5A5 5 0 0 1 12 16a7 7 0 0 1 6 3h4a6 6 0 0 0-6-8M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8m0 2a6 6 0 0 0-6 6h12a6 6 0 0 0-6-6"/></svg></button>
+      </aside>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="/app.js"></script>
   </body>
 </html>

@@ -1,16 +1,16 @@
 const games = [
-  { id: "snow-rider-3d", title: "Snow Rider 3D", category: "Arcade", tags: ["Racing", "Quick"], description: "Slide down snowy tracks, dodge hazards, and chase a cleaner run.", url: "https://ubg66.gitlab.io/snow-rider-3d/" },
-  { id: "bottle-flip-3d", title: "Bottle Flip 3D", category: "Skill", tags: ["Quick", "Chill"], description: "Flip the bottle across furniture and stick every landing.", url: "https://www.miniplay.com/embed/bottle-flip-3d" },
-  { id: "rooftop-snipers", title: "Rooftop Snipers", category: "Arcade", tags: ["2 Player", "Challenge"], description: "A wobbly rooftop duel with tiny controls and big knockouts.", url: "https://gswitch3.github.io/g/rooftop-snipers" },
-  { id: "basket-random", title: "Basket Random", category: "Sports", tags: ["2 Player", "Quick"], description: "Chaotic one-button basketball with random courts and physics.", url: "https://htmlunblockedgames.github.io/basket-random/" },
-  { id: "polytrack", title: "PolyTrack v0.6.0", category: "Racing", tags: ["Challenge"], description: "A sharp low-poly driving challenge with speed, drifting, and precise track flow.", url: "https://smapskajendfjshwbekf-prog.github.io/newcargame/" },
-  { id: "eaglercraft", title: "Eaglercraft", category: "Sandbox", tags: ["Chill"], description: "A browser sandbox build for mining, crafting, and open-ended survival.", url: "https://smapskajendfjshwbekf-prog.github.io/eaglercraft/" },
-  { id: "stacktris", title: "Stacktris", category: "Puzzle", tags: ["Chill", "Quick"], description: "Stack pieces with puzzle timing and clean block strategy.", url: "https://htmlunblockedgames.github.io/stacktris/" },
-  { id: "run-3", title: "Run 3", category: "Arcade", tags: ["Runner", "Challenge"], description: "Sprint through space tunnels and keep your footing on every wall.", url: "https://lekug.github.io/tn6pS9dCf37xAhkJv/" },
-  { id: "basketball-stars", title: "Basketball Stars", category: "Sports", tags: ["2 Player", "Challenge"], description: "Arcade basketball matchups with dunks, steals, and quick plays.", url: "https://basketball-stars.io/game/basketball-stars/" },
-  { id: "slope", title: "Slope", category: "Arcade", tags: ["Runner", "Quick"], description: "Roll through neon slopes at high speed without missing the track.", url: "https://ubg66.gitlab.io/slope/" },
-  { id: "tunnel-rush", title: "Tunnel Rush", category: "Arcade", tags: ["Runner", "Challenge"], description: "React fast through a rotating tunnel of color and obstacles.", url: "https://ubg66.gitlab.io/tunnel-rush/" },
-  { id: "retro-bowl", title: "Retro Bowl", category: "Sports", tags: ["Chill"], description: "Call plays, manage drives, and chase the perfect season.", url: "https://ubg66.gitlab.io/retro-bowl/" }
+  { id: "snow-rider-3d", title: "Snow Rider 3D", category: "Arcade", tags: ["Racing", "Quick"], description: "Slide down snowy tracks, dodge hazards, and chase a cleaner run.", url: "https://ubg66.gitlab.io/snow-rider-3d/", thumbnail: "https://imgs.crazygames.com/snow-rider-3d_16x9/20260120063434/snow-rider-3d_16x9-cover" },
+  { id: "bottle-flip-3d", title: "Bottle Flip 3D", category: "Skill", tags: ["Quick", "Chill"], description: "Flip the bottle across furniture and stick every landing.", url: "https://www.miniplay.com/embed/bottle-flip-3d", thumbnail: "https://www2.minijuegosgratis.com/v3/games/thumbnails/228850_1.jpg" },
+  { id: "rooftop-snipers", title: "Rooftop Snipers", category: "Arcade", tags: ["2 Player", "Challenge"], description: "A wobbly rooftop duel with tiny controls and big knockouts.", url: "https://gswitch3.github.io/g/rooftop-snipers", thumbnail: "https://imgs.crazygames.com/rooftop-snipers_16x9/20250108040440/rooftop-snipers_16x9-cover" },
+  { id: "basket-random", title: "Basket Random", category: "Sports", tags: ["2 Player", "Quick"], description: "Chaotic one-button basketball with random courts and physics.", url: "https://htmlunblockedgames.github.io/basket-random/", thumbnail: "https://imgs.crazygames.com/basket-random_16x9/20240617090207/basket-random_16x9-cover" },
+  { id: "polytrack", title: "PolyTrack v0.6.0", category: "Racing", tags: ["Challenge"], description: "A sharp low-poly driving challenge with speed, drifting, and precise track flow.", url: "https://smapskajendfjshwbekf-prog.github.io/newcargame/", thumbnail: null },
+  { id: "eaglercraft", title: "Eaglercraft", category: "Sandbox", tags: ["Chill"], description: "A browser sandbox build for mining, crafting, and open-ended survival.", url: "https://smapskajendfjshwbekf-prog.github.io/eaglercraft/", thumbnail: null },
+  { id: "stacktris", title: "Stacktris", category: "Puzzle", tags: ["Chill", "Quick"], description: "Stack pieces with puzzle timing and clean block strategy.", url: "https://htmlunblockedgames.github.io/stacktris/", thumbnail: null },
+  { id: "run-3", title: "Run 3", category: "Arcade", tags: ["Runner", "Challenge"], description: "Sprint through space tunnels and keep your footing on every wall.", url: "https://lekug.github.io/tn6pS9dCf37xAhkJv/", thumbnail: "https://imgs.crazygames.com/run3b.png" },
+  { id: "basketball-stars", title: "Basketball Stars", category: "Sports", tags: ["2 Player", "Challenge"], description: "Arcade basketball matchups with dunks, steals, and quick plays.", url: "https://basketball-stars.io/game/basketball-stars/", thumbnail: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=600,height=400,fit=cover,f=png/bc02c9cdfc5b424ddf343b01edf791ce/basketball-stars-logo.png" },
+  { id: "slope", title: "Slope", category: "Arcade", tags: ["Runner", "Quick"], description: "Roll through neon slopes at high speed without missing the track.", url: "https://ubg66.gitlab.io/slope/", thumbnail: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/48fdcb743a8cfc4b66dbb07444dd3108/slopey-logo.png" },
+  { id: "tunnel-rush", title: "Tunnel Rush", category: "Arcade", tags: ["Runner", "Challenge"], description: "React fast through a rotating tunnel of color and obstacles.", url: "https://ubg66.gitlab.io/tunnel-rush/", thumbnail: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=600,height=400,fit=cover,f=png/2094926076b7aa8264cace220ce5decc/tunnel-rush-logo.png" },
+  { id: "retro-bowl", title: "Retro Bowl", category: "Sports", tags: ["Chill"], description: "Call plays, manage drives, and chase the perfect season.", url: "https://ubg66.gitlab.io/retro-bowl/", thumbnail: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=600,height=400,fit=cover,f=png/ee9ca3764ef4289a48a1ebf457ef605441ed1f35a0f2eb12707a70d609e53686/retro-bowl-logo.png" }
 ];
 
 const els = {
@@ -76,6 +76,16 @@ const els = {
   surpriseBtn: document.getElementById("surpriseBtn")
 };
 
+// ── Supabase ──────────────────────────────────────────────────
+// Replace these two values with your project's URL and anon key
+// (Supabase dashboard → Project Settings → API)
+const SUPABASE_URL  = "https://czicirxkdjpxaygciiyu.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6aWNpcnhrZGpweGF5Z2NpaXl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NjIzMjIsImV4cCI6MjA5NjUzODMyMn0.ypFLqGzCmwpF-B8ISQffnsh0GMYdho_K6oqaZPR3tZQ";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+// ─────────────────────────────────────────────────────────────
+
+const ONLINE_MS = 90_000;
+
 const emptyStats = { totalSeconds: 0, plays: 0, xp: 0, lastPlayed: "snow-rider-3d", currentGame: null, mostPlayed: null, perGame: {} };
 const state = {
   route: "home",
@@ -83,9 +93,8 @@ const state = {
   query: "",
   currentGame: games[0],
   user: null,
-  token: localStorage.getItem("nexusToken") || "",
   friends: [],
-  stats: JSON.parse(localStorage.getItem("nexusLocalStats") || "null") || emptyStats,
+  stats: JSON.parse(localStorage.getItem("hunterLocalStats") || "null") || emptyStats,
   activeSince: 0,
   lastTick: 0
 };
@@ -124,16 +133,27 @@ function formatTime(seconds) {
 }
 
 function saveLocalStats() {
-  localStorage.setItem("nexusLocalStats", JSON.stringify(state.stats));
+  localStorage.setItem("hunterLocalStats", JSON.stringify(state.stats));
 }
 
-async function api(path, options = {}) {
-  const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
-  if (state.token) headers.Authorization = `Bearer ${state.token}`;
-  const response = await fetch(path, { ...options, headers });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error || "Request failed.");
-  return data;
+function buildStatsFromDB(playtimeRows, profile) {
+  const perGame = {};
+  for (const row of playtimeRows || []) {
+    perGame[row.game_id] = { seconds: row.seconds, plays: row.plays };
+  }
+  const totalSeconds = Object.values(perGame).reduce((s, v) => s + v.seconds, 0);
+  const plays        = Object.values(perGame).reduce((s, v) => s + v.plays, 0);
+  const mostPlayed   = Object.entries(perGame)
+    .map(([gameId, v]) => ({ gameId, seconds: v.seconds }))
+    .sort((a, b) => b.seconds - a.seconds)[0] || null;
+  return {
+    totalSeconds, plays,
+    xp: Math.floor(totalSeconds / 60) * 10 + plays * 25,
+    lastPlayed:  profile?.last_played  || "snow-rider-3d",
+    currentGame: profile?.current_game || null,
+    mostPlayed,
+    perGame
+  };
 }
 
 function setNotice(text) {
@@ -171,8 +191,8 @@ function setActivePage(page) {
     button.classList.toggle("active", target === page || (page === "play" && target === "games"));
   });
 
-  const titles = { home: "Nexus Games", games: "Game Library", stats: "Statistics", friends: "Friends", profile: "Profile", play: "Now Playing" };
-  els.pageTitle.textContent = titles[page] || "Nexus Games";
+  const titles = { home: "Hunter Games", games: "Game Library", stats: "Statistics", friends: "Friends", profile: "Profile", play: "Now Playing" };
+  els.pageTitle.textContent = titles[page] || "Hunter Games";
 }
 
 function route() {
@@ -200,6 +220,31 @@ function renderHero() {
     navigate(`#game/${featured.id}`);
   };
   els.featuredCard.onclick = () => navigate(`#game/${featured.id}`);
+  const orbit = els.featuredCard.querySelector(".game-orbit");
+  if (orbit) {
+    if (featured.thumbnail) {
+      orbit.style.backgroundImage = `url('${featured.thumbnail}')`;
+      orbit.style.backgroundSize = "cover";
+      orbit.style.backgroundPosition = "center";
+      orbit.style.borderRadius = "24px";
+      orbit.style.filter = "drop-shadow(0 28px 35px rgba(0,0,0,0.5))";
+    } else {
+      orbit.style.backgroundImage = "";
+      orbit.style.backgroundSize = "";
+      orbit.style.borderRadius = "50%";
+      orbit.style.filter = "drop-shadow(0 28px 35px rgba(0,0,0,0.4))";
+    }
+  }
+  if (document.getElementById("lastThumb")) {
+    const thumb = document.getElementById("lastThumb");
+    if (featured.thumbnail) {
+      thumb.style.backgroundImage = `url('${featured.thumbnail}')`;
+      thumb.style.backgroundSize = "cover";
+      thumb.style.backgroundPosition = "center";
+    } else {
+      thumb.style.backgroundImage = "";
+    }
+  }
 }
 
 function renderQuickList() {
@@ -208,7 +253,9 @@ function renderQuickList() {
     const button = document.createElement("button");
     button.className = "quick-card";
     button.type = "button";
-    button.innerHTML = `<div class="cover">${initials(game.title)}</div><div><strong>${game.title}</strong><span>${game.category}</span></div>${icon("M9 5l7 7-7 7-1.4-1.4 5.6-5.6-5.6-5.6z")}`;
+    const coverStyle = game.thumbnail ? `style="background-image:url('${game.thumbnail}');background-size:cover;background-position:center;"` : "";
+    const coverInner = game.thumbnail ? "" : initials(game.title);
+    button.innerHTML = `<div class="cover" ${coverStyle}>${coverInner}</div><div><strong>${game.title}</strong><span>${game.category}</span></div>${icon("M9 5l7 7-7 7-1.4-1.4 5.6-5.6-5.6-5.6z")}`;
     button.addEventListener("click", () => navigate(`#game/${game.id}`));
     els.quickList.appendChild(button);
   });
@@ -218,7 +265,7 @@ function renderActivities() {
   const last = gameById(state.stats.lastPlayed);
   const items = [
     { title: "Last Session", copy: last ? last.title : "Pick a game", target: last ? last.id : games[0].id },
-    { title: "Surprise Pick", copy: "Let Nexus choose", target: null },
+    { title: "Surprise Pick", copy: "Let Hunter choose", target: null },
     { title: "Most Played", copy: state.stats.mostPlayed ? gameName(state.stats.mostPlayed.gameId) : "Start a streak", target: state.stats.mostPlayed?.gameId || games[0].id }
   ];
   els.activityGrid.innerHTML = "";
@@ -257,7 +304,8 @@ function renderLibrary() {
     const button = document.createElement("button");
     button.className = "game-tile";
     button.type = "button";
-    button.innerHTML = `<div class="game-art" data-initials="${initials(game.title)}"></div><h3>${game.title}</h3><p>${game.description}</p>`;
+    const artStyle = game.thumbnail ? ` style="background-image:url('${game.thumbnail}');background-size:cover;background-position:center;"` : "";
+    button.innerHTML = `<div class="game-art" data-initials="${initials(game.title)}"${artStyle}></div><h3>${game.title}</h3><p>${game.description}</p>`;
     button.addEventListener("click", () => navigate(`#game/${game.id}`));
     els.gameGrid.appendChild(button);
   });
@@ -292,7 +340,9 @@ function renderStats() {
     const item = stats.perGame?.[game.id] || { seconds: 0, plays: 0 };
     const row = document.createElement("div");
     row.className = "time-row";
-    row.innerHTML = `<div class="cover">${initials(game.title)}</div><div><strong>${game.title}</strong><span>${item.plays || 0} plays</span></div><strong>${formatTime(item.seconds || 0)}</strong>`;
+    const coverStyle = game.thumbnail ? `style="background-image:url('${game.thumbnail}');background-size:cover;background-position:center;"` : "";
+    const coverInner = game.thumbnail ? "" : initials(game.title);
+    row.innerHTML = `<div class="cover" ${coverStyle}>${coverInner}</div><div><strong>${game.title}</strong><span>${item.plays || 0} plays</span></div><strong>${formatTime(item.seconds || 0)}</strong>`;
     els.timeList.appendChild(row);
   });
 }
@@ -400,11 +450,8 @@ async function startPlayTracking(game) {
   localPlayStart(game);
   if (state.user) {
     try {
-      const data = await api("/api/play-start", { method: "POST", body: JSON.stringify({ gameId: game.id }) });
-      state.stats = data.stats;
-    } catch (error) {
-      setNotice(error.message);
-    }
+      await sb.rpc("record_play", { p_game_id: game.id });
+    } catch {}
   }
   heartbeat();
 }
@@ -423,11 +470,8 @@ async function flushPlaytime() {
   localPlaytime(state.currentGame, seconds);
   if (state.user) {
     try {
-      const data = await api("/api/playtime", { method: "POST", body: JSON.stringify({ gameId: state.currentGame.id, seconds }) });
-      state.stats = data.stats;
-    } catch (error) {
-      setNotice(error.message);
-    }
+      await sb.rpc("add_playtime", { p_game_id: state.currentGame.id, p_seconds: seconds });
+    } catch {}
   }
   renderStats();
 }
@@ -436,39 +480,44 @@ async function heartbeat() {
   if (!state.user) return;
   try {
     const currentGame = state.route === "play" ? state.currentGame.id : null;
-    const data = await api("/api/heartbeat", { method: "POST", body: JSON.stringify({ currentGame }) });
-    state.user = data.user;
-    state.stats = data.stats;
+    await sb.rpc("update_heartbeat", { p_current_game: currentGame });
     await loadFriends();
   } catch {
+    // session expired — sign out gracefully
     state.user = null;
-    state.token = "";
-    localStorage.removeItem("nexusToken");
+    state.friends = [];
   }
   renderAll();
 }
 
 async function loadMe() {
-  if (!state.token) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
   try {
-    const data = await api("/api/me");
-    state.user = data.user;
-    state.stats = data.stats;
+    const [{ data: profile }, { data: playtime }] = await Promise.all([
+      sb.from("profiles").select("*").eq("id", session.user.id).single(),
+      sb.from("playtime").select("*").eq("user_id", session.user.id)
+    ]);
+    if (!profile) return;
+    state.user = { id: session.user.id, username: profile.username, initials: initials(profile.username) };
+    state.stats = buildStatsFromDB(playtime, profile);
     await loadFriends();
-  } catch {
-    state.token = "";
-    state.user = null;
-    localStorage.removeItem("nexusToken");
-  }
+  } catch {}
 }
 
 async function loadFriends() {
-  if (!state.user) {
-    state.friends = [];
-    return;
-  }
-  const data = await api("/api/friends");
-  state.friends = data.friends || [];
+  if (!state.user) { state.friends = []; return; }
+  const { data } = await sb
+    .from("friendships")
+    .select("friend:profiles!friendships_friend_id_fkey(id, username, current_game, last_seen)")
+    .eq("user_id", state.user.id);
+  state.friends = (data || []).map(({ friend: f }) => ({
+    id: f.id,
+    username: f.username,
+    initials: initials(f.username),
+    online: f.last_seen && (Date.now() - new Date(f.last_seen).getTime()) < ONLINE_MS,
+    currentGame: f.current_game
+  }));
 }
 
 function surpriseGame() {
@@ -504,18 +553,40 @@ els.searchInput.addEventListener("input", () => {
 els.authForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const action = event.submitter?.dataset.auth || "login";
+  const username = els.usernameInput.value.trim().toLowerCase().replace(/\s+/g, "_").slice(0, 24);
+  const password = els.passwordInput.value;
+  const email    = `${username}@huntergames.local`;
   setNotice("");
+
+  if (!/^[a-z0-9_-]{3,24}$/.test(username)) {
+    setNotice("Username must be 3–24 letters, numbers, _ or -.");
+    return;
+  }
+  if (password.length < 4) {
+    setNotice("Password must be at least 4 characters.");
+    return;
+  }
+
   try {
-    const data = await api(`/api/${action}`, {
-      method: "POST",
-      body: JSON.stringify({ username: els.usernameInput.value, password: els.passwordInput.value })
-    });
-    state.token = data.token;
-    state.user = data.user;
-    state.stats = data.stats;
-    localStorage.setItem("nexusToken", state.token);
+    if (action === "signup") {
+      const { data, error } = await sb.auth.signUp({ email, password });
+      if (error) throw new Error(error.message);
+      // Profile is created automatically by the Supabase trigger.
+      state.user = { id: data.user.id, username, initials: initials(username) };
+      state.stats = buildStatsFromDB([], null);
+      setNotice("Account created — you're signed in.");
+    } else {
+      const { data, error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) throw new Error("Username or password is wrong.");
+      const [{ data: profile }, { data: playtime }] = await Promise.all([
+        sb.from("profiles").select("*").eq("id", data.user.id).single(),
+        sb.from("playtime").select("*").eq("user_id", data.user.id)
+      ]);
+      state.user = { id: data.user.id, username: profile.username, initials: initials(profile.username) };
+      state.stats = buildStatsFromDB(playtime, profile);
+      setNotice("Signed in.");
+    }
     await loadFriends();
-    setNotice(action === "signup" ? "Account created." : "Signed in.");
     renderAll();
   } catch (error) {
     setNotice(error.message);
@@ -523,25 +594,31 @@ els.authForm.addEventListener("submit", async (event) => {
 });
 
 els.logoutBtn.addEventListener("click", async () => {
-  try {
-    await api("/api/logout", { method: "POST", body: "{}" });
-  } catch {}
-  state.token = "";
+  await sb.auth.signOut();
   state.user = null;
   state.friends = [];
-  localStorage.removeItem("nexusToken");
   setNotice("Signed out.");
   renderAll();
 });
 
 els.addFriendForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  if (!state.user) {
-    setNotice("Sign in before adding friends.");
-    return;
-  }
+  if (!state.user) { setNotice("Sign in before adding friends."); return; }
+  const friendName = els.friendInput.value.trim().toLowerCase();
   try {
-    await api("/api/friends/add", { method: "POST", body: JSON.stringify({ username: els.friendInput.value }) });
+    const { data: friend, error } = await sb
+      .from("profiles")
+      .select("id")
+      .eq("username", friendName)
+      .single();
+    if (error || !friend) throw new Error("No user with that username.");
+    if (friend.id === state.user.id) throw new Error("That's you!");
+    // Insert both directions so each side can query just by user_id
+    const { error: insErr } = await sb.from("friendships").upsert([
+      { user_id: state.user.id, friend_id: friend.id },
+      { user_id: friend.id, friend_id: state.user.id }
+    ]);
+    if (insErr) throw new Error(insErr.message);
     els.friendInput.value = "";
     await loadFriends();
     setNotice("Friend added.");

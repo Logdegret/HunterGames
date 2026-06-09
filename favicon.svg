@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff3e35"/>
+      <stop offset="100%" style="stop-color:#ff8a4f"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0.18)"/>
+      <stop offset="100%" style="stop-color:rgba(255,255,255,0)"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
+  <rect width="64" height="32" rx="0" fill="url(#shine)" rx="16"/>
+  <!-- controller body -->
+  <rect x="10" y="22" width="44" height="22" rx="11" fill="rgba(0,0,0,0.35)"/>
+  <!-- left bumps (d-pad cross) -->
+  <rect x="18" y="28" width="4" height="10" rx="2" fill="white" opacity="0.9"/>
+  <rect x="15" y="31" width="10" height="4" rx="2" fill="white" opacity="0.9"/>
+  <!-- right buttons -->
+  <circle cx="46" cy="30" r="2.5" fill="white" opacity="0.9"/>
+  <circle cx="50" cy="33" r="2.5" fill="white" opacity="0.9"/>
+  <circle cx="46" cy="36" r="2.5" fill="white" opacity="0.9"/>
+  <circle cx="42" cy="33" r="2.5" fill="white" opacity="0.9"/>
+  <!-- center button -->
+  <circle cx="32" cy="33" r="3" fill="rgba(255,255,255,0.25)"/>
+  <!-- grips -->
+  <ellipse cx="20" cy="42" rx="6" ry="4" fill="rgba(0,0,0,0.35)"/>
+  <ellipse cx="44" cy="42" rx="6" ry="4" fill="rgba(0,0,0,0.35)"/>
+</svg>
