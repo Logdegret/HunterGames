@@ -192,7 +192,7 @@ function setActivePage(page) {
     button.classList.toggle("active", target === page || (page === "play" && target === "games"));
   });
 
-  const titles = { home: "Hunter Games", games: "Game Library", stats: "Statistics", friends: "Friends", profile: "Profile", play: "Now Playing" };
+  const titles = { home: "Hunter Games", games: "Game Library", stats: "Statistics", profile: "Profile & Friends", play: "Now Playing" };
   els.pageTitle.textContent = titles[page] || "Hunter Games";
 }
 
@@ -388,7 +388,7 @@ function renderFriends() {
     rail.type = "button";
     rail.title = `${friend.username}: ${playing}`;
     rail.textContent = friend.initials;
-    rail.addEventListener("click", () => navigate("#friends"));
+    rail.addEventListener("click", () => navigate("#profile"));
     els.railFriends.appendChild(rail);
   });
 }

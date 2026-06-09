@@ -22,10 +22,7 @@
           <button class="rail-btn" data-route="#stats" type="button" title="Stats" aria-label="Stats">
             <svg viewBox="0 0 24 24"><path d="M4 20V9h4v11zm6 0V4h4v16zm6 0v-7h4v7z"/></svg>
           </button>
-          <button class="rail-btn" data-route="#friends" type="button" title="Friends" aria-label="Friends">
-            <svg viewBox="0 0 24 24"><path d="M16 11a4 4 0 1 0-3.9-5A5 5 0 0 1 12 16a7 7 0 0 1 6 3h4a6 6 0 0 0-6-8M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8m0 2a6 6 0 0 0-6 6h12a6 6 0 0 0-6-6"/></svg>
-          </button>
-          <button class="rail-btn" data-route="#profile" type="button" title="Profile" aria-label="Profile">
+          <button class="rail-btn" data-route="#profile" type="button" title="Profile & Friends" aria-label="Profile & Friends">
             <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10m-9 9a9 9 0 0 1 18 0z"/></svg>
           </button>
         </nav>
@@ -128,7 +125,23 @@
           <div class="time-list" id="timeList"></div>
         </section>
 
-        <section class="view" id="friendsView">
+        <section class="view" id="profileView">
+          <div class="profile-grid">
+            <article class="profile-card">
+              <div class="big-avatar" id="settingsAvatar">P</div>
+              <div>
+                <p class="eyebrow">Profile</p>
+                <h2 id="settingsName">Guest Player</h2>
+                <span id="settingsStatus">Sign in to save friends and play stats.</span>
+              </div>
+            </article>
+            <article class="metric-panel">
+              <p class="eyebrow">Current Game</p>
+              <strong id="currentGameLabel">None</strong>
+              <span>Your status updates while a game page is active.</span>
+            </article>
+          </div>
+
           <div class="friends-layout">
             <article class="auth-card">
               <p class="eyebrow">Account</p>
@@ -171,24 +184,6 @@
           </div>
         </section>
 
-        <section class="view" id="profileView">
-          <div class="profile-grid">
-            <article class="profile-card">
-              <div class="big-avatar" id="settingsAvatar">P</div>
-              <div>
-                <p class="eyebrow">Profile</p>
-                <h2 id="settingsName">Guest Player</h2>
-                <span id="settingsStatus">Sign in to save friends and play stats.</span>
-              </div>
-            </article>
-            <article class="metric-panel">
-              <p class="eyebrow">Current Game</p>
-              <strong id="currentGameLabel">None</strong>
-              <span>Your status updates while a game page is active.</span>
-            </article>
-          </div>
-        </section>
-
         <section class="view play-view" id="playView">
           <div class="play-head">
             <button class="back-btn" id="backBtn" type="button" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5L12 20 4 12l8-8 1.5 1.5L8 11z"/></svg></button>
@@ -216,7 +211,7 @@
       <aside class="right-rail" aria-label="Friends status">
         <button class="avatar profile" data-route="#profile" type="button" id="railProfile">G</button>
         <div class="rail-friends" id="railFriends"></div>
-        <button class="icon-btn" data-route="#friends" type="button" aria-label="Friends"><svg viewBox="0 0 24 24"><path d="M16 11a4 4 0 1 0-3.9-5A5 5 0 0 1 12 16a7 7 0 0 1 6 3h4a6 6 0 0 0-6-8M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8m0 2a6 6 0 0 0-6 6h12a6 6 0 0 0-6-6"/></svg></button>
+        <button class="icon-btn" data-route="#profile" type="button" aria-label="Friends"><svg viewBox="0 0 24 24"><path d="M16 11a4 4 0 1 0-3.9-5A5 5 0 0 1 12 16a7 7 0 0 1 6 3h4a6 6 0 0 0-6-8M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8m0 2a6 6 0 0 0-6 6h12a6 6 0 0 0-6-6"/></svg></button>
       </aside>
     </div>
 
