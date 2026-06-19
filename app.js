@@ -1,4 +1,5 @@
-const games = [
+const savedCustomGames = JSON.parse(localStorage.getItem("hunterCustomGames") || "[]");
+const games = [...savedCustomGames,
   { id: "snow-rider-3d", title: "Snow Rider 3D", category: "Arcade", tags: ["Racing", "Quick"], description: "Slide down snowy tracks, dodge hazards, and chase a cleaner run.", url: "https://ubg66.gitlab.io/snow-rider-3d/", thumbnail: "https://imgs.crazygames.com/snow-rider-3d_16x9/20260120063434/snow-rider-3d_16x9-cover" },
   { id: "bottle-flip-3d", title: "Bottle Flip 3D", category: "Skill", tags: ["Quick", "Chill"], description: "Flip the bottle across furniture and stick every landing.", url: "https://ubg66.gitlab.io/bottle-flip-3d/", thumbnail: "https://www2.minijuegosgratis.com/v3/games/thumbnails/228850_1.jpg" },
   { id: "rooftop-snipers", title: "Rooftop Snipers", category: "Arcade", tags: ["2 Player", "Challenge"], description: "A wobbly rooftop duel with tiny controls and big knockouts.", url: "https://gswitch3.github.io/g/rooftop-snipers", thumbnail: "https://imgs.crazygames.com/rooftop-snipers_16x9/20250108040440/rooftop-snipers_16x9-cover" },
@@ -42,6 +43,7 @@ const els = {
   statsMostPlayed: document.getElementById("statsMostPlayed"),
   statsMostPlayedTime: document.getElementById("statsMostPlayedTime"),
   timeList: document.getElementById("timeList"),
+  authSignedOut: document.getElementById("authSignedOut"),
   authForm: document.getElementById("authForm"),
   emailInput: document.getElementById("emailInput"),
   usernameInput: document.getElementById("usernameInput"),
@@ -60,7 +62,6 @@ const els = {
   settingsAvatar: document.getElementById("settingsAvatar"),
   settingsName: document.getElementById("settingsName"),
   settingsStatus: document.getElementById("settingsStatus"),
-  currentGameLabel: document.getElementById("currentGameLabel"),
   backBtn: document.getElementById("backBtn"),
   playCategory: document.getElementById("playCategory"),
   playTitle: document.getElementById("playTitle"),
@@ -74,7 +75,19 @@ const els = {
   reloadBtn: document.getElementById("reloadBtn"),
   fullscreenBtn: document.getElementById("fullscreenBtn"),
   resumeBtn: document.getElementById("resumeBtn"),
-  surpriseBtn: document.getElementById("surpriseBtn")
+  surpriseBtn: document.getElementById("surpriseBtn"),
+  devNavBtn: document.getElementById("devNavBtn"),
+  devTitleInput: document.getElementById("devTitleInput"),
+  devUrlInput: document.getElementById("devUrlInput"),
+  devLaunchBtn: document.getElementById("devLaunchBtn"),
+  devBlankBtn: document.getElementById("devBlankBtn"),
+  devCategoryInput: document.getElementById("devCategoryInput"),
+  devAddBtn: document.getElementById("devAddBtn"),
+  devPatInput: document.getElementById("devPatInput"),
+  devPatSaveBtn: document.getElementById("devPatSaveBtn"),
+  devPatNotice: document.getElementById("devPatNotice"),
+  devNotice: document.getElementById("devNotice"),
+  devLogoutBtn: document.getElementById("devLogoutBtn")
 };
 
 // ── Supabase ──────────────────────────────────────────────────
@@ -86,6 +99,9 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 // ─────────────────────────────────────────────────────────────
 
 const ONLINE_MS = 90_000;
+const DEV_EMAIL   = "logankao99@gmail.com";
+const DEV_PASS    = "GolfDude88";
+const GITHUB_API  = "https://api.github.com/repos/Logdegret/HunterGames/contents/app.js";
 
 const emptyStats = { totalSeconds: 0, plays: 0, xp: 0, lastPlayed: "snow-rider-3d", currentGame: null, mostPlayed: null, perGame: {} };
 const state = {
@@ -97,7 +113,8 @@ const state = {
   friends: [],
   stats: JSON.parse(localStorage.getItem("hunterLocalStats") || "null") || emptyStats,
   activeSince: 0,
-  lastTick: 0
+  lastTick: 0,
+  devMode: localStorage.getItem("hunterDevMode") === "1"
 };
 
 const filters = ["All", ...Array.from(new Set(games.flatMap((game) => [game.category, ...game.tags]))).sort()];
@@ -192,7 +209,7 @@ function setActivePage(page) {
     button.classList.toggle("active", target === page || (page === "play" && target === "games"));
   });
 
-  const titles = { home: "Hunter Games", games: "Game Library", stats: "Statistics", profile: "Profile & Friends", play: "Now Playing" };
+  const titles = { home: "Hunter Games", games: "Game Library", stats: "Statistics", profile: "Profile & Friends", play: "Now Playing", dev: "Developer Tools" };
   els.pageTitle.textContent = titles[page] || "Hunter Games";
 }
 
@@ -334,7 +351,7 @@ function renderStats() {
   els.statsXp.textContent = stats.xp || 0;
   els.statsMostPlayed.textContent = most ? most.title : "None";
   els.statsMostPlayedTime.textContent = most ? formatTime(stats.mostPlayed.seconds) : "0m";
-  els.currentGameLabel.textContent = state.route === "play" ? state.currentGame.title : "None";
+
 
   els.timeList.innerHTML = "";
   games.forEach((game) => {
@@ -350,14 +367,14 @@ function renderStats() {
 
 function renderUser() {
   const user = state.user;
-  els.sessionLabel.textContent = user ? `Signed in as ${user.username}` : "Offline profile";
+  els.sessionLabel.textContent = user ? `Signed in as ${user.username}` : "Online Games";
   els.railProfile.textContent = user ? user.initials : "G";
   els.settingsAvatar.textContent = user ? user.initials : "G";
   els.profileAvatar.textContent = user ? user.initials : "G";
   els.profileName.textContent = user ? user.username : "Guest Player";
   els.settingsName.textContent = user ? user.username : "Guest Player";
   els.settingsStatus.textContent = user ? "Online status is active." : "Sign in to save friends and play stats.";
-  els.authForm.classList.toggle("hidden", Boolean(user));
+  els.authSignedOut.classList.toggle("hidden", Boolean(user));
   els.signedInBox.classList.toggle("hidden", !user);
 }
 
@@ -421,6 +438,8 @@ function renderAll() {
   renderStats();
   renderUser();
   renderFriends();
+  renderDevMode();
+  renderDevPat();
 }
 
 function localPlayStart(game) {
@@ -551,12 +570,33 @@ els.searchInput.addEventListener("input", () => {
   renderLibrary();
 });
 
+function setDevMode(on) {
+  state.devMode = on;
+  localStorage.setItem("hunterDevMode", on ? "1" : "0");
+  els.devNavBtn.classList.toggle("hidden", !on);
+  els.sessionLabel.textContent = on
+    ? "Dev mode active"
+    : (state.user ? `Signed in as ${state.user.username}` : "Offline profile");
+}
+
+function renderDevMode() {
+  els.devNavBtn.classList.toggle("hidden", !state.devMode);
+}
+
 els.authForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const action   = event.submitter?.dataset.auth || "login";
   const email    = els.emailInput.value.trim();
   const password = els.passwordInput.value;
   setNotice("");
+
+  // Dev mode login — local only, no Supabase
+  if (email === DEV_EMAIL && password === DEV_PASS) {
+    setDevMode(true);
+    setNotice("Developer mode enabled.");
+    navigate("#dev");
+    return;
+  }
 
   // First "Sign up" click — just reveal the username field, don't submit yet
   if (action === "signup" && els.usernameInput.classList.contains("hidden")) {
@@ -631,6 +671,108 @@ els.addFriendForm.addEventListener("submit", async (event) => {
   } catch (error) {
     setNotice(error.message);
   }
+});
+
+els.devLogoutBtn.addEventListener("click", () => {
+  setDevMode(false);
+  navigate("#home");
+});
+
+function devGameFromInputs() {
+  const url = els.devUrlInput.value.trim();
+  if (!url) { els.devNotice.textContent = "Please paste a URL first."; return null; }
+  els.devNotice.textContent = "";
+  const title = els.devTitleInput.value.trim() || "Custom Game";
+  const category = els.devCategoryInput.value.trim() || "Custom";
+  return { id: "dev-custom", title, category, tags: [category], description: "", url };
+}
+
+function renderDevPat() {
+  const saved = localStorage.getItem("hunterDevPAT");
+  if (saved) {
+    els.devPatInput.placeholder = "Token saved — paste new one to replace";
+    els.devPatNotice.textContent = "Token saved.";
+  }
+}
+
+els.devPatSaveBtn.addEventListener("click", () => {
+  const pat = els.devPatInput.value.trim();
+  if (!pat) { els.devPatNotice.textContent = "Paste a token first."; return; }
+  localStorage.setItem("hunterDevPAT", pat);
+  els.devPatInput.value = "";
+  els.devPatInput.placeholder = "Token saved — paste new one to replace";
+  els.devPatNotice.textContent = "Token saved.";
+});
+
+els.devAddBtn.addEventListener("click", async () => {
+  const url      = els.devUrlInput.value.trim();
+  const title    = els.devTitleInput.value.trim();
+  const category = els.devCategoryInput.value.trim() || "Custom";
+  const pat      = localStorage.getItem("hunterDevPAT");
+
+  if (!url || !title) { els.devNotice.textContent = "Title and URL are required."; return; }
+  if (!pat) { els.devNotice.textContent = "Save your GitHub token first (left panel)."; return; }
+
+  const id = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  if (games.some((g) => g.id === id)) { els.devNotice.textContent = "A game with that title already exists."; return; }
+
+  els.devAddBtn.disabled = true;
+  els.devNotice.textContent = "Fetching app.js from GitHub…";
+
+  try {
+    const getRes = await fetch(GITHUB_API, {
+      headers: { Authorization: `token ${pat}`, Accept: "application/vnd.github.v3+json" }
+    });
+    if (!getRes.ok) throw new Error("Could not fetch app.js — check your token has repo scope.");
+    const fileData = await getRes.json();
+    const sha = fileData.sha;
+    const current = decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, ""))));
+
+    const marker = "const games = [...savedCustomGames,";
+    const idx = current.indexOf(marker);
+    if (idx === -1) throw new Error("Could not find games array in app.js.");
+
+    const newEntry = `\n  { id: ${JSON.stringify(id)}, title: ${JSON.stringify(title)}, category: ${JSON.stringify(category)}, tags: ${JSON.stringify([category])}, description: "", url: ${JSON.stringify(url)}, thumbnail: null },`;
+    const updated = current.slice(0, idx + marker.length) + newEntry + current.slice(idx + marker.length);
+
+    els.devNotice.textContent = "Committing to GitHub…";
+    const putRes = await fetch(GITHUB_API, {
+      method: "PUT",
+      headers: { Authorization: `token ${pat}`, Accept: "application/vnd.github.v3+json", "Content-Type": "application/json" },
+      body: JSON.stringify({ message: `Add game: ${title}`, content: btoa(unescape(encodeURIComponent(updated))), sha })
+    });
+    if (!putRes.ok) {
+      const err = await putRes.json();
+      throw new Error(err.message || "GitHub commit failed.");
+    }
+
+    // Show immediately without waiting for Pages redeploy
+    const game = { id, title, category, tags: [category], description: "", url, thumbnail: null };
+    games.unshift(game);
+    renderAll();
+
+    els.devNotice.textContent = `"${title}" added for everyone. GitHub Pages updates in ~30 seconds.`;
+    els.devUrlInput.value = "";
+    els.devTitleInput.value = "";
+    els.devCategoryInput.value = "";
+  } catch (err) {
+    els.devNotice.textContent = "Error: " + err.message;
+  } finally {
+    els.devAddBtn.disabled = false;
+  }
+});
+
+els.devLaunchBtn.addEventListener("click", () => {
+  const game = devGameFromInputs();
+  if (!game) return;
+  state.currentGame = game;
+  navigate(`#game/dev-custom`);
+});
+
+els.devBlankBtn.addEventListener("click", () => {
+  const game = devGameFromInputs();
+  if (!game) return;
+  openBlankGame(game);
 });
 
 els.backBtn.addEventListener("click", () => navigate("#games"));

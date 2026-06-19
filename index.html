@@ -11,7 +11,7 @@
   <body>
     <div class="app-shell">
       <aside class="left-rail" aria-label="Main navigation">
-        <button class="brand-mark" data-route="#home" type="button" aria-label="Home">H</button>
+        <button class="brand-mark" data-route="#home" type="button" aria-label="Home"><img src="favicon.png" alt="Company Logo" class="brand-logo-img"></button>
         <nav class="rail-nav">
           <button class="rail-btn active" data-route="#home" type="button" title="Home" aria-label="Home">
             <svg viewBox="0 0 24 24"><path d="m12 3 9 8h-3v9h-5v-6h-2v6H6v-9H3z"/></svg>
@@ -25,6 +25,9 @@
           <button class="rail-btn" data-route="#profile" type="button" title="Profile & Friends" aria-label="Profile & Friends">
             <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10m-9 9a9 9 0 0 1 18 0z"/></svg>
           </button>
+          <button class="rail-btn dev-btn hidden" data-route="#dev" type="button" title="Developer Tools" aria-label="Developer Tools" id="devNavBtn">
+            <svg viewBox="0 0 24 24"><path d="M9.1 2c.4 1.2.2 2.5-.6 3.4L6.1 7.8C5.3 8.6 4 8.8 2.8 8.4l-.8 1.4 1.9 1.9c.3-.1.6-.1.9-.1 1.1 0 2 .9 2 2s-.9 2-2 2c-.3 0-.6-.1-.9-.1L2 17l1.4.8c1.2-.4 2.5-.2 3.4.6l2.4 2.4c.8.8 1 2.1.6 3.2H11v-2.7c1.2-.4 2-.9 2.6-1.5L16 22h2v-2l-2.9-2.9c.6-.9.9-2.1.9-3.1H19l2-2-2-2h-3c0-1-.3-2.2-.9-3.1L18 4V2h-2l-2.4 2.4c-.6-.6-1.4-1.1-2.6-1.5V0z"/></svg>
+          </button>
         </nav>
         <button class="rail-plus" id="surpriseBtn" type="button" title="Surprise me" aria-label="Surprise me">
           <svg viewBox="0 0 24 24"><path d="M16 3l4 4-4 4V8h-1c-1 0-2 .5-2.8 1.4L9 13c-.9 1.1-2.2 2-4 2H3v-2h2c1.2 0 2.1-.6 2.8-1.4L11 8c.9-1.1 2.2-2 4-2h1V3zm0 13v-3l4 4-4 4v-3h-1c-1.8 0-3.1-.9-4-2l-1.5-1.9 1.5-1.9c.7.9 1.6 1.8 2.8 1.8h1z"/></svg>
@@ -34,7 +37,7 @@
       <main class="main-stage">
         <header class="topbar">
           <div>
-            <p class="eyebrow" id="sessionLabel">Offline profile</p>
+            <p class="eyebrow" id="sessionLabel">Online Games</p>
             <h1 id="pageTitle">Hunter Games</h1>
           </div>
           <label class="search-wrap" aria-label="Search games">
@@ -135,27 +138,24 @@
                 <span id="settingsStatus">Sign in to save friends and play stats.</span>
               </div>
             </article>
-            <article class="metric-panel">
-              <p class="eyebrow">Current Game</p>
-              <strong id="currentGameLabel">None</strong>
-              <span>Your status updates while a game page is active.</span>
-            </article>
           </div>
 
           <div class="friends-layout">
             <article class="auth-card">
               <p class="eyebrow">Account</p>
-              <h2 id="authTitle">Sign in or create an account</h2>
-              <p class="muted-copy">Accounts unlock real friends, online status, and synced play stats on this device.</p>
-              <form class="auth-form" id="authForm">
-                <input id="emailInput" name="email" type="email" placeholder="Email" autocomplete="email" required>
-                <input id="usernameInput" name="username" placeholder="Choose a username" autocomplete="username" class="hidden">
-                <input id="passwordInput" name="password" placeholder="Password" type="password" autocomplete="current-password" required>
-                <div class="form-actions">
-                  <button class="primary-btn" data-auth="login" type="submit">Log in</button>
-                  <button class="ghost-btn" data-auth="signup" type="submit">Sign up</button>
-                </div>
-              </form>
+              <div id="authSignedOut">
+                <h2>Sign in or create an account</h2>
+                <p class="muted-copy">Accounts unlock real friends, online status, and synced play stats on this device.</p>
+                <form class="auth-form" id="authForm">
+                  <input id="emailInput" name="email" type="email" placeholder="Email" autocomplete="email" required>
+                  <input id="usernameInput" name="username" placeholder="Choose a username" autocomplete="username" class="hidden">
+                  <input id="passwordInput" name="password" placeholder="Password" type="password" autocomplete="current-password" required>
+                  <div class="form-actions">
+                    <button class="primary-btn" data-auth="login" type="submit">Log in</button>
+                    <button class="ghost-btn" data-auth="signup" type="submit">Sign up</button>
+                  </div>
+                </form>
+              </div>
               <div class="signed-in hidden" id="signedInBox">
                 <div class="big-avatar" id="profileAvatar">P</div>
                 <div>
@@ -180,6 +180,41 @@
                 <span class="count-pill" id="friendCount">0</span>
               </div>
               <div class="friend-list" id="fullFriendList"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="devView">
+          <div class="section-bar">
+            <h2>Developer Tools</h2>
+            <button class="ghost-btn" id="devLogoutBtn" type="button">Exit Dev Mode</button>
+          </div>
+          <div class="dev-grid">
+            <article class="auth-card dev-panel">
+              <p class="eyebrow">GitHub Access</p>
+              <h2>Personal Access Token</h2>
+              <p class="muted-copy">Required to commit games for everyone. Create one at <strong>github.com/settings/tokens</strong> with <strong>repo</strong> scope. Saved locally — enter once.</p>
+              <div class="dev-form">
+                <input id="devPatInput" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+                <button class="primary-btn" id="devPatSaveBtn" type="button">Save Token</button>
+                <p class="notice" id="devPatNotice"></p>
+              </div>
+            </article>
+            <article class="auth-card dev-panel">
+              <p class="eyebrow">Add a Game</p>
+              <h2>Paste a game link</h2>
+              <p class="muted-copy"><strong>Add for Everyone</strong> commits to GitHub — everyone sees it in ~30 seconds. Quick launch options open without saving.</p>
+              <div class="dev-form">
+                <input id="devTitleInput" type="text" placeholder="Game title" autocomplete="off">
+                <input id="devUrlInput" type="url" placeholder="https://script.google.com/macros/s/..." autocomplete="off">
+                <input id="devCategoryInput" type="text" placeholder="Category (e.g. Arcade)" autocomplete="off">
+                <div class="form-actions">
+                  <button class="primary-btn" id="devAddBtn" type="button">Add for Everyone</button>
+                  <button class="ghost-btn" id="devLaunchBtn" type="button">Quick Launch</button>
+                  <button class="ghost-btn" id="devBlankBtn" type="button">Open in about:blank</button>
+                </div>
+                <p class="notice" id="devNotice"></p>
+              </div>
             </article>
           </div>
         </section>

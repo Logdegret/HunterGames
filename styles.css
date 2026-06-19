@@ -9,7 +9,7 @@
   --panel-strong: rgba(24, 6, 7, 0.92);
   --glass: rgba(255, 236, 229, 0.075);
   --line: rgba(255, 111, 88, 0.22);
-  --hot-line: rgba(255, 71, 58, 0.62);
+  --hot-line: rgba(231, 47, 34, 0.62);
   --text: #fff7f2;
   --soft: #e3b0a8;
   --muted: #a5716d;
@@ -107,6 +107,15 @@ svg {
   font-family: "Archivo Black", Manrope, sans-serif;
   font-size: 30px;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.brand-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
 }
 
 .rail-nav {
@@ -707,7 +716,7 @@ input:focus {
 }
 
 .time-row {
-  grid-template-columns: 58px 1fr auto;
+  grid-template-columns: 74px 1fr auto;
 }
 
 .friend-row {
@@ -772,7 +781,7 @@ input:focus {
 }
 
 .profile-grid {
-  grid-template-columns: 1.2fr 0.8fr;
+  grid-template-columns: 1fr;
 }
 
 .profile-card {
@@ -968,4 +977,84 @@ input:focus {
   .signed-in {
     grid-template-columns: 1fr;
   }
+}
+
+/* ── Developer Mode ────────────────────────────────────────── */
+.dev-btn svg path {
+  fill: none;
+  stroke: var(--hot, #e05c2a);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.dev-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(5, 3, 3, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.dev-modal.hidden {
+  display: none;
+}
+
+.dev-modal-card {
+  background: var(--panel, #130606);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 28px;
+  padding: 28px;
+  width: 100%;
+  max-width: 540px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+}
+
+.dev-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.dev-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.dev-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.dev-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.dev-form input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: inherit;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.dev-form input:focus {
+  outline: none;
+  border-color: rgba(255,255,255,0.25);
 }

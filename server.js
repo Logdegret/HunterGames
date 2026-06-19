@@ -1,8 +1,12 @@
 const crypto = require("crypto");
+const { execSync } = require("child_process");
 const fs = require("fs");
 const http = require("http");
 const path = require("path");
 const { URL } = require("url");
+
+const DEV_PASS = "GolfDude88";
+const APP_JS = path.join(__dirname, "app.js");
 
 const PORT = process.env.PORT || 4173;
 const ROOT = __dirname;
@@ -241,6 +245,31 @@ async function handleApi(req, res, pathname) {
     user.lastSeen = Date.now();
     writeDb(db);
     return send(res, 200, { friend: publicUser(friend) });
+  }
+
+  if (pathname === "/api/dev/add-game" && req.method === "POST") {
+    if (body.devPass !== DEV_PASS) return send(res, 403, { error: "Bad dev password." });
+    const { id, title, url, category = "Custom", tags = ["Custom"], description = "" } = body;
+    if (!id || !title || !url) return send(res, 400, { error: "id, title, and url are required." });
+
+    const src = fs.readFileSync(APP_JS, "utf8");
+    const marker = "const games = [";
+    const idx = src.indexOf(marker);
+    if (idx === -1) return send(res, 500, { error: "Could not find games array in app.js." });
+
+    const insertAt = idx + marker.length;
+    const newEntry = `\n  { id: ${JSON.stringify(id)}, title: ${JSON.stringify(title)}, category: ${JSON.stringify(category)}, tags: ${JSON.stringify(tags)}, description: ${JSON.stringify(description)}, url: ${JSON.stringify(url)}, thumbnail: null },`;
+    const updated = src.slice(0, insertAt) + newEntry + src.slice(insertAt);
+    fs.writeFileSync(APP_JS, updated, "utf8");
+
+    try {
+      const dir = __dirname;
+      const safeTitle = title.replace(/["`$\\]/g, "");
+      execSync(`git add app.js && git commit -m "Add game: ${safeTitle}" && git push`, { cwd: dir, shell: true });
+    } catch (gitErr) {
+      return send(res, 200, { ok: true, warning: "Game added to app.js but git push failed: " + gitErr.message });
+    }
+    return send(res, 200, { ok: true });
   }
 
   send(res, 404, { error: "Not found." });
