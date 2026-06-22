@@ -615,19 +615,6 @@ input:focus {
   border-radius: 21px;
 }
 
-.game-art::after {
-  content: attr(data-initials);
-  position: absolute;
-  left: 14px;
-  bottom: 14px;
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 15px;
-  background: rgba(12, 4, 5, 0.58);
-  font-family: "Archivo Black", Manrope, sans-serif;
-}
 
 .game-tile h3 {
   margin: 14px 0 6px;
@@ -1057,4 +1044,29 @@ input:focus {
 .dev-form input:focus {
   outline: none;
   border-color: rgba(255,255,255,0.25);
+}
+
+.dev-thumbnail-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.dev-thumbnail-row input {
+  flex: 1;
+}
+
+.dev-img-pick {
+  white-space: nowrap;
+  cursor: pointer;
+  padding: 10px 14px;
+  font-size: 14px;
+}
+
+.dev-thumb-preview {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid rgba(255,255,255,0.1);
 }

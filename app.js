@@ -87,7 +87,10 @@ const els = {
   devPatSaveBtn: document.getElementById("devPatSaveBtn"),
   devPatNotice: document.getElementById("devPatNotice"),
   devNotice: document.getElementById("devNotice"),
-  devLogoutBtn: document.getElementById("devLogoutBtn")
+  devLogoutBtn: document.getElementById("devLogoutBtn"),
+  devThumbnailInput: document.getElementById("devThumbnailInput"),
+  devThumbnailFile: document.getElementById("devThumbnailFile"),
+  devThumbnailPreview: document.getElementById("devThumbnailPreview")
 };
 
 // ── Supabase ──────────────────────────────────────────────────
@@ -272,8 +275,7 @@ function renderQuickList() {
     button.className = "quick-card";
     button.type = "button";
     const coverStyle = game.thumbnail ? `style="background-image:url('${game.thumbnail}');background-size:cover;background-position:center;"` : "";
-    const coverInner = game.thumbnail ? "" : initials(game.title);
-    button.innerHTML = `<div class="cover" ${coverStyle}>${coverInner}</div><div><strong>${game.title}</strong><span>${game.category}</span></div>${icon("M9 5l7 7-7 7-1.4-1.4 5.6-5.6-5.6-5.6z")}`;
+    button.innerHTML = `<div class="cover" ${coverStyle}></div><div><strong>${game.title}</strong><span>${game.category}</span></div>${icon("M9 5l7 7-7 7-1.4-1.4 5.6-5.6-5.6-5.6z")}`;
     button.addEventListener("click", () => navigate(`#game/${game.id}`));
     els.quickList.appendChild(button);
   });
@@ -323,7 +325,7 @@ function renderLibrary() {
     button.className = "game-tile";
     button.type = "button";
     const artStyle = game.thumbnail ? ` style="background-image:url('${game.thumbnail}');background-size:cover;background-position:center;"` : "";
-    button.innerHTML = `<div class="game-art" data-initials="${initials(game.title)}"${artStyle}></div><h3>${game.title}</h3><p>${game.description}</p>`;
+    button.innerHTML = `<div class="game-art"${artStyle}></div><h3>${game.title}</h3><p>${game.description}</p>`;
     button.addEventListener("click", () => navigate(`#game/${game.id}`));
     els.gameGrid.appendChild(button);
   });
@@ -343,7 +345,7 @@ function renderStats() {
   document.getElementById("statRing").style.setProperty("--ring", `${ring}%`);
   els.playsStat.textContent = stats.plays || 0;
   els.xpStat.textContent = stats.xp || 0;
-  els.mostPlayedStat.textContent = most ? initials(most.title) : "None";
+  els.mostPlayedStat.textContent = most ? most.title : "None";
 
   els.statsTotalPlaytime.textContent = formatTime(stats.totalSeconds);
   els.statsLastPlayed.textContent = stats.lastPlayed ? `Last played: ${gameName(stats.lastPlayed)}` : "No game played yet";
@@ -359,8 +361,7 @@ function renderStats() {
     const row = document.createElement("div");
     row.className = "time-row";
     const coverStyle = game.thumbnail ? `style="background-image:url('${game.thumbnail}');background-size:cover;background-position:center;"` : "";
-    const coverInner = game.thumbnail ? "" : initials(game.title);
-    row.innerHTML = `<div class="cover" ${coverStyle}>${coverInner}</div><div><strong>${game.title}</strong><span>${item.plays || 0} plays</span></div><strong>${formatTime(item.seconds || 0)}</strong>`;
+    row.innerHTML = `<div class="cover" ${coverStyle}></div><div><strong>${game.title}</strong><span>${item.plays || 0} plays</span></div><strong>${formatTime(item.seconds || 0)}</strong>`;
     els.timeList.appendChild(row);
   });
 }
@@ -684,8 +685,31 @@ function devGameFromInputs() {
   els.devNotice.textContent = "";
   const title = els.devTitleInput.value.trim() || "Custom Game";
   const category = els.devCategoryInput.value.trim() || "Custom";
-  return { id: "dev-custom", title, category, tags: [category], description: "", url };
+  const thumbnail = els.devThumbnailInput.value.trim() || null;
+  return { id: "dev-custom", title, category, tags: [category], description: "", url, thumbnail };
 }
+
+els.devThumbnailFile.addEventListener("change", () => {
+  const file = els.devThumbnailFile.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    els.devThumbnailInput.value = e.target.result;
+    els.devThumbnailPreview.src = e.target.result;
+    els.devThumbnailPreview.classList.remove("hidden");
+  };
+  reader.readAsDataURL(file);
+});
+
+els.devThumbnailInput.addEventListener("input", () => {
+  const val = els.devThumbnailInput.value.trim();
+  if (val && !val.startsWith("data:")) {
+    els.devThumbnailPreview.src = val;
+    els.devThumbnailPreview.classList.remove("hidden");
+  } else if (!val) {
+    els.devThumbnailPreview.classList.add("hidden");
+  }
+});
 
 function renderDevPat() {
   const saved = localStorage.getItem("hunterDevPAT");
@@ -705,10 +729,11 @@ els.devPatSaveBtn.addEventListener("click", () => {
 });
 
 els.devAddBtn.addEventListener("click", async () => {
-  const url      = els.devUrlInput.value.trim();
-  const title    = els.devTitleInput.value.trim();
-  const category = els.devCategoryInput.value.trim() || "Custom";
-  const pat      = localStorage.getItem("hunterDevPAT");
+  const url       = els.devUrlInput.value.trim();
+  const title     = els.devTitleInput.value.trim();
+  const category  = els.devCategoryInput.value.trim() || "Custom";
+  const thumbnail = els.devThumbnailInput.value.trim() || null;
+  const pat       = localStorage.getItem("hunterDevPAT");
 
   if (!url || !title) { els.devNotice.textContent = "Title and URL are required."; return; }
   if (!pat) { els.devNotice.textContent = "Save your GitHub token first (left panel)."; return; }
@@ -732,7 +757,7 @@ els.devAddBtn.addEventListener("click", async () => {
     const idx = current.indexOf(marker);
     if (idx === -1) throw new Error("Could not find games array in app.js.");
 
-    const newEntry = `\n  { id: ${JSON.stringify(id)}, title: ${JSON.stringify(title)}, category: ${JSON.stringify(category)}, tags: ${JSON.stringify([category])}, description: "", url: ${JSON.stringify(url)}, thumbnail: null },`;
+    const newEntry = `\n  { id: ${JSON.stringify(id)}, title: ${JSON.stringify(title)}, category: ${JSON.stringify(category)}, tags: ${JSON.stringify([category])}, description: "", url: ${JSON.stringify(url)}, thumbnail: ${JSON.stringify(thumbnail)} },`;
     const updated = current.slice(0, idx + marker.length) + newEntry + current.slice(idx + marker.length);
 
     els.devNotice.textContent = "Committing to GitHub…";
@@ -747,7 +772,7 @@ els.devAddBtn.addEventListener("click", async () => {
     }
 
     // Show immediately without waiting for Pages redeploy
-    const game = { id, title, category, tags: [category], description: "", url, thumbnail: null };
+    const game = { id, title, category, tags: [category], description: "", url, thumbnail };
     games.unshift(game);
     renderAll();
 
@@ -755,6 +780,9 @@ els.devAddBtn.addEventListener("click", async () => {
     els.devUrlInput.value = "";
     els.devTitleInput.value = "";
     els.devCategoryInput.value = "";
+    els.devThumbnailInput.value = "";
+    els.devThumbnailFile.value = "";
+    els.devThumbnailPreview.classList.add("hidden");
   } catch (err) {
     els.devNotice.textContent = "Error: " + err.message;
   } finally {

@@ -208,6 +208,12 @@
                 <input id="devTitleInput" type="text" placeholder="Game title" autocomplete="off">
                 <input id="devUrlInput" type="url" placeholder="https://script.google.com/macros/s/..." autocomplete="off">
                 <input id="devCategoryInput" type="text" placeholder="Category (e.g. Arcade)" autocomplete="off">
+                <div class="dev-thumbnail-row">
+                  <input id="devThumbnailInput" type="url" placeholder="Thumbnail image URL (optional)" autocomplete="off">
+                  <label class="ghost-btn dev-img-pick" for="devThumbnailFile" title="Import image from your computer">Import image</label>
+                  <input id="devThumbnailFile" type="file" accept="image/*" style="display:none">
+                </div>
+                <img id="devThumbnailPreview" class="dev-thumb-preview hidden" alt="Thumbnail preview">
                 <div class="form-actions">
                   <button class="primary-btn" id="devAddBtn" type="button">Add for Everyone</button>
                   <button class="ghost-btn" id="devLaunchBtn" type="button">Quick Launch</button>
