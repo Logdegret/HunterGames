@@ -502,12 +502,17 @@ async function heartbeat() {
   if (!state.user) return;
   try {
     const currentGame = state.route === "play" ? state.currentGame.id : null;
-    await sb.rpc("update_heartbeat", { p_current_game: currentGame });
+    const { error } = await sb.rpc("update_heartbeat", { p_current_game: currentGame });
+    if (error && (error.code === "PGRST301" || error.message?.toLowerCase().includes("jwt"))) {
+      // actual auth expiry — sign out gracefully
+      state.user = null;
+      state.friends = [];
+      renderAll();
+      return;
+    }
     await loadFriends();
   } catch {
-    // session expired — sign out gracefully
-    state.user = null;
-    state.friends = [];
+    // network error — leave session intact, try again next interval
   }
   renderAll();
 }
