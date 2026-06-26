@@ -8,17 +8,17 @@
   --panel: rgba(45, 12, 12, 0.82);
   --panel-strong: rgba(24, 6, 7, 0.92);
   --glass: rgba(255, 236, 229, 0.075);
-  --line: rgba(255, 111, 88, 0.22);
-  --hot-line: rgba(231, 47, 34, 0.62);
-  --text: #fff7f2;
+  --line: rgba(232, 91, 69, 0.22);
+  --hot-line: rgba(240, 28, 13, 0.687);
+  --text: #ffffff;
   --soft: #e3b0a8;
   --muted: #a5716d;
   --hot: #ff3e35;
-  --hot-2: #ff8a4f;
-  --gold: #ffcc60;
-  --green: #55df91;
-  --blue: #66c9ff;
-  --violet: #bca2ff;
+  --hot-2: #f4834b;
+  --gold: #fff460;
+  --green: #2d9058;
+  --blue: #54a4d0;
+  --violet: #743cff;
   --radius: 28px;
   --shadow: 0 26px 70px rgba(0, 0, 0, 0.36);
 }
@@ -266,7 +266,7 @@ input:focus {
 .dashboard-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.75fr) minmax(280px, 0.85fr);
-  gap: 20px;
+  gap: 50px;
 }
 
 .featured-card,
@@ -513,7 +513,7 @@ input:focus {
   display: grid;
   grid-template-columns: 210px 1fr auto;
   align-items: center;
-  gap: 18px;
+  gap: 20px;
   min-height: 132px;
   border-radius: 26px;
   padding: 16px;
@@ -552,10 +552,10 @@ input:focus {
 .stats-card {
   min-height: 360px;
   border-radius: 30px;
-  padding: 22px;
+  padding: 30px;
   background:
     linear-gradient(to top, rgba(18, 5, 6, 0.98), rgba(94, 18, 17, 0.72)),
-    radial-gradient(circle at 72% 36%, rgba(255, 88, 68, 0.34), transparent 14rem);
+    radial-gradient(circle at 72% 36%, rgba(255, 88, 68, 0.34), transparent 20rem);
 }
 
 .stat-ring {
