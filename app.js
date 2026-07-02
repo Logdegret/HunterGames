@@ -8,12 +8,12 @@ const games = [...savedCustomGames,
   { id: "snow-rider-3d", title: "Snow Rider 3D", category: "Arcade", tags: ["Racing", "Quick"], description: "Slide down snowy tracks, dodge hazards, and chase a cleaner run.", url: "https://ubg66.gitlab.io/snow-rider-3d/", thumbnail: "https://imgs.crazygames.com/snow-rider-3d_16x9/20260120063434/snow-rider-3d_16x9-cover" },
   { id: "bottle-flip-3d", title: "Bottle Flip 3D", category: "Skill", tags: ["Quick", "Chill"], description: "Flip the bottle across furniture and stick every landing.", url: "https://ubg66.gitlab.io/bottle-flip-3d/", thumbnail: "https://www2.minijuegosgratis.com/v3/games/thumbnails/228850_1.jpg" },
   { id: "rooftop-snipers", title: "Rooftop Snipers", category: "Arcade", tags: ["2 Player", "Challenge"], description: "A wobbly rooftop duel with tiny controls and big knockouts.", url: "https://gswitch3.github.io/g/rooftop-snipers", thumbnail: "https://imgs.crazygames.com/rooftop-snipers_16x9/20250108040440/rooftop-snipers_16x9-cover" },
-  { id: "basket-random", title: "Basket Random", category: "Sports", tags: ["2 Player", "Quick"], description: "Chaotic one-button basketball with random courts and physics.", url: "https://classroom6xonline.github.io/game/basket-random", thumbnail: "https://imgs.crazygames.com/basket-random_16x9/20240617090207/basket-random_16x9-cover" },
+  { id: "basket-random", title: "Basket Random", category: "Sports", tags: ["2 Player", "Quick"], description: "Chaotic one-button basketball with random courts and physics.", url: "https://script.google.com/macros/s/AKfycbwiQgeRHVDP8wzJ_CeSE1LyaKCMu1qdlopwylhD4LdBvBVd2y36VjlWY0iyk38WH0JiJA/exec", thumbnail: "https://imgs.crazygames.com/basket-random_16x9/20240617090207/basket-random_16x9-cover" },
   { id: "polytrack", title: "PolyTrack v0.6.0", category: "Racing", tags: ["Challenge"], description: "A sharp low-poly driving challenge with speed, drifting, and precise track flow.", url: "https://smapskajendfjshwbekf-prog.github.io/newcargame/", thumbnail: null },
   { id: "eaglercraft", title: "Eaglercraft", category: "Sandbox", tags: ["Chill"], description: "A browser sandbox build for mining, crafting, and open-ended survival.", url: "https://smapskajendfjshwbekf-prog.github.io/eaglercraft/", thumbnail: null },
   { id: "stacktris", title: "Stacktris", category: "Puzzle", tags: ["Chill", "Quick"], description: "Stack pieces with puzzle timing and clean block strategy.", url: "https://htmlunblockedgames.github.io/stacktris/", thumbnail: null },
   { id: "run-3", title: "Run 3", category: "Arcade", tags: ["Runner", "Challenge"], description: "Sprint through space tunnels and keep your footing on every wall.", url: "https://lekug.github.io/tn6pS9dCf37xAhkJv/", thumbnail: "https://imgs.crazygames.com/run3b.png" },
-  { id: "basketball-stars", title: "Basketball Stars", category: "Sports", tags: ["2 Player", "Challenge"], description: "Arcade basketball matchups with dunks, steals, and quick plays.", url: "https://classroom6xonline.github.io/game/basketball-stars", thumbnail: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=600,height=400,fit=cover,f=png/bc02c9cdfc5b424ddf343b01edf791ce/basketball-stars-logo.png" },
+  { id: "basketball-stars", title: "Basketball Stars", category: "Sports", tags: ["2 Player", "Challenge"], description: "Arcade basketball matchups with dunks, steals, and quick plays.", url: "https://script.google.com/macros/s/AKfycbwzYMDDcdDUAvEP7iO6OdRk-5_oUp6vYvDdyEEz8tTOzWi5y4-Qf3vQ6TBoZuc9UYVcLg/exec", thumbnail: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=600,height=400,fit=cover,f=png/bc02c9cdfc5b424ddf343b01edf791ce/basketball-stars-logo.png" },
   { id: "slope", title: "Slope", category: "Arcade", tags: ["Runner", "Quick"], description: "Roll through neon slopes at high speed without missing the track.", url: "https://ubg66.gitlab.io/slope/", thumbnail: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/48fdcb743a8cfc4b66dbb07444dd3108/slopey-logo.png" },
   { id: "tunnel-rush", title: "Tunnel Rush", category: "Arcade", tags: ["Runner", "Challenge"], description: "React fast through a rotating tunnel of color and obstacles.", url: "https://ubg66.gitlab.io/tunnel-rush/", thumbnail: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=600,height=400,fit=cover,f=png/2094926076b7aa8264cace220ce5decc/tunnel-rush-logo.png" },
   { id: "retro-bowl", title: "Retro Bowl", category: "Sports", tags: ["Chill"], description: "Call plays, manage drives, and chase the perfect season.", url: "https://ubg66.gitlab.io/retro-bowl/", thumbnail: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=600,height=400,fit=cover,f=png/ee9ca3764ef4289a48a1ebf457ef605441ed1f35a0f2eb12707a70d609e53686/retro-bowl-logo.png" }
@@ -116,6 +116,7 @@ const state = {
   route: "home",
   filter: "All",
   query: "",
+  favorites: new Set(JSON.parse(localStorage.getItem("hunterFavorites") || "[]")),
   currentGame: games[0],
   user: null,
   friends: [],
@@ -125,7 +126,7 @@ const state = {
   devMode: localStorage.getItem("hunterDevMode") === "1"
 };
 
-const filters = ["All", ...Array.from(new Set(games.flatMap((game) => [game.category, ...game.tags]))).sort()];
+const filters = ["All", "Favorites", ...Array.from(new Set(games.flatMap((game) => [game.category, ...game.tags]))).sort()];
 
 function icon(path) {
   return `<svg viewBox="0 0 24 24"><path d="${path}"/></svg>`;
@@ -189,7 +190,10 @@ function setNotice(text) {
 function filteredGames() {
   const query = state.query.toLowerCase();
   return games.filter((game) => {
-    const filterOk = state.filter === "All" || game.category === state.filter || game.tags.includes(state.filter);
+    const filterOk = state.filter === "All"
+      || (state.filter === "Favorites" && state.favorites.has(game.id))
+      || game.category === state.filter
+      || game.tags.includes(state.filter);
     const haystack = [game.title, game.category, game.description, ...game.tags].join(" ").toLowerCase();
     return filterOk && (!query || haystack.includes(query));
   });
@@ -326,14 +330,34 @@ function renderLibrary() {
   const visible = filteredGames();
   els.gameGrid.innerHTML = "";
   visible.forEach((game) => {
+    const tile = document.createElement("div");
+    tile.className = "game-tile-wrap";
     const button = document.createElement("button");
     button.className = "game-tile";
     button.type = "button";
     const artStyle = game.thumbnail ? ` style="background-image:url('${game.thumbnail}');background-size:cover;background-position:center;"` : "";
     button.innerHTML = `<div class="game-art"${artStyle}></div><h3>${game.title}</h3><p>${game.description}</p>`;
     button.addEventListener("click", () => navigate(`#game/${game.id}`));
-    els.gameGrid.appendChild(button);
+
+    const favorite = document.createElement("button");
+    favorite.className = `favorite-btn${state.favorites.has(game.id) ? " active" : ""}`;
+    favorite.type = "button";
+    favorite.setAttribute("aria-label", `${state.favorites.has(game.id) ? "Remove" : "Add"} ${game.title} ${state.favorites.has(game.id) ? "from" : "to"} favorites`);
+    favorite.setAttribute("aria-pressed", String(state.favorites.has(game.id)));
+    favorite.innerHTML = icon("M12 2.7l2.8 5.7 6.3.9-4.6 4.4 1.1 6.3-5.6-3-5.6 3 1.1-6.3-4.6-4.4 6.3-.9z");
+    favorite.addEventListener("click", () => {
+      if (state.favorites.has(game.id)) state.favorites.delete(game.id);
+      else state.favorites.add(game.id);
+      localStorage.setItem("hunterFavorites", JSON.stringify([...state.favorites]));
+      renderLibrary();
+    });
+
+    tile.append(button, favorite);
+    els.gameGrid.appendChild(tile);
   });
+  els.emptyState.textContent = state.filter === "Favorites"
+    ? "No favorites yet. Star a game to keep it here."
+    : "No games match that search.";
   els.emptyState.classList.toggle("active", visible.length === 0);
 }
 
@@ -599,15 +623,8 @@ els.authForm.addEventListener("submit", async (event) => {
   const action   = event.submitter?.dataset.auth || "login";
   const email    = els.emailInput.value.trim();
   const password = els.passwordInput.value;
+  const isDevLogin = action === "login" && email.toLowerCase() === DEV_EMAIL.toLowerCase() && password === DEV_PASS;
   setNotice("");
-
-  // Dev mode login — local only, no Supabase
-  if (email === DEV_EMAIL && password === DEV_PASS) {
-    setDevMode(true);
-    setNotice("Developer mode enabled.");
-    navigate("#dev");
-    return;
-  }
 
   // First "Sign up" click — just reveal the username field, don't submit yet
   if (action === "signup" && els.usernameInput.classList.contains("hidden")) {
@@ -651,10 +668,16 @@ els.authForm.addEventListener("submit", async (event) => {
       ]);
       state.user = { id: data.user.id, username: profile.username, initials: initials(profile.username) };
       state.stats = buildStatsFromDB(playtime, profile);
-      setNotice("Signed in.");
+      if (isDevLogin) {
+        setDevMode(true);
+        setNotice("Signed in — developer mode enabled.");
+      } else {
+        setNotice("Signed in.");
+      }
     }
     await loadFriends();
     renderAll();
+    if (isDevLogin) navigate("#dev");
   } catch (error) {
     setNotice(error.message);
   }
