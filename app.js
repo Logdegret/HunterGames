@@ -620,6 +620,10 @@ function renderDevMode() {
 
 els.authForm.addEventListener("submit", async (event) => {
   event.preventDefault();
+  // Finish restoring any existing session before starting a new login. Without
+  // this, a slower page-load check can return "signed out" after login succeeds
+  // and overwrite the newly authenticated user in the UI.
+  await bootPromise;
   const action   = event.submitter?.dataset.auth || "login";
   const email    = els.emailInput.value.trim();
   const password = els.passwordInput.value;
@@ -892,7 +896,7 @@ async function boot() {
   renderAll();
   booted = true;
 }
-boot();
+const bootPromise = boot();
 
 sb.auth.onAuthStateChange(async (_event, session) => {
   if (!booted) return; // boot() is already handling the initial session
