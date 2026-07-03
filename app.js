@@ -127,6 +127,11 @@ const state = {
 };
 
 const filters = ["All", "Favorites", ...Array.from(new Set(games.flatMap((game) => [game.category, ...game.tags]))).sort()];
+const doodleBaseball = games.find((game) => game.id === "google-doodle-baseball");
+if (doodleBaseball) {
+  doodleBaseball.url = "https://qz-games.github.io/Games01/gbase/";
+}
+const blankSessions = new Set();
 
 function icon(path) {
   return `<svg viewBox="0 0 24 24"><path d="${path}"/></svg>`;
@@ -511,8 +516,66 @@ function stopPlayTracking() {
   els.playerBox.innerHTML = "";
 }
 
+function activeBlankGame() {
+  for (const session of blankSessions) {
+    if (!session.win.closed) return session.game;
+  }
+  return null;
+}
+
+function isBlankTracking(gameId) {
+  for (const session of blankSessions) {
+    if (!session.win.closed && session.game.id === gameId) return true;
+  }
+  return false;
+}
+
+async function addTrackedTime(game, seconds) {
+  if (seconds < 1) return;
+  localPlaytime(game, seconds);
+  if (state.user) {
+    try {
+      await sb.rpc("add_playtime", { p_game_id: game.id, p_seconds: seconds });
+    } catch {}
+  }
+  renderStats();
+}
+
+function startBlankTracking(game, win) {
+  const continuedFromPlayer = state.route === "play" && state.currentGame.id === game.id;
+  const session = { game, win, lastTick: Date.now(), timer: 0 };
+  blankSessions.add(session);
+  state.lastTick = Date.now();
+
+  if (!continuedFromPlayer) {
+    localPlayStart(game);
+    if (state.user) {
+      Promise.resolve(sb.rpc("record_play", { p_game_id: game.id })).catch(() => {});
+    }
+  }
+
+  const tick = () => {
+    const now = Date.now();
+    const seconds = Math.floor((now - session.lastTick) / 1000);
+    if (seconds >= 15 || (win.closed && seconds > 0)) {
+      session.lastTick += seconds * 1000;
+      addTrackedTime(game, seconds);
+    }
+    if (win.closed) {
+      clearInterval(session.timer);
+      blankSessions.delete(session);
+      state.lastTick = Date.now();
+      heartbeat();
+    }
+  };
+
+  session.timer = setInterval(tick, 1_000);
+  heartbeat();
+}
+
 async function flushPlaytime() {
   if (state.route !== "play" || document.hidden) return;
+  if (isBlankTracking(state.currentGame.id)) return;
   const now = Date.now();
   const seconds = Math.floor((now - state.lastTick) / 1000);
   if (seconds < 1) return;
@@ -529,7 +592,8 @@ async function flushPlaytime() {
 async function heartbeat() {
   if (!state.user) return;
   try {
-    const currentGame = state.route === "play" ? state.currentGame.id : null;
+    const blankGame = activeBlankGame();
+    const currentGame = blankGame?.id || (state.route === "play" ? state.currentGame.id : null);
     const { error } = await sb.rpc("update_heartbeat", { p_current_game: currentGame });
     if (error && (error.code === "PGRST301" || error.message?.toLowerCase().includes("jwt"))) {
       // actual auth expiry — sign out gracefully
@@ -593,6 +657,7 @@ function openBlankGame(game) {
   const tag = ["i", "fr", "ame"].join("");
   win.document.write(`<!doctype html><html><head><title>${safeTitle}</title><style>html,body{margin:0;height:100%;background:#050303;overflow:hidden}.play{width:100%;height:100%;border:0;display:block}</style></head><body><${tag} class="play" src="${safeUrl}" title="${safeTitle}" allow="fullscreen *; autoplay *; gamepad *; clipboard-read *; clipboard-write *; accelerometer *; gyroscope *" allowfullscreen></${tag}></body></html>`);
   win.document.close();
+  startBlankTracking(game, win);
 }
 
 document.querySelectorAll("[data-route]").forEach((button) => {
@@ -859,7 +924,7 @@ document.addEventListener("visibilitychange", () => {
 
 window.addEventListener("hashchange", route);
 window.addEventListener("beforeunload", () => {
-  if (state.route === "play") {
+  if (state.route === "play" && !isBlankTracking(state.currentGame.id)) {
     const now = Date.now();
     const seconds = Math.floor((now - state.lastTick) / 1000);
     if (seconds > 0) localPlaytime(state.currentGame, seconds);
